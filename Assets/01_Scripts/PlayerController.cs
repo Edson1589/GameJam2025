@@ -1,4 +1,5 @@
 using UnityEngine;
+using TMPro;
 
 public class PlayerController : MonoBehaviour
 {
@@ -15,7 +16,16 @@ public class PlayerController : MonoBehaviour
 
     [Header("Parts Status")]
     public bool hasLegs = false;
+    public bool hasArms = false;
 
+    [Header("Push Settings")]
+    [SerializeField] private float pushPower = 3f;
+    [SerializeField] private float pushRayDistance = 1.5f;
+
+    [Header("UI (Optional)")]
+    [SerializeField] private TextMeshProUGUI statusText;
+
+    // Components
     private Rigidbody rb;
     private bool isGrounded;
     private bool isDashing;
@@ -24,7 +34,8 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        Debug.Log("R.U.B.O iniciado - Busca tus PIERNAS para saltar y hacer dash!");
+        UpdateStatusText();
+        Debug.Log("R.U.B.O. (Cabeza) iniciado - Busca tus partes!");
     }
 
     void Update()
@@ -48,6 +59,12 @@ public class PlayerController : MonoBehaviour
         else
         {
             Dash();
+        }
+
+        // Empujar objetos si tiene brazos
+        if (hasArms)
+        {
+            PushObjects();
         }
     }
 
@@ -100,20 +117,97 @@ public class PlayerController : MonoBehaviour
         isGrounded = Physics.CheckSphere(groundCheck.position, groundCheckRadius, groundLayer);
     }
 
-    // Método para conectar piernas (llamado desde el pickup)
+    private void PushObjects()
+    {
+        // Raycast hacia adelante para detectar objetos empujables
+        RaycastHit hit;
+        Vector3 forward = transform.forward;
+        Vector3 rayStart = transform.position + Vector3.up * 0.5f;
+
+        if (Physics.Raycast(rayStart, forward, out hit, pushRayDistance))
+        {
+            if (hit.collider.CompareTag("Pushable"))
+            {
+                Rigidbody boxRb = hit.collider.GetComponent<Rigidbody>();
+                if (boxRb != null)
+                {
+                    // Empujar si nos estamos moviendo hacia el objeto
+                    float horizontal = Input.GetAxisRaw("Horizontal");
+                    float vertical = Input.GetAxisRaw("Vertical");
+
+                    if (horizontal != 0 || vertical != 0)
+                    {
+                        Vector3 pushDirection = forward;
+                        pushDirection.y = 0; // Solo empujar horizontalmente
+                        boxRb.AddForce(pushDirection * pushPower, ForceMode.Force);
+                    }
+                }
+            }
+        }
+    }
+
+    // Método para conectar piernas
     public void ConnectLegs()
     {
         hasLegs = true;
+        UpdateStatusText();
         Debug.Log("¡PIERNAS RECONECTADAS! Ahora puedes SALTAR (Space) y hacer DASH (Shift)");
     }
 
-    // Visualizar ground check en editor
+    // Método para conectar brazos
+    public void ConnectArms()
+    {
+        hasArms = true;
+        UpdateStatusText();
+        Debug.Log("¡BRAZOS RECONECTADOS! Ahora puedes EMPUJAR/ARRASTRAR cajas y usar PALANCAS");
+    }
+
+    private void UpdateStatusText()
+    {
+        if (statusText != null)
+        {
+            string status = "";
+
+            if (hasLegs && hasArms)
+            {
+                status = "PIERNAS + BRAZOS - Totalmente operativo";
+                statusText.color = Color.cyan;
+            }
+            else if (hasLegs)
+            {
+                status = "PIERNAS - Space: Saltar | Shift: Dash";
+                statusText.color = Color.green;
+            }
+            else if (hasArms)
+            {
+                status = "BRAZOS - Puedes empujar cajas";
+                statusText.color = Color.yellow;
+            }
+            else
+            {
+                status = "SIN PARTES - Movimiento limitado";
+                statusText.color = Color.red;
+            }
+
+            statusText.text = status;
+        }
+    }
+
+    // Visualizar ground check y push ray en editor
     private void OnDrawGizmos()
     {
         if (groundCheck != null)
         {
             Gizmos.color = isGrounded ? Color.green : Color.red;
             Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
+        }
+
+        // Visualizar rayo de empuje
+        if (hasArms)
+        {
+            Gizmos.color = Color.yellow;
+            Vector3 rayStart = transform.position + Vector3.up * 0.5f;
+            Gizmos.DrawRay(rayStart, transform.forward * pushRayDistance);
         }
     }
 }
