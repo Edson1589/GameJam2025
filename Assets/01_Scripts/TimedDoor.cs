@@ -5,7 +5,7 @@ public class TimedDoor : MonoBehaviour
     [Header("Door Settings")]
     [SerializeField] private float openHeight = 4f;
     [SerializeField] private float openSpeed = 2f;
-    [SerializeField] private float openDuration = 5f; // Segundos que permanece abierta
+    [SerializeField] private float openDuration = 5f; 
 
     [Header("Audio (Optional)")]
     [SerializeField] private bool playSound = false;

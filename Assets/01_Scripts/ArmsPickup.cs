@@ -16,7 +16,7 @@ public class ArmsPickup : MonoBehaviour
 
     void Update()
     {
-        // Rotar en múltiples ejes (más dinámico que las piernas)
+        // Rotar en múltiples ejes
         transform.Rotate(Vector3.up, rotationSpeed * Time.deltaTime);
         transform.Rotate(Vector3.right, rotationSpeed * 0.5f * Time.deltaTime);
 

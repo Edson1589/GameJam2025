@@ -53,12 +53,7 @@ public class LevelExit : MonoBehaviour
         Debug.Log("=== ¡NIVEL 1 COMPLETADO! ===");
         Debug.Log("¡Has recuperado tus PIERNAS y escapado de la Zona de Ensamble!");
 
-        // Aquí puedes agregar:
-        // - Pantalla de victoria
-        // - Cargar siguiente nivel
-        // - Mostrar estadísticas
-
-        // Por ahora, reiniciar después de 3 segundos
+        //Reiniciar después de 3 segundos
         Invoke("RestartLevel", 3f);
     }
 

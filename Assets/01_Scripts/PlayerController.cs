@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using TMPro;
 
 public class PlayerController : MonoBehaviour
@@ -17,25 +17,57 @@ public class PlayerController : MonoBehaviour
     [Header("Parts Status")]
     public bool hasLegs = false;
     public bool hasArms = false;
+    public bool hasTorso = false;
 
     [Header("Push Settings")]
     [SerializeField] private float pushPower = 3f;
     [SerializeField] private float pushRayDistance = 1.5f;
 
-    [Header("UI (Optional)")]
-    [SerializeField] private TextMeshProUGUI statusText;
+    [Header("Torso Settings")]
+    [SerializeField] private Light playerLight;
+    [SerializeField] private float magneticResistance = 0.5f;
 
-    // Components
+    [Header("UI")]
+    [SerializeField] private TextMeshProUGUI statusText;
+    [SerializeField] private TextMeshProUGUI instructionsText;
+
+    [Header("Skills & Cooldown")]
+    [SerializeField] private int maxJumps = 2;
+    [SerializeField] private float abilityCooldownDuration = 10f;
+
+    private int availableJumps;
+    private bool isDashAvailable = true;
+    private float cooldownTimer;
+
     private Rigidbody rb;
+    private BodyPartsVisualizer bodyVisualizer;
     private bool isGrounded;
     private bool isDashing;
     private float dashTimer;
+    private bool lightEnabled = false;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        bodyVisualizer = GetComponent<BodyPartsVisualizer>();
+
+        availableJumps = maxJumps;
+
+        if (bodyVisualizer != null)
+        {
+            Debug.Log("=== BodyPartsVisualizer found! ===");
+        }
+        else
+        {
+            Debug.LogError("=== BodyPartsVisualizer NOT found! Add it to the Player ===");
+        }
+
+        if (playerLight != null)
+            playerLight.enabled = false;
+
         UpdateStatusText();
-        Debug.Log("R.U.B.O. (Cabeza) iniciado - Busca tus partes!");
+        UpdateInstructions();
+        Debug.Log("R.U.B.O. (Head) initiated - Find your parts!");
     }
 
     void Update()
@@ -47,6 +79,22 @@ public class PlayerController : MonoBehaviour
         {
             dashTimer -= Time.deltaTime;
             if (dashTimer <= 0) isDashing = false;
+        }
+
+        if (cooldownTimer > 0)
+        {
+            cooldownTimer -= Time.deltaTime;
+            if (cooldownTimer <= 0)
+            {
+                Debug.Log("ABILITIES RECHARGED!");
+                isDashAvailable = true;
+                // Saltos se resetean al entrar en contacto con el piso.
+                if (availableJumps < maxJumps)
+                {
+                    availableJumps = maxJumps;
+                }
+                cooldownTimer = 0;
+            }
         }
     }
 
@@ -61,7 +109,6 @@ public class PlayerController : MonoBehaviour
             Dash();
         }
 
-        // Empujar objetos si tiene brazos
         if (hasArms)
         {
             PushObjects();
@@ -70,19 +117,34 @@ public class PlayerController : MonoBehaviour
 
     private void HandleInput()
     {
-        // Jump (Space) - Solo si tiene piernas
-        if (Input.GetKeyDown(KeyCode.Space) && hasLegs && isGrounded)
+        if (Input.GetKeyDown(KeyCode.Space) && hasLegs && availableJumps > 0)
         {
             rb.velocity = new Vector3(rb.velocity.x, jumpForce, rb.velocity.z);
-            Debug.Log("¡Salto!");
+            availableJumps--;
+            Debug.Log($"Jump! {availableJumps} jumps remaining.");
+
+            if (cooldownTimer <= 0)
+            {
+                cooldownTimer = abilityCooldownDuration;
+            }
         }
 
-        // Dash (Shift) - Solo si tiene piernas
-        if (Input.GetKeyDown(KeyCode.LeftShift) && hasLegs && !isDashing && isGrounded)
+        if (Input.GetKeyDown(KeyCode.LeftShift) && hasLegs && !isDashing && isDashAvailable)
         {
             isDashing = true;
             dashTimer = dashDuration;
-            Debug.Log("¡Dash!");
+            isDashAvailable = false;
+            Debug.Log("Dash! Cooldown started.");
+
+            if (cooldownTimer <= 0)
+            {
+                cooldownTimer = abilityCooldownDuration;
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.F) && hasTorso)
+        {
+            ToggleLight();
         }
     }
 
@@ -92,13 +154,11 @@ public class PlayerController : MonoBehaviour
         float vertical = Input.GetAxisRaw("Vertical");
         Vector3 moveDir = new Vector3(horizontal, 0, vertical).normalized;
 
-        // Más lento sin piernas
         float currentSpeed = hasLegs ? moveSpeed : moveSpeed * 0.4f;
 
         Vector3 movement = moveDir * currentSpeed;
         rb.velocity = new Vector3(movement.x, rb.velocity.y, movement.z);
 
-        // Rotar hacia donde mira
         if (moveDir.magnitude > 0.1f)
         {
             Quaternion targetRotation = Quaternion.LookRotation(moveDir);
@@ -114,12 +174,18 @@ public class PlayerController : MonoBehaviour
 
     private void CheckGrounded()
     {
+        bool wasGrounded = isGrounded;
         isGrounded = Physics.CheckSphere(groundCheck.position, groundCheckRadius, groundLayer);
+
+        if (!wasGrounded && isGrounded)
+        {
+            availableJumps = maxJumps;
+            Debug.Log("Jumps reset by touching the ground.");
+        }
     }
 
     private void PushObjects()
     {
-        // Raycast hacia adelante para detectar objetos empujables
         RaycastHit hit;
         Vector3 forward = transform.forward;
         Vector3 rayStart = transform.position + Vector3.up * 0.5f;
@@ -131,14 +197,13 @@ public class PlayerController : MonoBehaviour
                 Rigidbody boxRb = hit.collider.GetComponent<Rigidbody>();
                 if (boxRb != null)
                 {
-                    // Empujar si nos estamos moviendo hacia el objeto
                     float horizontal = Input.GetAxisRaw("Horizontal");
                     float vertical = Input.GetAxisRaw("Vertical");
 
                     if (horizontal != 0 || vertical != 0)
                     {
                         Vector3 pushDirection = forward;
-                        pushDirection.y = 0; // Solo empujar horizontalmente
+                        pushDirection.y = 0;
                         boxRb.AddForce(pushDirection * pushPower, ForceMode.Force);
                     }
                 }
@@ -146,20 +211,123 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    // Método para conectar piernas
-    public void ConnectLegs()
+    private void ToggleLight()
     {
-        hasLegs = true;
-        UpdateStatusText();
-        Debug.Log("¡PIERNAS RECONECTADAS! Ahora puedes SALTAR (Space) y hacer DASH (Shift)");
+        if (playerLight == null) return;
+
+        lightEnabled = !lightEnabled;
+        playerLight.enabled = lightEnabled;
+
+        Debug.Log(lightEnabled ? "Flashlight ENABLED" : "Flashlight DISABLED");
     }
 
-    // Método para conectar brazos
+    public void ConnectLegs()
+    {
+        Debug.Log(">>> ConnectLegs() called");
+        hasLegs = true;
+
+        // Verificar y acoplar visualmente
+        if (bodyVisualizer != null)
+        {
+            Debug.Log(">>> bodyVisualizer exists, calling AttachLegs()...");
+            bodyVisualizer.AttachLegs();
+        }
+        else
+        {
+            Debug.LogError(">>> bodyVisualizer is NULL! Cannot attach visually");
+            Debug.LogError(">>> Make sure the BodyPartsVisualizer component is on the Player");
+        }
+
+        UpdateStatusText();
+        UpdateInstructions();
+        Debug.Log("LEGS RECONNECTED! Jump (Space) and Dash (Shift) unlocked");
+    }
+
     public void ConnectArms()
     {
+        Debug.Log(">>> ConnectArms() called");
         hasArms = true;
+
+        if (bodyVisualizer != null)
+        {
+            Debug.Log(">>> bodyVisualizer exists, calling AttachArms()...");
+            bodyVisualizer.AttachArms();
+        }
+        else
+        {
+            Debug.LogError(">>> bodyVisualizer is NULL! Cannot attach visually");
+        }
+
         UpdateStatusText();
-        Debug.Log("¡BRAZOS RECONECTADOS! Ahora puedes EMPUJAR/ARRASTRAR cajas y usar PALANCAS");
+        UpdateInstructions();
+        Debug.Log("ARMS RECONNECTED! Pushing boxes and using levers is available");
+    }
+
+    public void ConnectTorso()
+    {
+        Debug.Log(">>> ConnectTorso() called");
+        hasTorso = true;
+
+        if (bodyVisualizer != null)
+        {
+            Debug.Log(">>> bodyVisualizer exists, calling AttachTorso()...");
+            bodyVisualizer.AttachTorso();
+        }
+        else
+        {
+            Debug.LogError(">>> bodyVisualizer is NULL! Cannot attach visually");
+        }
+
+        if (playerLight != null)
+        {
+            lightEnabled = true;
+            playerLight.enabled = true;
+        }
+
+        UpdateStatusText();
+        UpdateInstructions();
+        Debug.Log("TORSO RECONNECTED! Flashlight/Visor (F) and Magnetic Resistance active");
+    }
+
+    public bool IsFullyAssembled()
+    {
+        return hasLegs && hasArms && hasTorso;
+    }
+
+    public float GetMagneticResistance()
+    {
+        return hasTorso ? magneticResistance : 0f;
+    }
+
+    private void UpdateInstructions()
+    {
+        if (instructionsText == null) return;
+
+        if (!hasLegs && !hasArms && !hasTorso)
+        {
+            instructionsText.text = "LEVEL 1: Assembly Zone - Find your LEGS";
+            instructionsText.color = new Color(1f, 0.4f, 0.4f);
+        }
+        else if (hasLegs && !hasArms && !hasTorso)
+        {
+            instructionsText.text = "LEVEL 2: Tapes & Packaging - Find your ARMS";
+            instructionsText.color = new Color(1f, 0.8f, 0.2f);
+        }
+        else if (hasLegs && hasArms && !hasTorso)
+        {
+            instructionsText.text = "LEVEL 3: Rooftop-Helipad - Find your TORSO";
+            instructionsText.color = new Color(0.4f, 0.8f, 1f);
+        }
+        else if (hasLegs && hasArms && hasTorso)
+        {
+            instructionsText.text = "ASSEMBLY COMPLETE - Deactivate the MOTHER ANCHOR";
+            instructionsText.color = new Color(0.2f, 1f, 0.4f);
+        }
+        else
+        {
+            instructionsText.text = "Find the missing parts of R.U.B.O.";
+            instructionsText.color = new Color(1f, 0.6f, 0.2f);
+        }
     }
 
     private void UpdateStatusText()
@@ -168,24 +336,29 @@ public class PlayerController : MonoBehaviour
         {
             string status = "";
 
-            if (hasLegs && hasArms)
+            if (hasLegs && hasArms && hasTorso)
             {
-                status = "PIERNAS + BRAZOS - Totalmente operativo";
+                status = "FULLY OPERATIONAL - F: Flashlight";
                 statusText.color = Color.cyan;
+            }
+            else if (hasLegs && hasArms)
+            {
+                status = "LEGS + ARMS - Find the TORSO";
+                statusText.color = Color.yellow;
             }
             else if (hasLegs)
             {
-                status = "PIERNAS - Space: Saltar | Shift: Dash";
+                status = "LEGS - Space: Jump | Shift: Dash";
                 statusText.color = Color.green;
             }
             else if (hasArms)
             {
-                status = "BRAZOS - Puedes empujar cajas";
+                status = "ARMS - You can push boxes";
                 statusText.color = Color.yellow;
             }
             else
             {
-                status = "SIN PARTES - Movimiento limitado";
+                status = "NO PARTS - Limited movement";
                 statusText.color = Color.red;
             }
 
@@ -193,7 +366,6 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    // Visualizar ground check y push ray en editor
     private void OnDrawGizmos()
     {
         if (groundCheck != null)
@@ -202,7 +374,6 @@ public class PlayerController : MonoBehaviour
             Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
         }
 
-        // Visualizar rayo de empuje
         if (hasArms)
         {
             Gizmos.color = Color.yellow;

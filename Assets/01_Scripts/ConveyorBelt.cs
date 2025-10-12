@@ -42,7 +42,7 @@ public class ConveyorBelt : MonoBehaviour
         {
             if (rb != null)
             {
-                Vector3 force = direction.normalized * speed * 10f; // Multiplicar por masa efectiva
+                Vector3 force = direction.normalized * speed * 10f; 
                 rb.AddForce(force, ForceMode.Force);
             }
         }
