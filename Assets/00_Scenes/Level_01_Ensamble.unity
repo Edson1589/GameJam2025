@@ -1330,10 +1330,8 @@ MonoBehaviour:
   magneticResistance: 0.5
   statusText: {fileID: 1131733764}
   instructionsText: {fileID: 1687684218}
-  memoryCounterText: {fileID: 538089834}
   maxJumps: 2
   abilityCooldownDuration: 10
-  totalMemories: 9
 --- !u!33 &544116096
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -4818,7 +4816,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nextSceneName: Level_02_Tapes
-  hasNextLevel: 1
+  hasNextLevel: 0
   rotationSpeed: 30
   floatAmplitude: 0.5
   floatSpeed: 1.5

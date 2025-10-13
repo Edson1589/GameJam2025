@@ -1,11 +1,8 @@
 ﻿using UnityEngine;
 using TMPro;
-using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
-    private static PlayerController instance;
-
     [Header("Movement")]
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float jumpForce = 8f;
@@ -31,7 +28,6 @@ public class PlayerController : MonoBehaviour
     [Header("UI")]
     [SerializeField] private TextMeshProUGUI statusText;
     [SerializeField] private TextMeshProUGUI instructionsText;
-    [SerializeField] private TextMeshProUGUI memoryCounterText;
 
     [Header("Skills & Cooldown")]
     [SerializeField] private int maxJumps = 2;
@@ -46,114 +42,15 @@ public class PlayerController : MonoBehaviour
     private bool isDashing;
     private float dashTimer;
 
-    void Awake()
-    {
-        if (instance == null)
-        {
-            instance = this;
-            DontDestroyOnLoad(gameObject);
-            Debug.Log("✅ Player marcado como persistente");
-        }
-        else
-        {
-            Debug.Log("⚠️ Player duplicado detectado - Destruyendo copia");
-            Destroy(gameObject);
-            return;
-        }
-
-        SceneManager.sceneLoaded += OnSceneLoaded;
-    }
-
-    void OnDestroy()
-    {
-        if (instance == this)
-        {
-            SceneManager.sceneLoaded -= OnSceneLoaded;
-        }
-    }
-
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        Debug.Log($"🎮 Escena cargada: {scene.name}");
-        Debug.Log($"📊 Estado actual - Piernas:{hasLegs} Brazos:{hasArms} Torso:{hasTorso}");
-
-        GameObject spawnPoint = GameObject.FindGameObjectWithTag("PlayerSpawn");
-
-        if (spawnPoint != null)
-        {
-            transform.position = spawnPoint.transform.position;
-            transform.rotation = spawnPoint.transform.rotation;
-
-            if (rb != null)
-            {
-                rb.velocity = Vector3.zero;
-                rb.angularVelocity = Vector3.zero;
-            }
-
-            Debug.Log($"📍 Player reposicionado en: {spawnPoint.transform.position}");
-        }
-        else
-        {
-            Debug.LogWarning($"⚠️ No se encontró PlayerSpawn en {scene.name}!");
-        }
-
-        ReconnectUI();
-
-        availableJumps = maxJumps;
-        isDashAvailable = true;
-        cooldownTimer = 0;
-    }
-
-    private void ReconnectUI()
-    {
-        GameObject statusObj = GameObject.Find("Text_Status");
-        if (statusObj != null)
-        {
-            statusText = statusObj.GetComponent<TextMeshProUGUI>();
-            Debug.Log("✅ Text_Status reconectado");
-        }
-        else
-        {
-            Debug.LogWarning("⚠️ No se encontró Text_Status en esta escena");
-        }
-
-        GameObject instructObj = GameObject.Find("Text_Instructions");
-        if (instructObj != null)
-        {
-            instructionsText = instructObj.GetComponent<TextMeshProUGUI>();
-            Debug.Log("✅ Text_Instructions reconectado");
-        }
-        else
-        {
-            Debug.LogWarning("⚠️ No se encontró Text_Instructions en esta escena");
-        }
-
-        GameObject memoryObj = GameObject.Find("Text_MemoryCounter");
-        if (memoryObj != null)
-        {
-            memoryCounterText = memoryObj.GetComponent<TextMeshProUGUI>();
-            Debug.Log("✅ Text_MemoryCounter reconectado");
-
-            // Actualizar el contador con el valor actual
-            UpdateMemoryCounter();
-        }
-        else
-        {
-            Debug.LogWarning("⚠️ No se encontró Text_MemoryCounter en esta escena");
-        }
-
-        UpdateStatusText();
-        UpdateInstructions();
-    }
-
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+
         availableJumps = maxJumps;
 
         UpdateStatusText();
         UpdateInstructions();
-        Debug.Log($"R.U.B.O. iniciado - Estado: Piernas:{hasLegs} Brazos:{hasArms} Torso:{hasTorso}");
+        Debug.Log("R.U.B.O. (Head) initiated - Find your parts!");
     }
 
     void Update()
@@ -174,6 +71,7 @@ public class PlayerController : MonoBehaviour
             {
                 Debug.Log("ABILITIES RECHARGED!");
                 isDashAvailable = true;
+                // Saltos se resetean al entrar en contacto con el piso.
                 if (availableJumps < maxJumps)
                 {
                     availableJumps = maxJumps;
@@ -260,6 +158,7 @@ public class PlayerController : MonoBehaviour
         if (!wasGrounded && isGrounded)
         {
             availableJumps = maxJumps;
+            Debug.Log("Jumps reset by touching the ground.");
         }
     }
 
@@ -290,12 +189,13 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+
     public void ConnectLegs()
     {
         hasLegs = true;
         UpdateStatusText();
         UpdateInstructions();
-        Debug.Log("✅ PIERNAS RECONECTADAS! Salto (Space) y Dash (Shift) desbloqueados");
+        Debug.Log("PIERNAS RECONECTADAS! Salto (Space) y Dash (Shift) desbloqueados");
     }
 
     public void ConnectArms()
@@ -303,7 +203,7 @@ public class PlayerController : MonoBehaviour
         hasArms = true;
         UpdateStatusText();
         UpdateInstructions();
-        Debug.Log("✅ BRAZOS RECONECTADOS! Empujar cajas y usar palancas disponible");
+        Debug.Log("BRAZOS RECONECTADOS! Empujar cajas y usar palancas disponible");
     }
 
     public void ConnectTorso()
@@ -311,7 +211,7 @@ public class PlayerController : MonoBehaviour
         hasTorso = true;
         UpdateStatusText();
         UpdateInstructions();
-        Debug.Log("✅ TORSO RECONECTADO! Ensamblaje completo");
+        Debug.Log("TORSO RECONECTADO! Ensamblaje completo");
     }
 
     public bool IsFullyAssembled()
@@ -400,30 +300,5 @@ public class PlayerController : MonoBehaviour
             Vector3 rayStart = transform.position + Vector3.up * 0.5f;
             Gizmos.DrawRay(rayStart, transform.forward * pushRayDistance);
         }
-    }
-
-    // Sistema de Eco-Memorias
-    [Header("Eco-Memories")]
-    [SerializeField] private int totalMemories = 9;
-    private int collectedMemories = 0;
-
-    public void CollectMemory()
-    {
-        collectedMemories++;
-        UpdateMemoryCounter();
-        Debug.Log($"💾 Eco-Memoria recogida! ({collectedMemories}/{totalMemories})");
-    }
-
-    private void UpdateMemoryCounter()
-    {
-        if (memoryCounterText != null)
-        {
-            memoryCounterText.text = $"Eco-Memories: {collectedMemories}/{totalMemories}";
-        }
-    }
-
-    public int GetCollectedMemories()
-    {
-        return collectedMemories;
     }
 }
