@@ -1,8 +1,11 @@
 ﻿using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
+    private static PlayerController instance;
+
     [Header("Movement")]
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float jumpForce = 8f;
@@ -23,13 +26,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float pushPower = 3f;
     [SerializeField] private float pushRayDistance = 1.5f;
 
-    [Header("Torso Settings")]
-    [SerializeField] private Light playerLight;
     [SerializeField] private float magneticResistance = 0.5f;
 
     [Header("UI")]
     [SerializeField] private TextMeshProUGUI statusText;
     [SerializeField] private TextMeshProUGUI instructionsText;
+    [SerializeField] private TextMeshProUGUI memoryCounterText;
 
     [Header("Skills & Cooldown")]
     [SerializeField] private int maxJumps = 2;
@@ -40,34 +42,118 @@ public class PlayerController : MonoBehaviour
     private float cooldownTimer;
 
     private Rigidbody rb;
-    private BodyPartsVisualizer bodyVisualizer;
     private bool isGrounded;
     private bool isDashing;
     private float dashTimer;
-    private bool lightEnabled = false;
+
+    void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+            Debug.Log("✅ Player marcado como persistente");
+        }
+        else
+        {
+            Debug.Log("⚠️ Player duplicado detectado - Destruyendo copia");
+            Destroy(gameObject);
+            return;
+        }
+
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    void OnDestroy()
+    {
+        if (instance == this)
+        {
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+        }
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        Debug.Log($"🎮 Escena cargada: {scene.name}");
+        Debug.Log($"📊 Estado actual - Piernas:{hasLegs} Brazos:{hasArms} Torso:{hasTorso}");
+
+        GameObject spawnPoint = GameObject.FindGameObjectWithTag("PlayerSpawn");
+
+        if (spawnPoint != null)
+        {
+            transform.position = spawnPoint.transform.position;
+            transform.rotation = spawnPoint.transform.rotation;
+
+            if (rb != null)
+            {
+                rb.velocity = Vector3.zero;
+                rb.angularVelocity = Vector3.zero;
+            }
+
+            Debug.Log($"📍 Player reposicionado en: {spawnPoint.transform.position}");
+        }
+        else
+        {
+            Debug.LogWarning($"⚠️ No se encontró PlayerSpawn en {scene.name}!");
+        }
+
+        ReconnectUI();
+
+        availableJumps = maxJumps;
+        isDashAvailable = true;
+        cooldownTimer = 0;
+    }
+
+    private void ReconnectUI()
+    {
+        GameObject statusObj = GameObject.Find("Text_Status");
+        if (statusObj != null)
+        {
+            statusText = statusObj.GetComponent<TextMeshProUGUI>();
+            Debug.Log("✅ Text_Status reconectado");
+        }
+        else
+        {
+            Debug.LogWarning("⚠️ No se encontró Text_Status en esta escena");
+        }
+
+        GameObject instructObj = GameObject.Find("Text_Instructions");
+        if (instructObj != null)
+        {
+            instructionsText = instructObj.GetComponent<TextMeshProUGUI>();
+            Debug.Log("✅ Text_Instructions reconectado");
+        }
+        else
+        {
+            Debug.LogWarning("⚠️ No se encontró Text_Instructions en esta escena");
+        }
+
+        GameObject memoryObj = GameObject.Find("Text_MemoryCounter");
+        if (memoryObj != null)
+        {
+            memoryCounterText = memoryObj.GetComponent<TextMeshProUGUI>();
+            Debug.Log("✅ Text_MemoryCounter reconectado");
+
+            // Actualizar el contador con el valor actual
+            UpdateMemoryCounter();
+        }
+        else
+        {
+            Debug.LogWarning("⚠️ No se encontró Text_MemoryCounter en esta escena");
+        }
+
+        UpdateStatusText();
+        UpdateInstructions();
+    }
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        bodyVisualizer = GetComponent<BodyPartsVisualizer>();
-
         availableJumps = maxJumps;
-
-        if (bodyVisualizer != null)
-        {
-            Debug.Log("=== BodyPartsVisualizer found! ===");
-        }
-        else
-        {
-            Debug.LogError("=== BodyPartsVisualizer NOT found! Add it to the Player ===");
-        }
-
-        if (playerLight != null)
-            playerLight.enabled = false;
 
         UpdateStatusText();
         UpdateInstructions();
-        Debug.Log("R.U.B.O. (Head) initiated - Find your parts!");
+        Debug.Log($"R.U.B.O. iniciado - Estado: Piernas:{hasLegs} Brazos:{hasArms} Torso:{hasTorso}");
     }
 
     void Update()
@@ -88,7 +174,6 @@ public class PlayerController : MonoBehaviour
             {
                 Debug.Log("ABILITIES RECHARGED!");
                 isDashAvailable = true;
-                // Saltos se resetean al entrar en contacto con el piso.
                 if (availableJumps < maxJumps)
                 {
                     availableJumps = maxJumps;
@@ -141,11 +226,6 @@ public class PlayerController : MonoBehaviour
                 cooldownTimer = abilityCooldownDuration;
             }
         }
-
-        if (Input.GetKeyDown(KeyCode.F) && hasTorso)
-        {
-            ToggleLight();
-        }
     }
 
     private void Move()
@@ -180,7 +260,6 @@ public class PlayerController : MonoBehaviour
         if (!wasGrounded && isGrounded)
         {
             availableJumps = maxJumps;
-            Debug.Log("Jumps reset by touching the ground.");
         }
     }
 
@@ -211,82 +290,28 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void ToggleLight()
-    {
-        if (playerLight == null) return;
-
-        lightEnabled = !lightEnabled;
-        playerLight.enabled = lightEnabled;
-
-        Debug.Log(lightEnabled ? "Flashlight ENABLED" : "Flashlight DISABLED");
-    }
-
     public void ConnectLegs()
     {
-        Debug.Log(">>> ConnectLegs() called");
         hasLegs = true;
-
-        // Verificar y acoplar visualmente
-        if (bodyVisualizer != null)
-        {
-            Debug.Log(">>> bodyVisualizer exists, calling AttachLegs()...");
-            bodyVisualizer.AttachLegs();
-        }
-        else
-        {
-            Debug.LogError(">>> bodyVisualizer is NULL! Cannot attach visually");
-            Debug.LogError(">>> Make sure the BodyPartsVisualizer component is on the Player");
-        }
-
         UpdateStatusText();
         UpdateInstructions();
-        Debug.Log("LEGS RECONNECTED! Jump (Space) and Dash (Shift) unlocked");
+        Debug.Log("✅ PIERNAS RECONECTADAS! Salto (Space) y Dash (Shift) desbloqueados");
     }
 
     public void ConnectArms()
     {
-        Debug.Log(">>> ConnectArms() called");
         hasArms = true;
-
-        if (bodyVisualizer != null)
-        {
-            Debug.Log(">>> bodyVisualizer exists, calling AttachArms()...");
-            bodyVisualizer.AttachArms();
-        }
-        else
-        {
-            Debug.LogError(">>> bodyVisualizer is NULL! Cannot attach visually");
-        }
-
         UpdateStatusText();
         UpdateInstructions();
-        Debug.Log("ARMS RECONNECTED! Pushing boxes and using levers is available");
+        Debug.Log("✅ BRAZOS RECONECTADOS! Empujar cajas y usar palancas disponible");
     }
 
     public void ConnectTorso()
     {
-        Debug.Log(">>> ConnectTorso() called");
         hasTorso = true;
-
-        if (bodyVisualizer != null)
-        {
-            Debug.Log(">>> bodyVisualizer exists, calling AttachTorso()...");
-            bodyVisualizer.AttachTorso();
-        }
-        else
-        {
-            Debug.LogError(">>> bodyVisualizer is NULL! Cannot attach visually");
-        }
-
-        if (playerLight != null)
-        {
-            lightEnabled = true;
-            playerLight.enabled = true;
-        }
-
         UpdateStatusText();
         UpdateInstructions();
-        Debug.Log("TORSO RECONNECTED! Flashlight/Visor (F) and Magnetic Resistance active");
+        Debug.Log("✅ TORSO RECONECTADO! Ensamblaje completo");
     }
 
     public bool IsFullyAssembled()
@@ -303,30 +328,25 @@ public class PlayerController : MonoBehaviour
     {
         if (instructionsText == null) return;
 
-        if (!hasLegs && !hasArms && !hasTorso)
+        if (!hasLegs)
         {
             instructionsText.text = "LEVEL 1: Assembly Zone - Find your LEGS";
-            instructionsText.color = new Color(1f, 0.4f, 0.4f);
+            instructionsText.color = new Color(1f, 0.3f, 0.3f);
         }
-        else if (hasLegs && !hasArms && !hasTorso)
+        else if (!hasArms)
         {
-            instructionsText.text = "LEVEL 2: Tapes & Packaging - Find your ARMS";
+            instructionsText.text = "LEVEL 2: Tapes and Packaging - Find your ARMS";
             instructionsText.color = new Color(1f, 0.8f, 0.2f);
         }
-        else if (hasLegs && hasArms && !hasTorso)
+        else if (!hasTorso)
         {
-            instructionsText.text = "LEVEL 3: Rooftop-Helipad - Find your TORSO";
-            instructionsText.color = new Color(0.4f, 0.8f, 1f);
-        }
-        else if (hasLegs && hasArms && hasTorso)
-        {
-            instructionsText.text = "ASSEMBLY COMPLETE - Deactivate the MOTHER ANCHOR";
-            instructionsText.color = new Color(0.2f, 1f, 0.4f);
+            instructionsText.text = "LEVEL 3: Rooftop-Heliport - Find your TORSO";
+            instructionsText.color = new Color(0.3f, 0.8f, 1f);
         }
         else
         {
-            instructionsText.text = "Find the missing parts of R.U.B.O.";
-            instructionsText.color = new Color(1f, 0.6f, 0.2f);
+            instructionsText.text = "COMPLETE ASSEMBLY! - Head to the EXIT";
+            instructionsText.color = new Color(0.3f, 1f, 0.3f);
         }
     }
 
@@ -338,7 +358,7 @@ public class PlayerController : MonoBehaviour
 
             if (hasLegs && hasArms && hasTorso)
             {
-                status = "FULLY OPERATIONAL - F: Flashlight";
+                status = "FULLY OPERATIONAL";
                 statusText.color = Color.cyan;
             }
             else if (hasLegs && hasArms)
@@ -380,5 +400,30 @@ public class PlayerController : MonoBehaviour
             Vector3 rayStart = transform.position + Vector3.up * 0.5f;
             Gizmos.DrawRay(rayStart, transform.forward * pushRayDistance);
         }
+    }
+
+    // Sistema de Eco-Memorias
+    [Header("Eco-Memories")]
+    [SerializeField] private int totalMemories = 9;
+    private int collectedMemories = 0;
+
+    public void CollectMemory()
+    {
+        collectedMemories++;
+        UpdateMemoryCounter();
+        Debug.Log($"💾 Eco-Memoria recogida! ({collectedMemories}/{totalMemories})");
+    }
+
+    private void UpdateMemoryCounter()
+    {
+        if (memoryCounterText != null)
+        {
+            memoryCounterText.text = $"Eco-Memories: {collectedMemories}/{totalMemories}";
+        }
+    }
+
+    public int GetCollectedMemories()
+    {
+        return collectedMemories;
     }
 }

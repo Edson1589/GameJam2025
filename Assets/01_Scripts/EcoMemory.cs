@@ -50,11 +50,14 @@ public class EcoMemory : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        PlayerController player = other.GetComponent<PlayerController>();
-
-        if (player != null)
+        if (other.CompareTag("Player"))
         {
-            CollectMemory(player);
+            PlayerController player = other.GetComponent<PlayerController>();
+            if (player != null)
+            {
+                player.CollectMemory();
+            }
+            Destroy(gameObject);
         }
     }
 
