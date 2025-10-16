@@ -30,9 +30,6 @@ public class PullerDrone : MonoBehaviour
     private Renderer droneRenderer;
     private Material droneMaterial;
 
-    [SerializeField] private Animator animator;
-    [SerializeField] private Transform[] propellers;
-
     void Start()
     {
         droneRenderer = GetComponent<Renderer>();
@@ -76,12 +73,6 @@ public class PullerDrone : MonoBehaviour
         }
 
         UpdateVisualState();
-
-        if (animator != null)
-        {
-            animator.SetBool("MagnetOn", magnetActive);
-            animator.SetBool("PlayerDetected", playerDetected);
-        }
     }
 
     void FixedUpdate()
