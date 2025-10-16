@@ -30,6 +30,9 @@ public class PullerDrone : MonoBehaviour
     private Renderer droneRenderer;
     private Material droneMaterial;
 
+    [SerializeField] private Animator animator;
+    [SerializeField] private Transform[] propellers;
+
     void Start()
     {
         droneRenderer = GetComponent<Renderer>();
@@ -50,7 +53,7 @@ public class PullerDrone : MonoBehaviour
     {
         if (!magnetActive)
         {
-            // Si el imán esta desactivado, solo patrullar
+            // Si el imï¿½n esta desactivado, solo patrullar
             Patrol();
             playerDetected = false;
             detectedPlayer = null;
@@ -63,7 +66,7 @@ public class PullerDrone : MonoBehaviour
 
         if (playerDetected && detectedPlayer != null)
         {
-            // Si detectó al jugador, mirar hacia él
+            // Si detectï¿½ al jugador, mirar hacia ï¿½l
             LookAtPlayer();
         }
         else
@@ -73,11 +76,17 @@ public class PullerDrone : MonoBehaviour
         }
 
         UpdateVisualState();
+
+        if (animator != null)
+        {
+            animator.SetBool("MagnetOn", magnetActive);
+            animator.SetBool("PlayerDetected", playerDetected);
+        }
     }
 
     void FixedUpdate()
     {
-        // Aplicar fuerza de atracción si detecto al jugador
+        // Aplicar fuerza de atracciï¿½n si detecto al jugador
         if (magnetActive && playerDetected && detectedPlayer != null)
         {
             PullPlayer();
@@ -98,7 +107,7 @@ public class PullerDrone : MonoBehaviour
         Quaternion targetRotation = Quaternion.LookRotation(direction);
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
 
-        // Verificar si llegó al punto
+        // Verificar si llegï¿½ al punto
         if (Vector3.Distance(transform.position, targetPoint.position) < waypointReachDistance)
         {
             currentPatrolIndex = (currentPatrolIndex + 1) % patrolPoints.Length;
@@ -120,10 +129,10 @@ public class PullerDrone : MonoBehaviour
                 Vector3 directionToPlayer = (col.transform.position - transform.position).normalized;
                 float angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
 
-                // Verificar si está dentro del cono de visión
+                // Verificar si estï¿½ dentro del cono de visiï¿½n
                 if (angleToPlayer < detectionAngle / 2f)
                 {
-                    // Raycast para verificar que no hay obstáculos
+                    // Raycast para verificar que no hay obstï¿½culos
                     RaycastHit hit;
                     if (Physics.Raycast(transform.position, directionToPlayer, out hit, detectionRange, playerLayer | obstacleLayer))
                     {
@@ -131,7 +140,7 @@ public class PullerDrone : MonoBehaviour
                         {
                             playerDetected = true;
                             detectedPlayer = col.transform;
-                            Debug.Log($"Dron '{gameObject.name}' detectó al jugador!");
+                            Debug.Log($"Dron '{gameObject.name}' detectï¿½ al jugador!");
                             break;
                         }
                     }
@@ -189,7 +198,7 @@ public class PullerDrone : MonoBehaviour
     public void ActivateMagnet()
     {
         magnetActive = true;
-        Debug.Log($"Dron '{gameObject.name}' - Imán ACTIVADO");
+        Debug.Log($"Dron '{gameObject.name}' - Imï¿½n ACTIVADO");
     }
 
     public void DeactivateMagnet()
@@ -197,20 +206,20 @@ public class PullerDrone : MonoBehaviour
         magnetActive = false;
         playerDetected = false;
         detectedPlayer = null;
-        Debug.Log($"Dron '{gameObject.name}' - Imán DESACTIVADO");
+        Debug.Log($"Dron '{gameObject.name}' - Imï¿½n DESACTIVADO");
     }
 
     private void OnDrawGizmosSelected()
     {
-        // Rango de detección
+        // Rango de detecciï¿½n
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, detectionRange);
 
-        // Rango de atracción
+        // Rango de atracciï¿½n
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, pullRange);
 
-        // Cono de visión
+        // Cono de visiï¿½n
         Gizmos.color = Color.cyan;
         Vector3 forward = transform.forward * detectionRange;
         Vector3 left = Quaternion.Euler(0, -detectionAngle / 2f, 0) * forward;
@@ -230,7 +239,7 @@ public class PullerDrone : MonoBehaviour
                 {
                     Gizmos.DrawSphere(patrolPoints[i].position, 0.3f);
 
-                    // Línea al siguiente punto
+                    // Lï¿½nea al siguiente punto
                     int nextIndex = (i + 1) % patrolPoints.Length;
                     if (patrolPoints[nextIndex] != null)
                     {
