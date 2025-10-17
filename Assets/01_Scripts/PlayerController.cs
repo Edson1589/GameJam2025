@@ -42,8 +42,13 @@ public class PlayerController : MonoBehaviour
     private bool isDashing;
     private float dashTimer;
 
+    [Header("Camera")]
+    [SerializeField] private Transform camTransform;
+
     void Start()
     {
+        if (camTransform == null) camTransform = Camera.main?.transform;
+
         rb = GetComponent<Rigidbody>();
 
         availableJumps = maxJumps;
@@ -130,17 +135,27 @@ public class PlayerController : MonoBehaviour
     {
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
-        Vector3 moveDir = new Vector3(horizontal, 0, vertical).normalized;
+
+        Vector3 moveDir;
+        if (camTransform != null)
+        {
+            Vector3 camF = camTransform.forward; camF.y = 0f; camF.Normalize();
+            Vector3 camR = camTransform.right; camR.y = 0f; camR.Normalize();
+            moveDir = (camF * vertical + camR * horizontal).normalized;
+        }
+        else
+        {
+            moveDir = new Vector3(horizontal, 0, vertical).normalized;
+        }
 
         float currentSpeed = hasLegs ? moveSpeed : moveSpeed * 0.4f;
-
         Vector3 movement = moveDir * currentSpeed;
         rb.velocity = new Vector3(movement.x, rb.velocity.y, movement.z);
 
-        if (moveDir.magnitude > 0.1f)
+        if (moveDir.sqrMagnitude > 0.001f)
         {
-            Quaternion targetRotation = Quaternion.LookRotation(moveDir);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
+            Quaternion targetRot = Quaternion.LookRotation(moveDir);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, Time.deltaTime * 12f);
         }
     }
 
