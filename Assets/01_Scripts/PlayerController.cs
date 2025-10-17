@@ -45,6 +45,14 @@ public class PlayerController : MonoBehaviour
     [Header("Camera")]
     [SerializeField] private Transform camTransform;
 
+    [SerializeField] private Animator headAnimator;
+
+    [Header("Body Parts (Groups or Objects)")]
+    [SerializeField] private GameObject headGO;
+    [SerializeField] private GameObject legsGroup;
+    [SerializeField] private GameObject armsGroup;
+    [SerializeField] private GameObject torsoGroup;
+
     void Start()
     {
         if (camTransform == null) camTransform = Camera.main?.transform;
@@ -52,6 +60,11 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody>();
 
         availableJumps = maxJumps;
+
+        if (headGO) headGO.SetActive(true);
+        if (legsGroup) legsGroup.SetActive(false);
+        if (armsGroup) armsGroup.SetActive(false);
+        if (torsoGroup) torsoGroup.SetActive(false);
 
         UpdateStatusText();
         UpdateInstructions();
@@ -83,6 +96,12 @@ public class PlayerController : MonoBehaviour
                 }
                 cooldownTimer = 0;
             }
+        }
+
+        if (headAnimator != null)
+        {
+            float planarSpeed = new Vector3(rb.velocity.x, 0f, rb.velocity.z).magnitude;
+            headAnimator.SetFloat("Speed", planarSpeed);
         }
     }
 
@@ -208,6 +227,7 @@ public class PlayerController : MonoBehaviour
     public void ConnectLegs()
     {
         hasLegs = true;
+        if (legsGroup) legsGroup.SetActive(true);
         UpdateStatusText();
         UpdateInstructions();
         Debug.Log("PIERNAS RECONECTADAS! Salto (Space) y Dash (Shift) desbloqueados");
@@ -216,6 +236,7 @@ public class PlayerController : MonoBehaviour
     public void ConnectArms()
     {
         hasArms = true;
+        if (armsGroup) armsGroup.SetActive(true);
         UpdateStatusText();
         UpdateInstructions();
         Debug.Log("BRAZOS RECONECTADOS! Empujar cajas y usar palancas disponible");
@@ -224,6 +245,7 @@ public class PlayerController : MonoBehaviour
     public void ConnectTorso()
     {
         hasTorso = true;
+        if (torsoGroup) torsoGroup.SetActive(true);
         UpdateStatusText();
         UpdateInstructions();
         Debug.Log("TORSO RECONECTADO! Ensamblaje completo");
