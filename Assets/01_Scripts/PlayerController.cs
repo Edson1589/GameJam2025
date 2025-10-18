@@ -23,6 +23,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float pushPower = 3f;
     [SerializeField] private float pushRayDistance = 1.5f;
 
+    [Header("Torso Abilities")]
+    [SerializeField] private GameObject flashlight; // ← NUEVO: Para la linterna
     [SerializeField] private float magneticResistance = 0.5f;
 
     [Header("UI")]
@@ -103,9 +105,15 @@ public class PlayerController : MonoBehaviour
             float planarSpeed = new Vector3(rb.velocity.x, 0f, rb.velocity.z).magnitude;
             headAnimator.SetFloat("Speed", planarSpeed);
         }
+
+        // Toggle flashlight con F si tiene torso
+        if (hasTorso && Input.GetKeyDown(KeyCode.F))
+        {
+            ToggleFlashlight();
+        }
     }
 
-    void FixedUpdate()
+        void FixedUpdate()
     {
         if (!isDashing)
         {
@@ -223,7 +231,6 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-
     public void ConnectLegs()
     {
         hasLegs = true;
@@ -248,7 +255,13 @@ public class PlayerController : MonoBehaviour
         if (torsoGroup) torsoGroup.SetActive(true);
         UpdateStatusText();
         UpdateInstructions();
-        Debug.Log("TORSO RECONECTADO! Ensamblaje completo");
+
+        if (flashlight != null)
+        {
+            flashlight.SetActive(false); // Empieza apagada, se activa con F
+        }
+
+        Debug.Log("TORSO RECONECTADO! Ensamblaje completo - Presiona F para linterna");
     }
 
     public bool IsFullyAssembled()
@@ -259,6 +272,15 @@ public class PlayerController : MonoBehaviour
     public float GetMagneticResistance()
     {
         return hasTorso ? magneticResistance : 0f;
+    }
+
+    private void ToggleFlashlight()
+    {
+        if (flashlight != null)
+        {
+            flashlight.SetActive(!flashlight.activeSelf);
+            Debug.Log($"Linterna: {(flashlight.activeSelf ? "ON" : "OFF")}");
+        }
     }
 
     private void UpdateInstructions()
