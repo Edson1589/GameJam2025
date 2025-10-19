@@ -26,7 +26,7 @@ public class BeltSwitch : MonoBehaviour, IJammable
     public enum SwitchType
     {
         Toggle,          // Alterna entre on/off
-        ReverseDirection, // Invierte dirección de cinta
+        ReverseDirection, // Invierte direcciï¿½n de cinta
         Activate,        // Solo activa
         Deactivate       // Solo desactiva
     }
@@ -123,12 +123,12 @@ public class BeltSwitch : MonoBehaviour, IJammable
         }
     }
 
-    // Implementación de IJammable
+    // Implementaciï¿½n de IJammable
     public void ApplyJam(float duration)
     {
         isJammed = true;
         jamTimer = duration;
-        canActivate = false; // Desactiva la interacción mientras está jammeado
+        canActivate = false; // Desactiva la interacciï¿½n mientras estï¿½ jammeado
         UpdateVisual();
         Debug.Log($"Switch '{gameObject.name}' jammeado por {duration} segundos");
     }
