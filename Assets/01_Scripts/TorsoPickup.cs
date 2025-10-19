@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class TorsoPickup : MonoBehaviour
 {
@@ -27,7 +27,7 @@ public class TorsoPickup : MonoBehaviour
 
     void Update()
     {
-        // Rotar m�s lento y majestuoso (es la pieza final)
+        // Rotar más lento y majestuoso (es la pieza final)
         transform.Rotate(Vector3.up, rotationSpeed * Time.deltaTime);
         transform.Rotate(Vector3.forward, rotationSpeed * 0.3f * Time.deltaTime);
 
@@ -42,7 +42,7 @@ public class TorsoPickup : MonoBehaviour
             float intensity = 1f + pulse * 0.5f;
             torsoMaterial.color = baseColor * intensity;
 
-            // Emission tambi�n pulsa
+            // Emission también pulsa
             if (torsoMaterial.IsKeywordEnabled("_EMISSION"))
             {
                 torsoMaterial.SetColor("_EmissionColor", baseColor * pulse * 2f);
@@ -57,6 +57,13 @@ public class TorsoPickup : MonoBehaviour
         if (player != null)
         {
             player.ConnectTorso();
+
+            // ← NUEVO: Guardar en GameManager
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.CollectTorso();
+            }
+
             Destroy(gameObject);
         }
     }

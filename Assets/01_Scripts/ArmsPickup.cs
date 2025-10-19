@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class ArmsPickup : MonoBehaviour
 {
@@ -16,7 +16,7 @@ public class ArmsPickup : MonoBehaviour
 
     void Update()
     {
-        // Rotar en m�ltiples ejes
+        // Rotar en múltiples ejes
         transform.Rotate(Vector3.up, rotationSpeed * Time.deltaTime);
         transform.Rotate(Vector3.right, rotationSpeed * 0.5f * Time.deltaTime);
 
@@ -33,6 +33,12 @@ public class ArmsPickup : MonoBehaviour
         {
             // Conectar los brazos
             player.ConnectArms();
+
+            // ← NUEVO: Guardar en GameManager
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.CollectArms();
+            }
 
             // Destruir el pickup
             Destroy(gameObject);

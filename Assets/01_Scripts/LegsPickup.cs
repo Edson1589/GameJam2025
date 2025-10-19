@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class LegsPickup : MonoBehaviour
 {
@@ -40,6 +40,12 @@ public class LegsPickup : MonoBehaviour
         {
             // Conectar las piernas
             player.ConnectLegs();
+
+            // ← NUEVO: Guardar en GameManager
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.CollectLegs();
+            }
 
             // Destruir el pickup
             Destroy(gameObject);

@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using TMPro;
 using System.Collections.Generic;
 
@@ -14,7 +14,6 @@ public class MemoryManager : MonoBehaviour
     [Header("Stats")]
     [SerializeField] private int totalMemories = 9;
 
-    private HashSet<int> collectedMemories = new HashSet<int>();
     private float displayTimer = 0f;
     private bool isDisplaying = false;
 
@@ -25,16 +24,16 @@ public class MemoryManager : MonoBehaviour
             memoryPanel.SetActive(false);
         }
 
+        // Cargar memorias del GameManager al iniciar
+        LoadMemoriesFromGameManager();
         UpdateCounter();
     }
 
     void Update()
     {
-        // Cerrar panel automáticamente después del tiempo
         if (isDisplaying)
         {
             displayTimer -= Time.deltaTime;
-
             if (displayTimer <= 0 || Input.GetKeyDown(KeyCode.E))
             {
                 CloseMemoryPanel();
@@ -42,19 +41,31 @@ public class MemoryManager : MonoBehaviour
         }
     }
 
+    private void LoadMemoriesFromGameManager()
+    {
+        if (GameManager.Instance != null)
+        {
+            // Las memorias ya estÃ¡n en el GameManager, no necesitamos copiarlas
+            Debug.Log($"Memorias cargadas del GameManager: {GameManager.Instance.GetMemoryCount()}");
+        }
+    }
+
     public void CollectMemory(int memoryID, string memoryText)
     {
-        // Evitar recolectar la misma memoria dos veces
-        if (collectedMemories.Contains(memoryID))
+        // Verificar si ya fue colectada (desde GameManager)
+        if (GameManager.Instance != null && GameManager.Instance.HasMemory(memoryID))
         {
             Debug.LogWarning($"Eco-Memoria #{memoryID} ya fue colectada");
             return;
         }
 
-        // Registrar memoria
-        collectedMemories.Add(memoryID);
+        // Guardar en GameManager
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.CollectMemory(memoryID);
+        }
 
-        Debug.Log($"? Eco-Memoria #{memoryID} colectada ({collectedMemories.Count}/{totalMemories})");
+        Debug.Log($"âœ“ Eco-Memoria #{memoryID} colectada ({GetCollectedCount()}/{totalMemories})");
 
         // Mostrar en UI
         ShowMemoryPanel(memoryID, memoryText);
@@ -88,7 +99,6 @@ public class MemoryManager : MonoBehaviour
         {
             memoryPanel.SetActive(false);
         }
-
         isDisplaying = false;
     }
 
@@ -96,12 +106,21 @@ public class MemoryManager : MonoBehaviour
     {
         if (counterText != null)
         {
-            counterText.text = $"Memories: {collectedMemories.Count}/{totalMemories}";
+            int collected = GetCollectedCount();
+            counterText.text = $"Memories: {collected}/{totalMemories}";
         }
     }
 
-    // Métodos públicos para consultar progreso
-    public int GetCollectedCount() => collectedMemories.Count;
+    // MÃ©todos pÃºblicos para consultar progreso (ahora desde GameManager)
+    public int GetCollectedCount()
+    {
+        return GameManager.Instance != null ? GameManager.Instance.GetMemoryCount() : 0;
+    }
+
     public int GetTotalCount() => totalMemories;
-    public bool HasCollectedAll() => collectedMemories.Count >= totalMemories;
+
+    public bool HasCollectedAll()
+    {
+        return GetCollectedCount() >= totalMemories;
+    }
 }

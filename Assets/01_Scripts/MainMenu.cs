@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
@@ -9,13 +9,27 @@ public class MainMenu : MonoBehaviour
 
     public void PlayGame()
     {
-        Debug.Log("Iniciando juego...");
+        Debug.Log("Iniciando juego NUEVO - Reseteando progreso...");
+
+        // ← NUEVO: Resetear progreso al iniciar nuevo juego
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.ResetProgress();
+        }
+
         SceneManager.LoadScene(level01SceneName);
     }
 
     public void PlayTestLevel()
     {
-        Debug.Log("Cargando nivel de prueba...");
+        Debug.Log("Cargando nivel de prueba - Reseteando progreso...");
+
+        // ← NUEVO: Resetear para test
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.ResetProgress();
+        }
+
         SceneManager.LoadScene(testSceneName);
     }
 
@@ -24,7 +38,6 @@ public class MainMenu : MonoBehaviour
         Debug.Log("Saliendo del juego...");
         Application.Quit();
 
-        // Para testing en editor
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #endif
@@ -32,6 +45,6 @@ public class MainMenu : MonoBehaviour
 
     public void OpenCredits()
     {
-        Debug.Log("Cr�ditos - Grupo Pixels - Desarrollado para GameJam 2025");
+        Debug.Log("Créditos - Desarrollado para GameJam 2025");
     }
 }

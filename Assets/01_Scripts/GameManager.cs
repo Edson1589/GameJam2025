@@ -1,216 +1,244 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// Singleton que persiste entre escenas y guarda el progreso del jugador
+/// GameManager - Mantiene el progreso del jugador entre escenas
+/// Singleton que persiste con DontDestroyOnLoad
 /// </summary>
 public class GameManager : MonoBehaviour
 {
-    // ═══════════════════════════════════════════════════════
-    // SINGLETON - Solo puede existir uno en todo el juego
-    // ═══════════════════════════════════════════════════════
+    // Singleton instance
     public static GameManager Instance { get; private set; }
 
-    [Header("Player Progress - R.U.B.O. Parts")]
-    public bool hasTorso = false;
+    [Header("Player Progress")]
     public bool hasLegs = false;
     public bool hasArms = false;
-    public int coinsCollected = 0;
-    public int currentLevel = 1;
-    public float health = 100f;
-    public float maxHealth = 100f;
+    public bool hasTorso = false;
+    public HashSet<int> collectedMemories = new HashSet<int>();
 
-    [Header("Custom Variables")]
-    [Tooltip("Agrega aquí variables personalizadas que necesites guardar")]
-    public int customNumber = 0;
-    public string customText = "";
-    public bool customFlag = false;
+    [Header("Scene Management")]
+    [SerializeField] private string[] testLevelNames = { "Level_Test", "TestLevel", "Test" };
 
     [Header("Debug")]
     [SerializeField] private bool showDebugLogs = true;
+    [SerializeField] private bool resetProgressOnMainMenu = true;
 
-    private void Awake()
+    void Awake()
     {
         // Implementar Singleton
-        if (Instance != null && Instance != this)
+        if (Instance == null)
         {
-            Destroy(gameObject);
+            Instance = this;
+            DontDestroyOnLoad(gameObject); // No destruir al cambiar de escena
+
+            if (showDebugLogs)
+                Debug.Log("═══ GameManager creado - Progreso persistente activado ═══");
+
+            // Suscribirse a eventos de carga de escena
+            SceneManager.sceneLoaded += OnSceneLoaded;
+        }
+        else
+        {
+            Destroy(gameObject); // Si ya existe otro, destruir este
             return;
         }
-
-        Instance = this;
-        DontDestroyOnLoad(gameObject); // No destruir al cambiar de escena
-
-        if (showDebugLogs)
-            Debug.Log("GameManager inicializado - Este objeto persistirá entre escenas");
-
-        // Cargar datos guardados al iniciar
-        LoadGame();
     }
 
-    // ═══════════════════════════════════════════════════════
-    // MÉTODOS PÚBLICOS PARA MODIFICAR EL PROGRESO
-    // ═══════════════════════════════════════════════════════
-
-    public void UnlockTorso()
+    void OnDestroy()
     {
-        hasTorso = true;
-        SaveGame();
-        if (showDebugLogs) Debug.Log("✓ Torso desbloqueado!");
-    }
-
-    public void UnlockLegs()
-    {
-        hasLegs = true;
-        SaveGame();
-        if (showDebugLogs) Debug.Log("✓ Piernas desbloqueadas!");
-    }
-
-    public void UnlockArms()
-    {
-        hasArms = true;
-        SaveGame();
-        if (showDebugLogs) Debug.Log("✓ Brazos desbloqueados!");
-    }
-
-    public void AddCoins(int amount)
-    {
-        coinsCollected += amount;
-        SaveGame();
-        if (showDebugLogs) Debug.Log($"Monedas: {coinsCollected} (+{amount})");
-    }
-
-    public void SetHealth(float newHealth)
-    {
-        health = Mathf.Clamp(newHealth, 0f, maxHealth);
-        SaveGame();
-        if (showDebugLogs) Debug.Log($"Salud: {health}/{maxHealth}");
-    }
-
-    public void TakeDamage(float damage)
-    {
-        SetHealth(health - damage);
-    }
-
-    public void Heal(float amount)
-    {
-        SetHealth(health + amount);
-    }
-
-    public void SetCustomNumber(int value)
-    {
-        customNumber = value;
-        SaveGame();
-        if (showDebugLogs) Debug.Log($"Custom Number: {customNumber}");
-    }
-
-    public void SetCustomText(string text)
-    {
-        customText = text;
-        SaveGame();
-        if (showDebugLogs) Debug.Log($"Custom Text: {customText}");
-    }
-
-    // ═══════════════════════════════════════════════════════
-    // SISTEMA DE GUARDADO Y CARGA
-    // ═══════════════════════════════════════════════════════
-
-    public void SaveGame()
-    {
-        PlayerPrefs.SetInt("HasTorso", hasTorso ? 1 : 0);
-        PlayerPrefs.SetInt("HasLegs", hasLegs ? 1 : 0);
-        PlayerPrefs.SetInt("HasArms", hasArms ? 1 : 0);
-        PlayerPrefs.SetInt("CoinsCollected", coinsCollected);
-        PlayerPrefs.SetInt("CurrentLevel", currentLevel);
-        PlayerPrefs.SetFloat("Health", health);
-        PlayerPrefs.SetFloat("MaxHealth", maxHealth);
-
-        // Variables personalizadas
-        PlayerPrefs.SetInt("CustomNumber", customNumber);
-        PlayerPrefs.SetString("CustomText", customText);
-        PlayerPrefs.SetInt("CustomFlag", customFlag ? 1 : 0);
-
-        PlayerPrefs.Save();
-
-        if (showDebugLogs) Debug.Log("💾 Juego guardado!");
-    }
-
-    public void LoadGame()
-    {
-        hasTorso = PlayerPrefs.GetInt("HasTorso", 0) == 1;
-        hasLegs = PlayerPrefs.GetInt("HasLegs", 0) == 1;
-        hasArms = PlayerPrefs.GetInt("HasArms", 0) == 1;
-        coinsCollected = PlayerPrefs.GetInt("CoinsCollected", 0);
-        currentLevel = PlayerPrefs.GetInt("CurrentLevel", 1);
-        health = PlayerPrefs.GetFloat("Health", 100f);
-        maxHealth = PlayerPrefs.GetFloat("MaxHealth", 100f);
-
-        // Variables personalizadas
-        customNumber = PlayerPrefs.GetInt("CustomNumber", 0);
-        customText = PlayerPrefs.GetString("CustomText", "");
-        customFlag = PlayerPrefs.GetInt("CustomFlag", 0) == 1;
-
-        if (showDebugLogs)
+        if (Instance == this)
         {
-            Debug.Log($"📂 Juego cargado - Torso: {hasTorso}, Piernas: {hasLegs}, Brazos: {hasArms}");
-            Debug.Log($"   Monedas: {coinsCollected}, Nivel: {currentLevel}, Salud: {health}");
+            SceneManager.sceneLoaded -= OnSceneLoaded;
         }
     }
 
-    public void ResetProgress()
+    void Update()
     {
-        PlayerPrefs.DeleteAll();
-
-        hasTorso = false;
-        hasLegs = false;
-        hasArms = false;
-        coinsCollected = 0;
-        currentLevel = 1;
-        health = 100f;
-        maxHealth = 100f;
-        customNumber = 0;
-        customText = "";
-        customFlag = false;
-
-        if (showDebugLogs) Debug.Log("🔄 Progreso reseteado!");
+        // Presiona P para ver el progreso actual
+        if (showDebugLogs && Input.GetKeyDown(KeyCode.P))
+        {
+            Debug.Log($"═══ PROGRESO ACTUAL ═══\n{GetProgressString()}");
+        }
     }
 
-    // ═══════════════════════════════════════════════════════
-    // MÉTODOS DE UTILIDAD
-    // ═══════════════════════════════════════════════════════
-
-    private void OnEnable()
-    {
-        SceneManager.sceneLoaded += OnSceneLoaded;
-    }
-
-    private void OnDisable()
-    {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
-    }
-
+    // Evento cuando se carga una escena
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        currentLevel = scene.buildIndex;
-        SaveGame();
-
         if (showDebugLogs)
-            Debug.Log($"📍 Escena cargada: {scene.name} (Index: {scene.buildIndex})");
+            Debug.Log($"═══ Escena cargada: {scene.name} ═══");
+
+        // SOLO resetear en MainMenu, NO en niveles del juego
+        if (resetProgressOnMainMenu && IsMainMenuScene(scene.name))
+        {
+            ResetProgress();
+            if (showDebugLogs)
+                Debug.Log("MainMenu detectado - Progreso reseteado");
+        }
+        else if (IsTestLevel(scene.name))
+        {
+            ResetProgress();
+            if (showDebugLogs)
+                Debug.Log("Nivel de PRUEBA detectado - Progreso reseteado para testing");
+        }
+        else
+        {
+            // Es un nivel normal, MANTENER el progreso
+            if (showDebugLogs)
+                Debug.Log($"Nivel normal: {scene.name} - Manteniendo progreso: {GetProgressString()}");
+        }
+
+        // Buscar al jugador y aplicar progreso
+        StartCoroutine(ApplyProgressToPlayerDelayed());
     }
 
-    // Método para acceder desde otros scripts
-    public void PrintProgress()
+    private System.Collections.IEnumerator ApplyProgressToPlayerDelayed()
     {
-        Debug.Log("═══════════════════════════════════════");
-        Debug.Log("PROGRESO DE R.U.B.O.:");
-        Debug.Log($"  🦴 Torso: {(hasTorso ? "✓" : "✗")}");
-        Debug.Log($"  🦵 Piernas: {(hasLegs ? "✓" : "✗")}");
-        Debug.Log($"  💪 Brazos: {(hasArms ? "✓" : "✗")}");
-        Debug.Log($"  🪙 Monedas: {coinsCollected}");
-        Debug.Log($"  📊 Nivel actual: {currentLevel}");
-        Debug.Log($"  ❤️ Salud: {health}/{maxHealth}");
-        Debug.Log($"  🔢 Custom Number: {customNumber}");
-        Debug.Log($"  📝 Custom Text: {customText}");
-        Debug.Log("═══════════════════════════════════════");
+        // Esperar un frame para que el jugador se inicialice
+        yield return null;
+
+        GameObject playerGO = GameObject.FindGameObjectWithTag("Player");
+        if (playerGO != null)
+        {
+            PlayerController player = playerGO.GetComponent<PlayerController>();
+            if (player != null)
+            {
+                ApplyProgressToPlayer(player);
+            }
+        }
+    }
+
+    // Métodos para actualizar progreso
+    public void CollectLegs()
+    {
+        hasLegs = true;
+        if (showDebugLogs)
+            Debug.Log(">>> GameManager: Piernas GUARDADAS (Persistente entre escenas)");
+    }
+
+    public void CollectArms()
+    {
+        hasArms = true;
+        if (showDebugLogs)
+            Debug.Log(">>> GameManager: Brazos GUARDADOS (Persistente entre escenas)");
+    }
+
+    public void CollectTorso()
+    {
+        hasTorso = true;
+        if (showDebugLogs)
+            Debug.Log(">>> GameManager: Torso GUARDADO (Persistente entre escenas)");
+    }
+
+    public void CollectMemory(int memoryID)
+    {
+        if (!collectedMemories.Contains(memoryID))
+        {
+            collectedMemories.Add(memoryID);
+            if (showDebugLogs)
+                Debug.Log($">>> GameManager: Memoria #{memoryID} GUARDADA. Total: {collectedMemories.Count}");
+        }
+    }
+
+    public bool HasMemory(int memoryID)
+    {
+        return collectedMemories.Contains(memoryID);
+    }
+
+    public int GetMemoryCount()
+    {
+        return collectedMemories.Count;
+    }
+
+    public HashSet<int> GetCollectedMemories()
+    {
+        return new HashSet<int>(collectedMemories); // Retornar copia
+    }
+
+    // Resetear progreso
+    public void ResetProgress()
+    {
+        hasLegs = false;
+        hasArms = false;
+        hasTorso = false;
+        collectedMemories.Clear();
+
+        if (showDebugLogs)
+            Debug.Log(">>> GameManager: Progreso RESETEADO");
+    }
+
+    // Verificar si está completo
+    public bool IsFullyAssembled()
+    {
+        return hasLegs && hasArms && hasTorso;
+    }
+
+    public void ApplyProgressToPlayer(PlayerController player)
+    {
+        if (player == null) return;
+
+        bool anyPartRestored = false;
+
+        if (hasLegs && !player.hasLegs)
+        {
+            player.hasLegs = true;
+            if (player.legsGroup != null)
+                player.legsGroup.SetActive(true);
+            anyPartRestored = true;
+        }
+
+        if (hasArms && !player.hasArms)
+        {
+            player.hasArms = true;
+            if (player.armsGroup != null)
+                player.armsGroup.SetActive(true);
+            anyPartRestored = true;
+        }
+
+        if (hasTorso && !player.hasTorso)
+        {
+            player.hasTorso = true;
+            if (player.torsoGroup != null)
+                player.torsoGroup.SetActive(true);
+            anyPartRestored = true;
+        }
+
+        if (anyPartRestored)
+        {
+            player.SendMessage("UpdateStatusText", SendMessageOptions.DontRequireReceiver);
+            player.SendMessage("UpdateInstructions", SendMessageOptions.DontRequireReceiver);
+
+            if (showDebugLogs)
+            {
+                Debug.Log($"═══ Progreso aplicado al jugador ═══");
+                Debug.Log($"Piernas: {hasLegs} | Brazos: {hasArms} | Torso: {hasTorso}");
+            }
+        }
+    }
+
+    // Helpers
+    private bool IsMainMenuScene(string sceneName)
+    {
+        // Solo considerar MainMenu si es EXACTAMENTE el menú principal
+        // NO detectar escenas que contengan "Menu" en su nombre
+        return sceneName.Equals("MainMenu", System.StringComparison.OrdinalIgnoreCase)
+               || sceneName.Equals("Menu", System.StringComparison.OrdinalIgnoreCase)
+               || sceneName.Equals("StartMenu", System.StringComparison.OrdinalIgnoreCase);
+    }
+
+    private bool IsTestLevel(string sceneName)
+    {
+        foreach (string testName in testLevelNames)
+        {
+            if (sceneName.Contains(testName))
+                return true;
+        }
+        return false;
+    }
+
+    // Método para UI/Debug
+    public string GetProgressString()
+    {
+        return $"Piernas: {(hasLegs ? "✓" : "✗")} | Brazos: {(hasArms ? "✓" : "✗")} | Torso: {(hasTorso ? "✓" : "✗")} | Memorias: {collectedMemories.Count}";
     }
 }

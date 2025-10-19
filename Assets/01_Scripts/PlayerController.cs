@@ -24,7 +24,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float pushRayDistance = 1.5f;
 
     [Header("Torso Abilities")]
-    [SerializeField] private GameObject flashlight; // ← NUEVO: Para la linterna
+    [SerializeField] private GameObject flashlight;
     [SerializeField] private float magneticResistance = 0.5f;
 
     [Header("UI")]
@@ -51,9 +51,9 @@ public class PlayerController : MonoBehaviour
 
     [Header("Body Parts (Groups or Objects)")]
     [SerializeField] private GameObject headGO;
-    [SerializeField] private GameObject legsGroup;
-    [SerializeField] private GameObject armsGroup;
-    [SerializeField] private GameObject torsoGroup;
+    [SerializeField] public GameObject legsGroup;
+    [SerializeField] public GameObject armsGroup;
+    [SerializeField] public GameObject torsoGroup;
 
     void Start()
     {
@@ -91,7 +91,6 @@ public class PlayerController : MonoBehaviour
             {
                 Debug.Log("ABILITIES RECHARGED!");
                 isDashAvailable = true;
-                // Saltos se resetean al entrar en contacto con el piso.
                 if (availableJumps < maxJumps)
                 {
                     availableJumps = maxJumps;
@@ -106,14 +105,14 @@ public class PlayerController : MonoBehaviour
             headAnimator.SetFloat("Speed", planarSpeed);
         }
 
-        // Toggle flashlight con F si tiene torso
-        if (hasTorso && Input.GetKeyDown(KeyCode.F))
+        // Toggle flashlight con F si tiene torso
+        if (hasTorso && Input.GetKeyDown(KeyCode.F))
         {
             ToggleFlashlight();
         }
     }
 
-        void FixedUpdate()
+    void FixedUpdate()
     {
         if (!isDashing)
         {
@@ -235,6 +234,13 @@ public class PlayerController : MonoBehaviour
     {
         hasLegs = true;
         if (legsGroup) legsGroup.SetActive(true);
+
+        // ¡GUARDAR EN GAMEMANAGER!
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.CollectLegs();
+        }
+
         UpdateStatusText();
         UpdateInstructions();
         Debug.Log("PIERNAS RECONECTADAS! Salto (Space) y Dash (Shift) desbloqueados");
@@ -244,6 +250,13 @@ public class PlayerController : MonoBehaviour
     {
         hasArms = true;
         if (armsGroup) armsGroup.SetActive(true);
+
+        // ¡GUARDAR EN GAMEMANAGER!
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.CollectArms();
+        }
+
         UpdateStatusText();
         UpdateInstructions();
         Debug.Log("BRAZOS RECONECTADOS! Empujar cajas y usar palancas disponible");
@@ -253,12 +266,19 @@ public class PlayerController : MonoBehaviour
     {
         hasTorso = true;
         if (torsoGroup) torsoGroup.SetActive(true);
+
+        // ¡GUARDAR EN GAMEMANAGER!
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.CollectTorso();
+        }
+
         UpdateStatusText();
         UpdateInstructions();
 
         if (flashlight != null)
         {
-            flashlight.SetActive(false); // Empieza apagada, se activa con F
+            flashlight.SetActive(false);
         }
 
         Debug.Log("TORSO RECONECTADO! Ensamblaje completo - Presiona F para linterna");
