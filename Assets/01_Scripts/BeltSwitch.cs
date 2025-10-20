@@ -19,7 +19,6 @@ public class BeltSwitch : MonoBehaviour, IJammable
     private float cooldown = 0.5f;
     private float cooldownTimer = 0f;
 
-    // Jamming
     private bool isJammed = false;
     private float jamTimer = 0f;
 
@@ -39,7 +38,7 @@ public class BeltSwitch : MonoBehaviour, IJammable
 
     void Update()
     {
-        // Jamming timer
+  
         if (isJammed)
         {
             jamTimer -= Time.deltaTime;
@@ -128,7 +127,7 @@ public class BeltSwitch : MonoBehaviour, IJammable
     {
         isJammed = true;
         jamTimer = duration;
-        canActivate = false; // Desactiva la interacci�n mientras est� jammeado
+        canActivate = false; // Desactiva la interacci�n mientras esto jammeado
         UpdateVisual();
         Debug.Log($"Switch '{gameObject.name}' jammeado por {duration} segundos");
     }
