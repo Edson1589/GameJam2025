@@ -4214,7 +4214,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1772320552}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 40, y: 0.5, z: 0}
+  m_LocalPosition: {x: 48, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -4507,7 +4507,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   activeMaterial: {fileID: 2100000, guid: edb7ed5d9072a6f44b7408bf36ac2949, type: 2}
   inactiveMaterial: {fileID: 2100000, guid: 9c0f641238c7c8048b18bf8725d10fb8, type: 2}
-  connectedDoor: {fileID: 306910204}
+  connectedDoor: {fileID: 1681771356}
   showDebugInfo: 1
 --- !u!33 &1948678515
 MeshFilter:
@@ -4525,7 +4525,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1948678511}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 54, y: 0.05, z: 0}
+  m_LocalPosition: {x: 54, y: 0.1, z: 0}
   m_LocalScale: {x: 1.5, y: 0.05, z: 1.5}
   m_Children: []
   m_Father: {fileID: 0}
