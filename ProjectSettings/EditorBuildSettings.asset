@@ -20,4 +20,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/00_Scenes/Level_03_Azotea.unity
     guid: 471c4c96844ad3d4eb0c5d1d5d0aeffc
+  - enabled: 1
+    path: Assets/00_Scenes/VideoScene.unity
+    guid: ffe246baf139d2247b6bdbc8563ded3c
   m_configObjects: {}

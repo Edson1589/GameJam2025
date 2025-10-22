@@ -9,16 +9,16 @@ public class MainMenu : MonoBehaviour
 
     public void PlayGame()
     {
-        Debug.Log("Iniciando juego NUEVO - Reseteando progreso...");
+        Debug.Log("Reproduciendo video inicial...");
 
-        // ← NUEVO: Resetear progreso al iniciar nuevo juego
         if (GameManager.Instance != null)
         {
             GameManager.Instance.ResetProgress();
         }
 
-        SceneManager.LoadScene(level01SceneName);
+        SceneManager.LoadScene("VideoScene"); 
     }
+
 
     public void PlayTestLevel()
     {
