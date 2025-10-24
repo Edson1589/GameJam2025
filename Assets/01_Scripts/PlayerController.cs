@@ -3,6 +3,8 @@ using TMPro;
 
 public class PlayerController : MonoBehaviour
 {
+    public static PlayerController Instance { get; private set; }
+
     [Header("Movement")]
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float jumpForce = 8f;
@@ -30,14 +32,15 @@ public class PlayerController : MonoBehaviour
     [Header("UI")]
     [SerializeField] private TextMeshProUGUI statusText;
     [SerializeField] private TextMeshProUGUI instructionsText;
+    [SerializeField] private TextMeshProUGUI dashCooldownText;
 
     [Header("Skills & Cooldown")]
     [SerializeField] private int maxJumps = 2;
-    [SerializeField] private float abilityCooldownDuration = 10f;
+    [SerializeField] private float dashCooldownDuration = 10f;
 
     private int availableJumps;
     private bool isDashAvailable = true;
-    private float cooldownTimer;
+    private float dashCooldownTimer = 0f;
 
     private Rigidbody rb;
     private bool isGrounded;
@@ -50,10 +53,18 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Animator headAnimator;
 
     [Header("Body Parts (Groups or Objects)")]
-    [SerializeField] private GameObject headGO;
+    [SerializeField] public GameObject headGO;
     [SerializeField] public GameObject legsGroup;
     [SerializeField] public GameObject armsGroup;
     [SerializeField] public GameObject torsoGroup;
+
+    void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+    }
 
     void Start()
     {
@@ -67,6 +78,12 @@ public class PlayerController : MonoBehaviour
         if (legsGroup) legsGroup.SetActive(false);
         if (armsGroup) armsGroup.SetActive(false);
         if (torsoGroup) torsoGroup.SetActive(false);
+
+        LoadPartsState();
+        InitializeAbilitiesUI();
+        if (legsGroup) legsGroup.SetActive(hasLegs);
+        if (armsGroup) armsGroup.SetActive(hasArms);
+        if (torsoGroup) torsoGroup.SetActive(hasTorso);
 
         UpdateStatusText();
         UpdateInstructions();
@@ -84,20 +101,19 @@ public class PlayerController : MonoBehaviour
             if (dashTimer <= 0) isDashing = false;
         }
 
-        if (cooldownTimer > 0)
+        if (dashCooldownTimer > 0)
         {
-            cooldownTimer -= Time.deltaTime;
-            if (cooldownTimer <= 0)
+            dashCooldownTimer -= Time.deltaTime;
+
+            if (dashCooldownTimer <= 0)
             {
-                Debug.Log("ABILITIES RECHARGED!");
+                Debug.Log("DASH RECHARGED!");
                 isDashAvailable = true;
-                if (availableJumps < maxJumps)
-                {
-                    availableJumps = maxJumps;
-                }
-                cooldownTimer = 0;
+                dashCooldownTimer = 0f;
             }
         }
+
+        UpdateDashCooldownUI();
 
         if (headAnimator != null)
         {
@@ -128,6 +144,16 @@ public class PlayerController : MonoBehaviour
             PushObjects();
         }
     }
+        
+    private void LoadPartsState()
+    {
+        if (GameManager.Instance != null)
+        {
+            hasLegs = GameManager.Instance.hasLegs;
+            hasArms = GameManager.Instance.hasArms;
+            hasTorso = GameManager.Instance.hasTorso;
+        }
+    }
 
     private void HandleInput()
     {
@@ -136,11 +162,6 @@ public class PlayerController : MonoBehaviour
             rb.velocity = new Vector3(rb.velocity.x, jumpForce, rb.velocity.z);
             availableJumps--;
             Debug.Log($"Jump! {availableJumps} jumps remaining.");
-
-            if (cooldownTimer <= 0)
-            {
-                cooldownTimer = abilityCooldownDuration;
-            }
         }
 
         if (Input.GetKeyDown(KeyCode.LeftShift) && hasLegs && !isDashing && isDashAvailable)
@@ -148,12 +169,8 @@ public class PlayerController : MonoBehaviour
             isDashing = true;
             dashTimer = dashDuration;
             isDashAvailable = false;
+            dashCooldownTimer = dashCooldownDuration;
             Debug.Log("Dash! Cooldown started.");
-
-            if (cooldownTimer <= 0)
-            {
-                cooldownTimer = abilityCooldownDuration;
-            }
         }
     }
 
@@ -230,12 +247,50 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void UpdateDashCooldownUI()
+    {
+        if (dashCooldownText == null || !hasLegs) return;
+
+        if (isDashAvailable)
+        {
+            dashCooldownText.text = "DASH: READY";
+            dashCooldownText.color = Color.green;
+        }
+        else
+        {
+            float timeElapsed = dashCooldownDuration - dashCooldownTimer;
+
+            if (timeElapsed < 0) timeElapsed = 0;
+
+            dashCooldownText.text = $"DASH: {timeElapsed:0.0}s";
+            dashCooldownText.color = Color.yellow;
+        }
+    }
+
+    private void InitializeAbilitiesUI()
+    {
+        if (dashCooldownText != null)
+        {
+            dashCooldownText.gameObject.SetActive(hasLegs);
+
+            if (hasLegs)
+            {
+                UpdateDashCooldownUI();
+            }
+        }
+    }
+
     public void ConnectLegs()
     {
         hasLegs = true;
         if (legsGroup) legsGroup.SetActive(true);
 
-        // ¡GUARDAR EN GAMEMANAGER!
+        if (dashCooldownText != null)
+        {
+            dashCooldownText.gameObject.SetActive(true);
+            UpdateDashCooldownUI();
+        }
+
         if (GameManager.Instance != null)
         {
             GameManager.Instance.CollectLegs();
@@ -251,7 +306,6 @@ public class PlayerController : MonoBehaviour
         hasArms = true;
         if (armsGroup) armsGroup.SetActive(true);
 
-        // ¡GUARDAR EN GAMEMANAGER!
         if (GameManager.Instance != null)
         {
             GameManager.Instance.CollectArms();
@@ -267,7 +321,6 @@ public class PlayerController : MonoBehaviour
         hasTorso = true;
         if (torsoGroup) torsoGroup.SetActive(true);
 
-        // ¡GUARDAR EN GAMEMANAGER!
         if (GameManager.Instance != null)
         {
             GameManager.Instance.CollectTorso();
