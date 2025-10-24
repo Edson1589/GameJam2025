@@ -46,7 +46,6 @@ public class LegsPickup : MonoBehaviour
             {
                 GameManager.Instance.CollectLegs();
             }
-
             // Destruir el pickup
             Destroy(gameObject);
         }

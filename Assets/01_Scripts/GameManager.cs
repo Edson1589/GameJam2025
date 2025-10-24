@@ -155,7 +155,7 @@ public class GameManager : MonoBehaviour
         return new HashSet<int>(collectedMemories); // Retornar copia
     }
 
-    // Resetear progreso
+    // Resetear progreso COMPLETO
     public void ResetProgress()
     {
         hasLegs = false;
@@ -165,6 +165,55 @@ public class GameManager : MonoBehaviour
 
         if (showDebugLogs)
             Debug.Log(">>> GameManager: Progreso RESETEADO");
+    }
+
+    // NUEVO: Resetear solo las memorias del nivel actual
+    public void ResetMemoriesForLevel(string sceneName)
+    {
+        HashSet<int> memoriesToRemove = new HashSet<int>();
+
+        // Determinar qué memorias pertenecen a este nivel
+        if (sceneName.Contains("Level_01") || sceneName.Contains("Ensamble"))
+        {
+            // Nivel 1: Memorias 1, 2, 3
+            memoriesToRemove.Add(1);
+            memoriesToRemove.Add(2);
+            memoriesToRemove.Add(3);
+        }
+        else if (sceneName.Contains("Level_02") || sceneName.Contains("Tapes"))
+        {
+            // Nivel 2: Memorias 4, 5, 6
+            memoriesToRemove.Add(4);
+            memoriesToRemove.Add(5);
+            memoriesToRemove.Add(6);
+        }
+        else if (sceneName.Contains("Level_03") || sceneName.Contains("Azotea"))
+        {
+            // Nivel 3: Memorias 7, 8, 9
+            memoriesToRemove.Add(7);
+            memoriesToRemove.Add(8);
+            memoriesToRemove.Add(9);
+        }
+        else if (IsTestLevel(sceneName))
+        {
+            // En niveles de test, resetear todas
+            collectedMemories.Clear();
+            if (showDebugLogs)
+                Debug.Log(">>> GameManager: TODAS las memorias reseteadas (Test Level)");
+            return;
+        }
+
+        // Remover las memorias del nivel actual
+        foreach (int memoryID in memoriesToRemove)
+        {
+            if (collectedMemories.Contains(memoryID))
+            {
+                collectedMemories.Remove(memoryID);
+            }
+        }
+
+        if (showDebugLogs && memoriesToRemove.Count > 0)
+            Debug.Log($">>> GameManager: Memorias del nivel {sceneName} reseteadas. Quedan: {collectedMemories.Count}");
     }
 
     // Verificar si está completo
