@@ -18,6 +18,9 @@ EditorBuildSettings:
     path: Assets/00_Scenes/Level_02_Tapes.unity
     guid: 44886179fdb9b4d40b099a9138ce50c5
   - enabled: 1
+    path: Assets/00_Scenes/VideoSceneLVL2to3.unity
+    guid: 7bc9d6537622b7e42931615a28cb7261
+  - enabled: 1
     path: Assets/00_Scenes/Level_03_Azotea.unity
     guid: 471c4c96844ad3d4eb0c5d1d5d0aeffc
   - enabled: 1

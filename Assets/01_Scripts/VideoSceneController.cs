@@ -11,7 +11,7 @@ public class VideoSceneController : MonoBehaviour
     {
         if (videoPlayer == null)
         {
-            videoPlayer = GetComponent<VideoPlayer>();
+            videoPlayer = GetComponentInChildren<VideoPlayer>();
         }
 
         // Cuando el video termina, cargar la siguiente escena

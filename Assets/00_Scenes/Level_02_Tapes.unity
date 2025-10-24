@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.4455761, g: 0.5212605, b: 0.54665613, a: 1}
+  m_IndirectSpecularColor: {r: 0.44557828, g: 0.52106774, b: 0.54623896, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -240,7 +240,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c996eef72536b284dbfd919d1de77dd4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nextSceneName: Level_03_Azotea
+  nextSceneName: VideoSceneLVL2to3
   hasNextLevel: 1
   rotationSpeed: 30
   floatAmplitude: 0.5
@@ -494,8 +494,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 306910201}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 35, y: 2, z: 0}
-  m_LocalScale: {x: 0.3, y: 3, z: 4}
+  m_LocalPosition: {x: 35, y: 1.6, z: 0}
+  m_LocalScale: {x: 0.3, y: 3, z: 10.6}
   m_Children:
   - {fileID: 6513799931472792882}
   m_Father: {fileID: 0}
@@ -3091,8 +3091,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1681771353}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 58, y: 2, z: 0}
-  m_LocalScale: {x: 0.3, y: 3, z: 4}
+  m_LocalPosition: {x: 58, y: 1.6, z: 0}
+  m_LocalScale: {x: 0.3, y: 3, z: 10.6}
   m_Children:
   - {fileID: 8292771877968481695}
   m_Father: {fileID: 0}
@@ -3367,8 +3367,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 20
-  m_fontSizeBase: 20
+  m_fontSize: 26
+  m_fontSizeBase: 26
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -3460,17 +3460,17 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1728743164}
-  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_Children: []
   m_Father: {fileID: 1739780729}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 1.5}
-  m_SizeDelta: {x: 20, y: 5}
+  m_SizeDelta: {x: 30, y: 5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1739780724
 GameObject:
