@@ -25,7 +25,7 @@ public class ConveyorBelt : MonoBehaviour
 
     void Update()
     {
-        // Animar textura si está activa
+        // Animar textura si estï¿½ activa
         if (isActive && beltRenderer != null)
         {
             textureOffset += textureScrollSpeed * Time.deltaTime;
@@ -42,13 +42,13 @@ public class ConveyorBelt : MonoBehaviour
         {
             if (rb != null)
             {
-                Vector3 force = direction.normalized * speed * 10f; 
+                Vector3 force = direction.normalized * speed * 10f;
                 rb.AddForce(force, ForceMode.Force);
             }
         }
     }
 
-    // Usar triggers para detección más confiable
+    // Usar triggers para detecciï¿½n mï¿½s confiable
     private void OnTriggerEnter(Collider other)
     {
         Rigidbody rb = other.GetComponent<Rigidbody>();
@@ -56,13 +56,13 @@ public class ConveyorBelt : MonoBehaviour
         if (rb != null && !objectsOnBelt.Contains(rb))
         {
             objectsOnBelt.Add(rb);
-            Debug.Log($"Objeto '{other.gameObject.name}' entró en cinta");
+            Debug.Log($"Objeto '{other.gameObject.name}' entrï¿½ en cinta");
         }
     }
 
     private void OnTriggerStay(Collider other)
     {
-        // Mantener objetos en la lista mientras están encima
+        // Mantener objetos en la lista mientras estï¿½n encima
         Rigidbody rb = other.GetComponent<Rigidbody>();
 
         if (rb != null && !objectsOnBelt.Contains(rb))
@@ -78,11 +78,11 @@ public class ConveyorBelt : MonoBehaviour
         if (rb != null && objectsOnBelt.Contains(rb))
         {
             objectsOnBelt.Remove(rb);
-            Debug.Log($"Objeto '{other.gameObject.name}' salió de cinta");
+            Debug.Log($"Objeto '{other.gameObject.name}' saliï¿½ de cinta");
         }
     }
 
-    // Métodos públicos para control externo
+    // Mï¿½todos pï¿½blicos para control externo
     public void Activate()
     {
         isActive = true;
@@ -100,7 +100,7 @@ public class ConveyorBelt : MonoBehaviour
     public void ReverseDirection()
     {
         direction = -direction;
-        Debug.Log($"Cinta '{gameObject.name}' cambió dirección a {direction}");
+        Debug.Log($"Cinta '{gameObject.name}' cambiï¿½ direcciï¿½n a {direction}");
     }
 
     public void SetDirection(Vector3 newDirection)
@@ -123,14 +123,14 @@ public class ConveyorBelt : MonoBehaviour
         }
     }
 
-    // Visualización en editor
+    // Visualizaciï¿½n en editor
     private void OnDrawGizmos()
     {
         Gizmos.color = isActive ? Color.cyan : Color.gray;
         Vector3 center = transform.position + Vector3.up * 0.1f;
         Vector3 arrowEnd = center + direction.normalized * 2f;
 
-        // Dibujar flecha de dirección
+        // Dibujar flecha de direcciï¿½n
         Gizmos.DrawLine(center, arrowEnd);
         Gizmos.DrawSphere(arrowEnd, 0.2f);
     }
