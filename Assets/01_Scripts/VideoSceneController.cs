@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 public class VideoSceneController : MonoBehaviour
 {
     [SerializeField] private VideoPlayer videoPlayer;
-    [SerializeField] private string nextSceneName = "Level_01_Ensamble";
+    [SerializeField] private string nextSceneName = "Level_01_Ensamblee";
 
     void Start()
     {
