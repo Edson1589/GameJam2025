@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.12704206, g: 0.13238367, b: 0.10719695, a: 1}
+  m_IndirectSpecularColor: {r: 0.12703887, g: 0.13241151, b: 0.10719233, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -871,7 +871,7 @@ MonoBehaviour:
   groundCheckRadius: 0.3
   groundLayer:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 1024
   hasLegs: 0
   hasArms: 0
   hasTorso: 0
@@ -882,7 +882,7 @@ MonoBehaviour:
   statusText: {fileID: 1051698453}
   instructionsText: {fileID: 1910161926}
   dashCooldownText: {fileID: 1317401376}
-  maxJumps: 2
+  maxJumps: 1
   dashCooldownDuration: 10
   camTransform: {fileID: 0}
   headAnimator: {fileID: 1040758798}
@@ -3523,6 +3523,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Ground03
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: c30f2ec8798c82f47bd38cf9b44dd3c2, type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c30f2ec8798c82f47bd38cf9b44dd3c2, type: 3}
 --- !u!1 &1383316148 stripped
@@ -4973,7 +4977,7 @@ GameObject:
   - component: {fileID: 1990972078}
   - component: {fileID: 1990972077}
   - component: {fileID: 1990972076}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Ground_Rooftop
   m_TagString: Untagged
   m_Icon: {fileID: 0}

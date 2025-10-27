@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44557828, g: 0.52106774, b: 0.54623896, a: 1}
+  m_IndirectSpecularColor: {r: 0.44551373, g: 0.52103895, b: 0.54645765, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -2146,7 +2146,7 @@ GameObject:
   - component: {fileID: 1196163109}
   - component: {fileID: 1196163108}
   - component: {fileID: 1196163112}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Ground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4481,7 +4481,7 @@ MonoBehaviour:
   groundCheckRadius: 0.3
   groundLayer:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 1024
   hasLegs: 0
   hasArms: 0
   hasTorso: 0
@@ -4492,7 +4492,7 @@ MonoBehaviour:
   statusText: {fileID: 1184497809}
   instructionsText: {fileID: 455530487}
   dashCooldownText: {fileID: 420494544}
-  maxJumps: 2
+  maxJumps: 1
   dashCooldownDuration: 10
   camTransform: {fileID: 0}
   headAnimator: {fileID: 914022271}
@@ -4515,7 +4515,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1862774542}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 0.8, y: 1, z: 0.6}
   m_Children:
@@ -4524,7 +4524,7 @@ Transform:
   - {fileID: 1355280757}
   m_Father: {fileID: 0}
   m_RootOrder: 7
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!1 &1921526861
 GameObject:
   m_ObjectHideFlags: 0

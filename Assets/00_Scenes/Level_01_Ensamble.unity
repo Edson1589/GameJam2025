@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.017243778, g: 0.002721645, b: 0.0756892, a: 1}
+  m_IndirectSpecularColor: {r: 0.017236529, g: 0.00271701, b: 0.07566567, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -344,7 +344,7 @@ GameObject:
   - component: {fileID: 88245871}
   - component: {fileID: 88245870}
   - component: {fileID: 88245869}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Platform_TestZone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -554,7 +554,7 @@ MonoBehaviour:
   groundCheckRadius: 0.3
   groundLayer:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 1024
   hasLegs: 0
   hasArms: 0
   hasTorso: 0
@@ -565,7 +565,7 @@ MonoBehaviour:
   statusText: {fileID: 827591446}
   instructionsText: {fileID: 811327766}
   dashCooldownText: {fileID: 1779972552}
-  maxJumps: 123
+  maxJumps: 1
   dashCooldownDuration: 10
   camTransform: {fileID: 0}
   headAnimator: {fileID: 675522160}
@@ -2536,6 +2536,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1743858912457296782, guid: d91828fb1f6265242a2275e508bc5be2, type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 3961588192957963906, guid: d91828fb1f6265242a2275e508bc5be2, type: 3}
       propertyPath: m_RootOrder
       value: 8
@@ -2583,6 +2587,10 @@ PrefabInstance:
     - target: {fileID: 3961588192957963934, guid: d91828fb1f6265242a2275e508bc5be2, type: 3}
       propertyPath: m_Name
       value: Platform (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3961588192957963934, guid: d91828fb1f6265242a2275e508bc5be2, type: 3}
+      propertyPath: m_Layer
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d91828fb1f6265242a2275e508bc5be2, type: 3}
@@ -3277,7 +3285,7 @@ GameObject:
   - component: {fileID: 1462361590}
   - component: {fileID: 1462361589}
   - component: {fileID: 1462361588}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Ground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5731,6 +5739,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Platform
       objectReference: {fileID: 0}
+    - target: {fileID: 3961588192957963934, guid: d91828fb1f6265242a2275e508bc5be2, type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d91828fb1f6265242a2275e508bc5be2, type: 3}
 --- !u!33 &4150145773190117014
@@ -6696,6 +6708,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 5807398702472140777, guid: 7ad676e986f2bd842b9c5cae3e2adf4b, type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 8021320559959871274, guid: 7ad676e986f2bd842b9c5cae3e2adf4b, type: 3}
       propertyPath: m_RootOrder
       value: 17
@@ -6743,6 +6759,10 @@ PrefabInstance:
     - target: {fileID: 8021320559959871278, guid: 7ad676e986f2bd842b9c5cae3e2adf4b, type: 3}
       propertyPath: m_Name
       value: Ground
+      objectReference: {fileID: 0}
+    - target: {fileID: 8021320559959871278, guid: 7ad676e986f2bd842b9c5cae3e2adf4b, type: 3}
+      propertyPath: m_Layer
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7ad676e986f2bd842b9c5cae3e2adf4b, type: 3}
