@@ -76,7 +76,7 @@ public class DoorButton : MonoBehaviour
             }
             else if (type == ButtonType.PressurePlate)
             {
-                // Pressure plate se activa automáticamente
+                // Pressure plate se activa automï¿½ticamente
                 if (!isActive)
                 {
                     Activate();
@@ -112,9 +112,9 @@ public class DoorButton : MonoBehaviour
         // Abrir puerta
         connectedDoor.Open();
 
-        Debug.Log($"Botón '{gameObject.name}' ACTIVADO - Puerta abierta por 5s");
+        Debug.Log($"Botï¿½n '{gameObject.name}' ACTIVADO - Puerta abierta por 5s");
 
-        // Auto-desactivar después de que la puerta se cierre
+        // Auto-desactivar despuï¿½s de que la puerta se cierre
         Invoke("Deactivate", connectedDoor != null ? 5.5f : 5f);
     }
 
@@ -124,18 +124,18 @@ public class DoorButton : MonoBehaviour
         UpdateVisual();
         AnimateRelease();
 
-        Debug.Log($"Botón '{gameObject.name}' DESACTIVADO");
+        Debug.Log($"Botï¿½n '{gameObject.name}' DESACTIVADO");
     }
 
     private void AnimatePress()
     {
-        // Animar el botón hundiéndose
+        // Animar el botï¿½n hundiï¿½ndose
         transform.position = pressedPosition;
     }
 
     private void AnimateRelease()
     {
-        // Animar el botón subiendo
+        // Animar el botï¿½n subiendo
         transform.position = originalPosition;
     }
 
