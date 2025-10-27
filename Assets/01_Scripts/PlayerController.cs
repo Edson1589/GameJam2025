@@ -120,12 +120,6 @@ public class PlayerController : MonoBehaviour
             float planarSpeed = new Vector3(rb.velocity.x, 0f, rb.velocity.z).magnitude;
             headAnimator.SetFloat("Speed", planarSpeed);
         }
-
-        // Toggle flashlight con F si tiene torso
-        if (hasTorso && Input.GetKeyDown(KeyCode.F))
-        {
-            ToggleFlashlight();
-        }
     }
 
     void FixedUpdate()
@@ -144,7 +138,7 @@ public class PlayerController : MonoBehaviour
             PushObjects();
         }
     }
-        
+
     private void LoadPartsState()
     {
         if (GameManager.Instance != null)
@@ -157,20 +151,32 @@ public class PlayerController : MonoBehaviour
 
     private void HandleInput()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && hasLegs && availableJumps > 0)
+        // ============================================
+        // CAMBIO: Ahora usa InputManager en lugar de Input directo
+        // ============================================
+
+        // SALTO - Usa la tecla configurada en opciones
+        if (InputManager.Instance != null && InputManager.Instance.GetKeyDown("Jump") && hasLegs && availableJumps > 0)
         {
             rb.velocity = new Vector3(rb.velocity.x, jumpForce, rb.velocity.z);
             availableJumps--;
             Debug.Log($"Jump! {availableJumps} jumps remaining.");
         }
 
-        if (Input.GetKeyDown(KeyCode.LeftShift) && hasLegs && !isDashing && isDashAvailable)
+        // DASH - Usa la tecla configurada en opciones
+        if (InputManager.Instance != null && InputManager.Instance.GetKeyDown("Dash") && hasLegs && !isDashing && isDashAvailable)
         {
             isDashing = true;
             dashTimer = dashDuration;
             isDashAvailable = false;
             dashCooldownTimer = dashCooldownDuration;
             Debug.Log("Dash! Cooldown started.");
+        }
+
+        // LINTERNA - Usa la tecla configurada en opciones
+        if (InputManager.Instance != null && hasTorso && InputManager.Instance.GetKeyDown("Flashlight"))
+        {
+            ToggleFlashlight();
         }
     }
 
@@ -298,7 +304,7 @@ public class PlayerController : MonoBehaviour
 
         UpdateStatusText();
         UpdateInstructions();
-        Debug.Log("PIERNAS RECONECTADAS! Salto (Space) y Dash (Shift) desbloqueados");
+        Debug.Log("PIERNAS RECONECTADAS! Salto y Dash desbloqueados");
     }
 
     public void ConnectArms()
@@ -334,7 +340,7 @@ public class PlayerController : MonoBehaviour
             flashlight.SetActive(false);
         }
 
-        Debug.Log("TORSO RECONECTADO! Ensamblaje completo - Presiona F para linterna");
+        Debug.Log("TORSO RECONECTADO! Ensamblaje completo - Linterna disponible");
     }
 
     public bool IsFullyAssembled()
@@ -400,7 +406,7 @@ public class PlayerController : MonoBehaviour
             }
             else if (hasLegs)
             {
-                status = "LEGS - Space: Jump | Shift: Dash";
+                status = "LEGS - Jump & Dash Available";
                 statusText.color = Color.green;
             }
             else if (hasArms)
