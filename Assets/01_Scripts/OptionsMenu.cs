@@ -27,6 +27,7 @@ public class OptionsMenu : MonoBehaviour
     [Header("UI Panels")]
     public GameObject mainMenuPanel;
     public GameObject optionsPanel;
+    public GameObject creditsPanel;
     public GameObject waitingForKeyPanel;
     public TextMeshProUGUI waitingText;
 
@@ -376,6 +377,15 @@ public class OptionsMenu : MonoBehaviour
     {
         if (optionsPanel != null)
             optionsPanel.SetActive(false);
+
+        if (mainMenuPanel != null)
+            mainMenuPanel.SetActive(true);
+    }
+
+    public void CloseCredits()
+    {
+        if (creditsPanel != null)
+            creditsPanel.SetActive(false);
 
         if (mainMenuPanel != null)
             mainMenuPanel.SetActive(true);
