@@ -54,6 +54,13 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private Animator headAnimator;
 
+    [Header("UI Effects")]
+    [SerializeField] private float pulseSpeed = 2f;
+    [SerializeField] private float pulseMinScale = 0.98f;
+    [SerializeField] private float pulseMaxScale = 1.02f;
+    [SerializeField] private Color glowColorMin = new Color(0f, 0.8f, 0f, 1f);
+    [SerializeField] private Color glowColorMax = new Color(0.5f, 1f, 0.5f, 1f);
+
     [Header("Body Parts (Groups or Objects)")]
     [SerializeField] public GameObject headGO;
     [SerializeField] public GameObject legsGroup;
@@ -257,13 +264,27 @@ public class PlayerController : MonoBehaviour
             if (isDashAvailable)
             {
                 dashCooldownSlider.value = 1f;
+
+                float pulse = (Mathf.Sin(Time.time * pulseSpeed) + 1f) / 2f;
+
+                // Animación de escala
+                float scaleMultiplierX = Mathf.Lerp(0.99f, 1.01f, pulse); 
+                float scaleMultiplierY = Mathf.Lerp(pulseMinScale, pulseMaxScale, pulse); 
+                dashCooldownSlider.transform.localScale = new Vector3(4f * scaleMultiplierX, 0.6f * scaleMultiplierY, 1f);
+
+                // Animación de brillo
                 if (dashFillImage != null)
-                    dashFillImage.color = Color.green;
+                {
+                    dashFillImage.color = Color.Lerp(glowColorMin, glowColorMax, pulse);
+                }
             }
             else
             {
                 float progress = (dashCooldownDuration - dashCooldownTimer) / dashCooldownDuration;
                 dashCooldownSlider.value = progress;
+
+                dashCooldownSlider.transform.localScale = new Vector3(4f, 0.6f, 1f);
+
                 if (dashFillImage != null)
                     dashFillImage.color = Color.yellow;
             }
@@ -302,9 +323,10 @@ public class PlayerController : MonoBehaviour
             dashCooldownSlider.gameObject.SetActive(hasLegs);
             if (hasLegs)
             {
+                dashCooldownSlider.transform.localScale = new Vector3(4f, 0.6f, 1f);
                 dashCooldownSlider.value = 1f;
                 if (dashFillImage != null)
-                    dashFillImage.color = Color.green;
+                    dashFillImage.color = glowColorMin;
             }
         }
     }
