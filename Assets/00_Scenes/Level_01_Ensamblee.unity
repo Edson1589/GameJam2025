@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.017243778, g: 0.002721645, b: 0.0756892, a: 1}
+  m_IndirectSpecularColor: {r: 0.017236529, g: 0.00271701, b: 0.07566567, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -17605,6 +17605,10 @@ PrefabInstance:
       propertyPath: bossHealth
       value: 
       objectReference: {fileID: 1615839296}
+    - target: {fileID: 4597622804316593551, guid: 7f5f900bff6a0fe47b4bab603a7e0adb, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5552210022067897305, guid: 7f5f900bff6a0fe47b4bab603a7e0adb, type: 3}
       propertyPath: m_Name
       value: Turret

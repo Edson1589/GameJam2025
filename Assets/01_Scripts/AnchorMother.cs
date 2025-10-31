@@ -21,6 +21,17 @@ public class AnchorMother : MonoBehaviour
     [Header("Victory")]
     [SerializeField] private string nextSceneName = "MainMenu";
 
+    [Header("Shooting")]
+    [SerializeField] private Transform[] firePoints; 
+    private int currentFireIndex = 0;
+    [SerializeField] private GameObject projectilePrefab;
+    [SerializeField] private float shootInterval = 2f;
+    [SerializeField] private float projectileSpeed = 10f;
+
+    private float shootTimer = 0f;
+
+
+
     private int panelsActivated = 0;
     private bool isBossDefeated = false;
     private Renderer coreRenderer;
@@ -59,6 +70,18 @@ public class AnchorMother : MonoBehaviour
                 playerTransform = player.transform;
             }
         }
+        // Disparar proyectil si el campo está activo
+        if (fieldActive && projectilePrefab != null && firePoints.Length >= 2)
+        {
+            shootTimer += Time.deltaTime;
+            if (shootTimer >= shootInterval)
+            {
+                ShootProjectile();
+                shootTimer = 0f;
+            }
+        }
+
+
     }
 
     void FixedUpdate()
@@ -199,4 +222,28 @@ public class AnchorMother : MonoBehaviour
             }
         }
     }
+    private void ShootProjectile()
+    {
+        if (projectilePrefab == null || firePoints.Length < 2 || playerTransform == null) return;
+
+        Transform firePoint = firePoints[currentFireIndex];
+        currentFireIndex = (currentFireIndex + 1) % firePoints.Length; // Alternar entre 0 y 1
+
+        GameObject projectile = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
+
+        Rigidbody rb = projectile.GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            Vector3 direction = (playerTransform.position - firePoint.position).normalized;
+            rb.velocity = direction * projectileSpeed;
+        }
+        else
+        {
+            Debug.LogWarning("El proyectil no tiene Rigidbody asignado.");
+        }
+
+        Debug.Log($"¡Disparo desde punto {currentFireIndex}!");
+    }
+
+
 }

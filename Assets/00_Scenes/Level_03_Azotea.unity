@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.12704206, g: 0.13238367, b: 0.10719695, a: 1}
+  m_IndirectSpecularColor: {r: 0.12703887, g: 0.13241151, b: 0.10719233, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -957,6 +957,7 @@ MonoBehaviour:
   legsGroup: {fileID: 1351868795}
   armsGroup: {fileID: 976606280}
   torsoGroup: {fileID: 252326974}
+  playerHealth: {fileID: 0}
 --- !u!33 &457521019
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -1894,6 +1895,12 @@ MonoBehaviour:
   pullForce: 60
   fieldActive: 1
   nextSceneName: MainMenu
+  firePoints:
+  - {fileID: 1920446315}
+  - {fileID: 2051900605}
+  projectilePrefab: {fileID: 1794199004686914434, guid: 049b6a033455e224183d6b5b8c7a859c, type: 3}
+  shootInterval: 2
+  projectileSpeed: 10
 --- !u!4 &773917867
 Transform:
   m_ObjectHideFlags: 0
@@ -5458,6 +5465,36 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1910161924}
   m_CullTransparentMesh: 1
+--- !u!1 &1920446314
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1920446315}
+  m_Layer: 0
+  m_Name: FirePointBulletsRight
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1920446315
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1920446314}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.8, y: 4.5, z: 10.000145}
+  m_LocalScale: {x: 0.8444862, y: 0.8444862, z: 0.8444862}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 29
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1929985825
 GameObject:
   m_ObjectHideFlags: 0
@@ -5989,6 +6026,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14d5ad39fd15e554e89a32e9e5469874, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &2051900604
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2051900605}
+  m_Layer: 0
+  m_Name: FirePointBullets (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2051900605
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2051900604}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -2.3, y: 4.5, z: 10.000145}
+  m_LocalScale: {x: 0.8444862, y: 0.8444862, z: 0.8444862}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 30
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2120699073
 GameObject:
   m_ObjectHideFlags: 0
