@@ -67,6 +67,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] public GameObject armsGroup;
     [SerializeField] public GameObject torsoGroup;
 
+    [SerializeField] private PlayerHealth playerHealth;
+
     void Awake()
     {
         if (Instance == null)
@@ -93,6 +95,11 @@ public class PlayerController : MonoBehaviour
         if (legsGroup) legsGroup.SetActive(hasLegs);
         if (armsGroup) armsGroup.SetActive(hasArms);
         if (torsoGroup) torsoGroup.SetActive(hasTorso);
+
+        if (playerHealth != null)
+        {
+            playerHealth.InitializeFromParts(hasLegs, hasArms, hasTorso);
+        }
 
         UpdateStatusText();
         UpdateInstructions();
@@ -268,8 +275,8 @@ public class PlayerController : MonoBehaviour
                 float pulse = (Mathf.Sin(Time.time * pulseSpeed) + 1f) / 2f;
 
                 // Animación de escala
-                float scaleMultiplierX = Mathf.Lerp(0.99f, 1.01f, pulse); 
-                float scaleMultiplierY = Mathf.Lerp(pulseMinScale, pulseMaxScale, pulse); 
+                float scaleMultiplierX = Mathf.Lerp(0.99f, 1.01f, pulse);
+                float scaleMultiplierY = Mathf.Lerp(pulseMinScale, pulseMaxScale, pulse);
                 dashCooldownSlider.transform.localScale = new Vector3(4f * scaleMultiplierX, 0.6f * scaleMultiplierY, 1f);
 
                 // Animación de brillo
@@ -355,6 +362,7 @@ public class PlayerController : MonoBehaviour
             GameManager.Instance.CollectLegs();
         }
 
+        if (playerHealth != null) playerHealth.OnPartConnected(BodyPart.Legs);
         UpdateStatusText();
         UpdateInstructions();
         Debug.Log("PIERNAS RECONECTADAS! Salto y Dash desbloqueados");
@@ -370,6 +378,7 @@ public class PlayerController : MonoBehaviour
             GameManager.Instance.CollectArms();
         }
 
+        if (playerHealth != null) playerHealth.OnPartConnected(BodyPart.Arms);
         UpdateStatusText();
         UpdateInstructions();
         Debug.Log("BRAZOS RECONECTADOS! Empujar cajas y usar palancas disponible");
@@ -385,6 +394,7 @@ public class PlayerController : MonoBehaviour
             GameManager.Instance.CollectTorso();
         }
 
+        if (playerHealth != null) playerHealth.OnPartConnected(BodyPart.Torso);
         UpdateStatusText();
         UpdateInstructions();
 

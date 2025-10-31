@@ -8,6 +8,9 @@ public class BossChargeHitbox : MonoBehaviour
     [SerializeField] private Vector3 localOffset;
     [SerializeField] private Vector3 localEuler;
 
+    [Header("Daño")]
+    [SerializeField] private int damage = 3;
+
     void LateUpdate()
     {
         if (!target) return;
@@ -18,13 +21,12 @@ public class BossChargeHitbox : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (!other.CompareTag("Player")) return;
+
+        var health = other.GetComponent<PlayerHealth>();
+        if (health != null)
         {
-            PlayerRespawnHandler resp = other.GetComponent<PlayerRespawnHandler>();
-            if (resp != null)
-            {
-                resp.RespawnNow();
-            }
+            health.TakeDamage(damage);
         }
     }
 }

@@ -8,6 +8,9 @@ public class BossShockwave : MonoBehaviour
     [SerializeField] private Transform player;
     [SerializeField] private float killYTolerance = 1.0f;
 
+    [Header("Daño")]
+    [SerializeField] private int damage = 2;
+
     [Header("Crecimiento de la onda")]
     [SerializeField] private float startRadius = 0.5f;
     [SerializeField] private float expandSpeed = 10f;
@@ -20,14 +23,17 @@ public class BossShockwave : MonoBehaviour
     [SerializeField] private float visualHeightScale = 0.05f;
 
     private float currentRadius;
+    private float prevRadius;
     private float timer;
+    private bool hasHitPlayer = false;
 
     public void Init(Transform playerRef)
     {
         player = playerRef;
-
         currentRadius = startRadius;
+        prevRadius = startRadius;
         timer = lifeTime;
+        hasHitPlayer = false;
 
         UpdateVisual();
     }
@@ -41,11 +47,11 @@ public class BossShockwave : MonoBehaviour
             return;
         }
 
+        prevRadius = currentRadius;
         currentRadius += expandSpeed * Time.deltaTime;
 
         UpdateVisual();
-
-        CheckPlayerKill();
+        CheckPlayerDamageOnce();
     }
 
     private void UpdateVisual()
@@ -65,28 +71,28 @@ public class BossShockwave : MonoBehaviour
         waveVisual.position = basePos;
     }
 
-    private void CheckPlayerKill()
+    private void CheckPlayerDamageOnce()
     {
-        if (player == null) return;
+        if (player == null || hasHitPlayer) return;
+
+        float heightDiff = Mathf.Abs(player.position.y - waveHeightY);
+        if (heightDiff > killYTolerance) return;
 
         Vector3 center = transform.position;
         Vector2 centerXZ = new Vector2(center.x, center.z);
         Vector2 playerXZ = new Vector2(player.position.x, player.position.z);
-
         float dist = Vector2.Distance(playerXZ, centerXZ);
 
-        bool insideBlast = dist <= currentRadius;
-        if (!insideBlast)
-            return;
+        bool ringCross = (prevRadius <= dist && dist <= currentRadius);
 
-        float heightDiff = Mathf.Abs(player.position.y - waveHeightY);
-        if (heightDiff > killYTolerance)
-            return;
-
-        PlayerRespawnHandler resp = player.GetComponent<PlayerRespawnHandler>();
-        if (resp != null)
+        if (ringCross)
         {
-            resp.RespawnNow();
+            var health = player.GetComponent<PlayerHealth>();
+            if (health != null)
+            {
+                health.TakeDamage(damage);
+                hasHitPlayer = true;
+            }
         }
     }
 }

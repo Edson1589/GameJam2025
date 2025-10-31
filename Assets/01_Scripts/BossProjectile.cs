@@ -5,6 +5,7 @@ using UnityEngine;
 public class BossProjectile : MonoBehaviour
 {
     [SerializeField] private float lifeTime = 4f;
+    [SerializeField] private int damage = 25;
     private Vector3 velocity;
 
     public void Init(Vector3 dir, float speed)
@@ -27,13 +28,14 @@ public class BossProjectile : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            PlayerRespawnHandler resp = other.GetComponent<PlayerRespawnHandler>();
-            if (resp != null)
+            var health = other.GetComponent<PlayerHealth>();
+            if (health != null)
             {
-                resp.RespawnNow();
+                health.TakeDamage(damage);
             }
 
             Destroy(gameObject);
+            return;
         }
 
         if (other.gameObject.layer == LayerMask.NameToLayer("Environment"))
