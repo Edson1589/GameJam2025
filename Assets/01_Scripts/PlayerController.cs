@@ -33,6 +33,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private TextMeshProUGUI statusText;
     [SerializeField] private TextMeshProUGUI instructionsText;
     [SerializeField] private TextMeshProUGUI dashCooldownText;
+    [SerializeField] private UnityEngine.UI.Slider dashCooldownSlider;
+    [SerializeField] private UnityEngine.UI.Image dashFillImage;
 
     [Header("Skills & Cooldown")]
     [SerializeField] private int maxJumps = 2;
@@ -151,11 +153,6 @@ public class PlayerController : MonoBehaviour
 
     private void HandleInput()
     {
-        // ============================================
-        // CAMBIO: Ahora usa InputManager en lugar de Input directo
-        // ============================================
-
-        // SALTO - Usa la tecla configurada en opciones
         if (InputManager.Instance != null && InputManager.Instance.GetKeyDown("Jump") && hasLegs && availableJumps > 0)
         {
             rb.velocity = new Vector3(rb.velocity.x, jumpForce, rb.velocity.z);
@@ -163,7 +160,6 @@ public class PlayerController : MonoBehaviour
             Debug.Log($"Jump! {availableJumps} jumps remaining.");
         }
 
-        // DASH - Usa la tecla configurada en opciones
         if (InputManager.Instance != null && InputManager.Instance.GetKeyDown("Dash") && hasLegs && !isDashing && isDashAvailable)
         {
             isDashing = true;
@@ -173,7 +169,6 @@ public class PlayerController : MonoBehaviour
             Debug.Log("Dash! Cooldown started.");
         }
 
-        // LINTERNA - Usa la tecla configurada en opciones
         if (InputManager.Instance != null && hasTorso && InputManager.Instance.GetKeyDown("Flashlight"))
         {
             ToggleFlashlight();
@@ -255,21 +250,39 @@ public class PlayerController : MonoBehaviour
 
     private void UpdateDashCooldownUI()
     {
-        if (dashCooldownText == null || !hasLegs) return;
+        if (!hasLegs) return;
 
-        if (isDashAvailable)
+        if (dashCooldownSlider != null)
         {
-            dashCooldownText.text = "DASH: READY";
-            dashCooldownText.color = Color.green;
+            if (isDashAvailable)
+            {
+                dashCooldownSlider.value = 1f;
+                if (dashFillImage != null)
+                    dashFillImage.color = Color.green;
+            }
+            else
+            {
+                float progress = (dashCooldownDuration - dashCooldownTimer) / dashCooldownDuration;
+                dashCooldownSlider.value = progress;
+                if (dashFillImage != null)
+                    dashFillImage.color = Color.yellow;
+            }
         }
-        else
+
+        if (dashCooldownText != null)
         {
-            float timeElapsed = dashCooldownDuration - dashCooldownTimer;
-
-            if (timeElapsed < 0) timeElapsed = 0;
-
-            dashCooldownText.text = $"DASH: {timeElapsed:0.0}s";
-            dashCooldownText.color = Color.yellow;
+            if (isDashAvailable)
+            {
+                dashCooldownText.text = "DASH: READY";
+                dashCooldownText.color = Color.green;
+            }
+            else
+            {
+                float timeElapsed = dashCooldownDuration - dashCooldownTimer;
+                if (timeElapsed < 0) timeElapsed = 0;
+                dashCooldownText.text = $"DASH: {timeElapsed:0.0}s";
+                dashCooldownText.color = Color.yellow;
+            }
         }
     }
 
@@ -278,10 +291,20 @@ public class PlayerController : MonoBehaviour
         if (dashCooldownText != null)
         {
             dashCooldownText.gameObject.SetActive(hasLegs);
-
             if (hasLegs)
             {
                 UpdateDashCooldownUI();
+            }
+        }
+
+        if (dashCooldownSlider != null)
+        {
+            dashCooldownSlider.gameObject.SetActive(hasLegs);
+            if (hasLegs)
+            {
+                dashCooldownSlider.value = 1f;
+                if (dashFillImage != null)
+                    dashFillImage.color = Color.green;
             }
         }
     }
@@ -295,6 +318,14 @@ public class PlayerController : MonoBehaviour
         {
             dashCooldownText.gameObject.SetActive(true);
             UpdateDashCooldownUI();
+        }
+
+        if (dashCooldownSlider != null)
+        {
+            dashCooldownSlider.gameObject.SetActive(true);
+            dashCooldownSlider.value = 1f;
+            if (dashFillImage != null)
+                dashFillImage.color = Color.green;
         }
 
         if (GameManager.Instance != null)

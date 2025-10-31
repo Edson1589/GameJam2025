@@ -41,7 +41,7 @@ public class LegsPickup : MonoBehaviour
             // Conectar las piernas
             player.ConnectLegs();
 
-            // ← NUEVO: Guardar en GameManager
+            // Guardar en GameManager
             if (GameManager.Instance != null)
             {
                 GameManager.Instance.CollectLegs();
