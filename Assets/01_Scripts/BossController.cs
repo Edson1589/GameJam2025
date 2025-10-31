@@ -12,6 +12,9 @@ public class BossController : MonoBehaviour
     [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private GameObject shockwavePrefab;
     [SerializeField] private GameObject chargeHitboxObj;
+    [SerializeField] private int maxConsecutiveSameAttack = 2;
+    private int lastAttack = -1;
+    private int sameAttackCount = 0;
 
     [Header("Arena / movimiento")]
     [SerializeField] private float arenaRadius = 12f;
@@ -29,7 +32,6 @@ public class BossController : MonoBehaviour
     [SerializeField] private float delayBetweenShockwaveJumps = 0.4f;
 
     [SerializeField] private float shockwaveYOffset = 0.1f;
-
 
     [Header("Ataque: Ráfaga de disparos")]
     [SerializeField] private int burstsMin = 2;
@@ -51,10 +53,41 @@ public class BossController : MonoBehaviour
     [SerializeField] private float minAttackDelay = 0.5f;
     [SerializeField] private float maxAttackDelay = 1.2f;
 
+    [Header("Activación")]
+    [SerializeField] private bool startDormant = true;
+    private bool isActive = false;
+    private Coroutine loopCo;
     private bool attacking = false;
+
+    [SerializeField] private Animator anim;
+
+    [Header("Audio")]
+    [SerializeField] private AudioSource sfxSource;
+    [SerializeField] private AudioClip sfxJump;
+    [SerializeField] private AudioClip sfxShockwave;
+    [SerializeField] private AudioClip sfxPunch;
+    [SerializeField] private AudioClip sfxShoot;
+    [SerializeField, Range(0f, 1f)] private float sfxVolume = 1f;
+    [SerializeField] private Vector2 pitchRange = new Vector2(0.98f, 1.02f);
+    private static readonly int HashSpeed = Animator.StringToHash("Speed");
+    private static readonly int HashDoJump = Animator.StringToHash("DoJump");
+    private static readonly int HashDoShoot = Animator.StringToHash("DoShoot");
+    private static readonly int HashDoCharge = Animator.StringToHash("DoCharge");
+    private static readonly int HashActive = Animator.StringToHash("IsActive");
+
 
     private void Start()
     {
+        if (!sfxSource)
+        {
+            sfxSource = gameObject.AddComponent<AudioSource>();
+            sfxSource.playOnAwake = false;
+            sfxSource.spatialBlend = 1f;
+            sfxSource.dopplerLevel = 0.05f;
+            sfxSource.rolloffMode = AudioRolloffMode.Linear;
+            sfxSource.maxDistance = 35f;
+        }
+
         if (!rb) rb = GetComponent<Rigidbody>();
 
         if (rb != null)
@@ -64,12 +97,17 @@ public class BossController : MonoBehaviour
         }
 
         if (chargeHitboxObj != null)
-        {
-            chargeHitboxObj.SetActive(false);
-        }
+            chargeHitboxObj.SetActive(true);
 
-        StartCoroutine(BossLoop());
+        if (!startDormant) Activate();
     }
+    private void PlayOne(AudioClip clip, float volMul = 1f)
+    {
+        if (!clip || !sfxSource) return;
+        sfxSource.pitch = Random.Range(pitchRange.x, pitchRange.y);
+        sfxSource.PlayOneShot(clip, sfxVolume * volMul);
+    }
+
 
     private void Update()
     {
@@ -95,17 +133,37 @@ public class BossController : MonoBehaviour
             flat = flat.normalized * arenaRadius;
             transform.position = new Vector3(flat.x, bossHeight, flat.z);
         }
+
+        if (anim) anim.SetFloat(HashSpeed, 0f, 0.1f, Time.deltaTime);
+    }
+
+    public void Activate()
+    {
+        if (isActive) return;
+        isActive = true;
+        attacking = false;
+        if (anim) anim.SetBool(HashActive, true);
+        if (loopCo == null) loopCo = StartCoroutine(BossLoop());
+    }
+
+    public void Deactivate()
+    {
+        if (!isActive) return;
+        isActive = false;
+        attacking = false;
+        if (anim) anim.SetBool(HashActive, false);
+        if (loopCo != null) { StopCoroutine(loopCo); loopCo = null; }
     }
 
     private IEnumerator BossLoop()
     {
-        while (true)
+        while (isActive)
         {
             if (!attacking)
             {
                 attacking = true;
 
-                int choice = Random.Range(0, 3);
+                int choice = PickAttack();
 
                 if (choice == 0)
                 {
@@ -127,8 +185,28 @@ public class BossController : MonoBehaviour
         }
     }
 
+    private int PickAttack()
+    {
+        int choice = Random.Range(0, 3);
+
+
+        if (choice == lastAttack && sameAttackCount >= maxConsecutiveSameAttack)
+        {
+            int a = (lastAttack + 1) % 3;
+            int b = (lastAttack + 2) % 3;
+            choice = (Random.value < 0.5f) ? a : b;
+        }
+
+        if (choice == lastAttack) sameAttackCount++;
+        else { lastAttack = choice; sameAttackCount = 1; }
+
+        return choice;
+    }
+
     private IEnumerator DoSingleShockwaveJump()
     {
+        if (anim) anim.SetTrigger(HashDoJump);
+        PlayOne(sfxJump);
         Vector3 startPos = transform.position;
         Vector3 apexPos = startPos + Vector3.up * jumpUpHeight;
         Vector3 landPos = startPos;
@@ -150,6 +228,7 @@ public class BossController : MonoBehaviour
         }
 
         Vector3 spawnPos = transform.position + Vector3.up * shockwaveYOffset;
+        if (sfxShockwave) AudioSource.PlayClipAtPoint(sfxShockwave, spawnPos, sfxVolume);
         SpawnShockwaveAt(spawnPos);
 
         yield return new WaitForSeconds(0.1f);
@@ -188,6 +267,8 @@ public class BossController : MonoBehaviour
 
     private IEnumerator DoShootingAttack()
     {
+        if (anim) anim.SetTrigger(HashDoShoot);
+        PlayOne(sfxShoot);
         int bursts = Random.Range(burstsMin, burstsMax + 1);
 
         for (int b = 0; b < bursts; b++)
@@ -230,6 +311,8 @@ public class BossController : MonoBehaviour
     private IEnumerator DoChargeAttack()
     {
         if (player == null) yield break;
+        if (anim) anim.SetTrigger(HashDoCharge);
+        PlayOne(sfxPunch);
 
         Vector3 startPos = transform.position;
         Vector3 targetDirFlat = (player.position - startPos);
@@ -262,9 +345,12 @@ public class BossController : MonoBehaviour
             yield return null;
         }
 
-        if (chargeHitboxObj != null)
-            chargeHitboxObj.SetActive(false);
-
         yield return new WaitForSeconds(chargeRecovery);
     }
+
+    public void ShowIdleVisual(bool on)
+    {
+        if (anim) anim.SetBool(HashActive, on);
+    }
+
 }
