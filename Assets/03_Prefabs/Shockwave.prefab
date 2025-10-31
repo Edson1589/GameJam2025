@@ -51,7 +51,7 @@ MonoBehaviour:
   maxRadius: 15
   lifeTime: 2
   waveVisual: {fileID: 4795129879947383948}
-  waveHeightY: 27
+  waveHeightY: 26.5
   visualHeightScale: 0.05
 --- !u!1 &7291542746416496235
 GameObject:
