@@ -10,6 +10,7 @@ public class BossRoomTrigger : MonoBehaviour
 
     [Header("Boss")]
     [SerializeField] private BossController boss;
+    [SerializeField] private BossHealthUI bossHpUI;
 
     [Header("Mensaje inicial")]
     [TextArea(2, 4)]
@@ -43,6 +44,8 @@ public class BossRoomTrigger : MonoBehaviour
         if (!other.CompareTag(playerTag)) return;
         triggered = true;
         StartBossMusic();
+        bossHpUI.gameObject.SetActive(true);
+        bossHpUI.Show(true);
 
         if (BossTitleUI.Instance != null)
             BossTitleUI.Instance.ShowTitle(bossTitle, bossTitleHold);
