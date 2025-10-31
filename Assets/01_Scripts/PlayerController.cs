@@ -354,7 +354,12 @@ public class PlayerController : MonoBehaviour
             dashCooldownSlider.gameObject.SetActive(true);
             dashCooldownSlider.value = 1f;
             if (dashFillImage != null)
-                dashFillImage.color = Color.green;
+            {
+                Color colorHex;
+                if (ColorUtility.TryParseHtmlString("#28E2ED", out colorHex))
+                    dashFillImage.color = colorHex;
+            }
+
         }
 
         if (GameManager.Instance != null)
