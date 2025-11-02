@@ -1,9 +1,14 @@
 ﻿using UnityEngine;
 using TMPro;
+using System.Collections;
 
 public class PlayerController : MonoBehaviour
 {
     public static PlayerController Instance { get; private set; }
+
+    [Header("Animation")]
+    private Animator animator;
+    [SerializeField] private RuntimeAnimatorController animatorControllerAsset;
 
     [Header("Movement")]
     [SerializeField] private float moveSpeed = 5f;
@@ -41,8 +46,6 @@ public class PlayerController : MonoBehaviour
     [Header("Camera")]
     [SerializeField] private Transform camTransform;
 
-    [SerializeField] private Animator headAnimator;
-
     [Header("UI Effects")]
     [SerializeField] private float pulseSpeed = 2f;
     [SerializeField] private float pulseMinScale = 0.98f;
@@ -53,14 +56,32 @@ public class PlayerController : MonoBehaviour
     [SerializeField] public GameObject legsGroup;
     [SerializeField] public GameObject armsGroup;
     [SerializeField] public GameObject torsoGroup;
+    [SerializeField] private Transform headGroupTransform;
+    [SerializeField] private Transform torsoGroupTransform;
 
     [SerializeField] private PlayerHealth playerHealth;
-
-    [Header("Components")]
     [SerializeField] private PlayerDash playerDash;
 
+    [Header("Height Adjustment System")]
+    [SerializeField] private float initialYOffset = 0f;
+
+    [Header("Components")]
     [SerializeField] private LaserRay laser;
 
+    [SerializeField] private float headOnlyColliderHeight = 0.3f;
+    [SerializeField] private float withTorsoColliderHeight = 0.6f;
+    [SerializeField] private float withLegsColliderHeight = 1f;
+
+    [SerializeField] private float headStackingOffsetTorso = -0.15f;
+    [SerializeField] private float headStackingOffsetLegs = -0.13f;
+    [SerializeField] private float torsoStackingOffsetLegs = 0.42f;
+    [SerializeField] private float legsStackingOffset = 0.468f;
+    [SerializeField] private float armsStackingOffset = 0.46f;
+
+    [SerializeField] private float heightTransitionDuration = 0.5f;
+
+    private CapsuleCollider capsuleCollider;
+    private bool isTransitioningHeight = false;
 
     void Awake()
     {
@@ -77,50 +98,55 @@ public class PlayerController : MonoBehaviour
         if (camTransform == null) camTransform = Camera.main?.transform;
 
         rb = GetComponent<Rigidbody>();
-
+        capsuleCollider = GetComponent<CapsuleCollider>();
         availableJumps = maxJumps;
 
-        if (headGO) headGO.SetActive(true);
+        hasLegs = false;
+        hasArms = false;
+        hasTorso = false;
+
         if (legsGroup) legsGroup.SetActive(false);
         if (armsGroup) armsGroup.SetActive(false);
         if (torsoGroup) torsoGroup.SetActive(false);
+        if (flashlight) flashlight.SetActive(false);
 
-        LoadPartsState();
-
-        if (playerDash != null)
+        if (GameManager.Instance != null)
         {
-            playerDash.InitializeUI(hasLegs);
+            GameManager.Instance.ApplyProgressToPlayer(this);
+        }
+        else
+        {
+            BodyConfig initialConfig = GetCurrentBodyConfig();
+            UpdateColliderAndPivot(initialConfig);
         }
 
-        if (legsGroup) legsGroup.SetActive(hasLegs);
-        if (armsGroup) armsGroup.SetActive(hasArms);
-        if (torsoGroup) torsoGroup.SetActive(hasTorso);
-
-        if (playerHealth != null)
+        if (rb != null)
         {
-            playerHealth.InitializeFromParts(hasLegs, hasArms, hasTorso);
+            rb.velocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+        }
+
+        BodyConfig initialConfigOnStart = GetCurrentBodyConfig();
+        UpdateColliderAndPivot(initialConfigOnStart);
+
+        if (rb != null)
+        {
+            float targetY = GetHeightForConfig(initialConfigOnStart) + initialYOffset;
+            rb.position = new Vector3(rb.position.x, targetY, rb.position.z);
         }
 
         UpdateStatusText();
         UpdateInstructions();
-        Debug.Log("R.U.B.O. (Head) initiated - Find your parts!");
     }
 
     void Update()
     {
         CheckGrounded();
         HandleInput();
-
-        if (headAnimator != null)
-        {
-            float planarSpeed = new Vector3(rb.velocity.x, 0f, rb.velocity.z).magnitude;
-            headAnimator.SetFloat("Speed", planarSpeed);
-        }
     }
 
-    void FixedUpdate()
+    private void FixedUpdate()
     {
-        // El movimiento se ejecuta solo si PlayerDash NO está en estado Dashing
         if (playerDash == null || !playerDash.IsDashing)
         {
             Move();
@@ -130,17 +156,38 @@ public class PlayerController : MonoBehaviour
         {
             PushObjects();
         }
-    }
 
-    private void LoadPartsState()
-    {
-        if (GameManager.Instance != null)
+        if (animator != null)
         {
-            hasLegs = GameManager.Instance.hasLegs;
-            hasArms = GameManager.Instance.hasArms;
-            hasTorso = GameManager.Instance.hasTorso;
+            Vector3 horizontalVelocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
+            float currentSpeed = horizontalVelocity.magnitude;
+            animator.SetFloat("Speed", currentSpeed);
         }
     }
+
+    public void ApplyProgressFromManager(bool _hasLegs, bool _hasArms, bool _hasTorso)
+    {
+        this.hasLegs = _hasLegs;
+        this.hasArms = _hasArms;
+        this.hasTorso = _hasTorso;
+
+        if (legsGroup) legsGroup.SetActive(this.hasLegs);
+        if (armsGroup) armsGroup.SetActive(this.hasArms);
+        if (torsoGroup) torsoGroup.SetActive(this.hasTorso);
+
+        if (playerDash != null)
+        {
+            playerDash.InitializeUI(this.hasLegs);
+        }
+
+        EnforceAnimatorConnection();
+
+        BodyConfig currentConfig = GetCurrentBodyConfig();
+        AdjustHeightImmediate(currentConfig);
+        UpdateStatusText();
+        UpdateInstructions();
+    }
+
 
     private void HandleInput()
     {
@@ -148,7 +195,6 @@ public class PlayerController : MonoBehaviour
         {
             rb.velocity = new Vector3(rb.velocity.x, jumpForce, rb.velocity.z);
             availableJumps--;
-            Debug.Log($"Jump! {availableJumps} jumps remaining.");
         }
 
         if (InputManager.Instance != null && hasTorso && InputManager.Instance.GetKeyDown("Flashlight"))
@@ -193,7 +239,6 @@ public class PlayerController : MonoBehaviour
         if (!wasGrounded && isGrounded)
         {
             availableJumps = maxJumps;
-            Debug.Log("Jumps reset by touching the ground.");
         }
     }
 
@@ -224,9 +269,175 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void InitializeAbilitiesUI()
+    private BodyConfig GetCurrentBodyConfig()
     {
+        if (hasLegs) return BodyConfig.WithLegs;
+        if (hasTorso) return BodyConfig.HeadAndTorso;
+        return BodyConfig.HeadOnly;
+    }
 
+
+    private float GetHeightForConfig(BodyConfig config)
+    {
+        float colliderHeight = 0f;
+        switch (config)
+        {
+            case BodyConfig.HeadOnly: colliderHeight = headOnlyColliderHeight; break;
+            case BodyConfig.HeadAndTorso: colliderHeight = withTorsoColliderHeight; break;
+            case BodyConfig.WithLegs: colliderHeight = withLegsColliderHeight; break;
+        }
+        return colliderHeight * 0.5f;
+    }
+
+    private void AdjustHeightImmediate(BodyConfig config)
+    {
+        float baseColliderHeight = GetHeightForConfig(config);
+        float targetHeight = baseColliderHeight + initialYOffset;
+
+        Vector3 targetPos = new Vector3(transform.position.x, targetHeight, transform.position.z);
+
+        if (rb != null)
+        {
+            rb.position = targetPos;
+        }
+        else
+        {
+            transform.position = targetPos;
+        }
+
+        UpdateColliderAndPivot(config);
+    }
+
+    private IEnumerator TransitionHeight(BodyConfig newConfig)
+    {
+        if (isTransitioningHeight) yield break;
+        isTransitioningHeight = true;
+
+        if (rb != null) rb.isKinematic = true;
+
+        float startHeight = transform.position.y;
+        float baseEndHeight = GetHeightForConfig(newConfig);
+        float endHeight = baseEndHeight + initialYOffset;
+
+        float elapsed = 0f;
+
+        UpdateColliderAndPivot(newConfig);
+
+        while (elapsed < heightTransitionDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.SmoothStep(0, 1, elapsed / heightTransitionDuration);
+
+            float newY = Mathf.Lerp(startHeight, endHeight, t);
+            Vector3 targetPos = new Vector3(transform.position.x, newY, transform.position.z);
+
+            transform.position = targetPos;
+
+            yield return null;
+        }
+
+        Vector3 finalPos = new Vector3(transform.position.x, endHeight, transform.position.z);
+        transform.position = finalPos;
+
+        if (rb != null)
+        {
+            rb.isKinematic = false;
+            rb.velocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+        }
+
+        isTransitioningHeight = false;
+    }
+
+    private void UpdateColliderAndPivot(BodyConfig config)
+    {
+        if (capsuleCollider == null) return;
+
+        float targetHeight = 0f;
+        switch (config)
+        {
+            case BodyConfig.HeadOnly: targetHeight = headOnlyColliderHeight; break;
+            case BodyConfig.HeadAndTorso: targetHeight = withTorsoColliderHeight; break;
+            case BodyConfig.WithLegs: targetHeight = withLegsColliderHeight; break;
+        }
+
+        capsuleCollider.height = targetHeight;
+        capsuleCollider.center = new Vector3(0, targetHeight * 0.5f, 0);
+
+        if (headGroupTransform != null)
+        {
+            float localHeadY = 0f;
+            float headBasePosition = targetHeight;
+            float halfHead = headOnlyColliderHeight * 0.5f;
+            float currentOffset = 0f;
+
+            switch (config)
+            {
+                case BodyConfig.HeadOnly:
+                    localHeadY = 0f;
+                    currentOffset = 0f;
+                    break;
+                case BodyConfig.HeadAndTorso:
+                    currentOffset = headStackingOffsetTorso;
+                    localHeadY = headBasePosition - halfHead + currentOffset;
+                    break;
+                case BodyConfig.WithLegs:
+                    currentOffset = headStackingOffsetLegs;
+                    localHeadY = headBasePosition - halfHead + currentOffset;
+                    break;
+            }
+
+            headGroupTransform.localPosition = new Vector3(0, localHeadY, 0);
+        }
+
+        if (torsoGroupTransform != null)
+        {
+            float localTorsoY = 0f;
+
+            switch (config)
+            {
+                case BodyConfig.HeadOnly:
+                case BodyConfig.HeadAndTorso:
+                    localTorsoY = 0f;
+                    break;
+                case BodyConfig.WithLegs:
+                    localTorsoY = torsoStackingOffsetLegs;
+                    break;
+            }
+
+            torsoGroupTransform.localPosition = new Vector3(0, localTorsoY, 0);
+        }
+
+        if (legsGroup != null)
+        {
+            float localLegsY = 0f;
+
+            if (config == BodyConfig.WithLegs)
+            {
+                localLegsY = legsStackingOffset;
+            }
+
+            legsGroup.transform.localPosition = new Vector3(0, localLegsY, 0);
+        }
+
+        if (armsGroup != null)
+        {
+            float localArmsY = 0f;
+
+            if (hasArms)
+            {
+                localArmsY = armsStackingOffset;
+            }
+
+            armsGroup.transform.localPosition = new Vector3(0, localArmsY, 0);
+        }
+
+        if (groundCheck != null)
+        {
+            groundCheck.localPosition = new Vector3(0, -(targetHeight * 0.5f), 0);
+        }
+
+        EnforceAnimatorConnection();
     }
 
     public void ConnectLegs()
@@ -234,7 +445,18 @@ public class PlayerController : MonoBehaviour
         hasLegs = true;
         if (legsGroup) legsGroup.SetActive(true);
 
-        // Notificar al componente PlayerDash para que actualice su UI
+        BodyConfig newConfig = GetCurrentBodyConfig();
+
+        if (hasTorso)
+        {
+            AdjustHeightImmediate(newConfig);
+            StartCoroutine(TransitionHeight(newConfig));
+        }
+        else
+        {
+            StartCoroutine(TransitionHeight(newConfig));
+        }
+
         if (playerDash != null)
         {
             playerDash.OnLegsConnected();
@@ -245,10 +467,8 @@ public class PlayerController : MonoBehaviour
             GameManager.Instance.CollectLegs();
         }
 
-        if (playerHealth != null) playerHealth.OnPartConnected(BodyPart.Legs);
         UpdateStatusText();
         UpdateInstructions();
-        Debug.Log("PIERNAS RECONECTADAS! Salto y Dash desbloqueados");
     }
 
     public void ConnectArms()
@@ -256,15 +476,15 @@ public class PlayerController : MonoBehaviour
         hasArms = true;
         if (armsGroup) armsGroup.SetActive(true);
 
+        UpdateColliderAndPivot(GetCurrentBodyConfig());
+
         if (GameManager.Instance != null)
         {
             GameManager.Instance.CollectArms();
         }
 
-        if (playerHealth != null) playerHealth.OnPartConnected(BodyPart.Arms);
         UpdateStatusText();
         UpdateInstructions();
-        Debug.Log("BRAZOS RECONECTADOS! Empujar cajas y usar palancas disponible");
     }
 
     public void ConnectTorso()
@@ -272,12 +492,22 @@ public class PlayerController : MonoBehaviour
         hasTorso = true;
         if (torsoGroup) torsoGroup.SetActive(true);
 
+        BodyConfig newConfig = GetCurrentBodyConfig();
+
+        if (!hasLegs)
+        {
+            StartCoroutine(TransitionHeight(newConfig));
+        }
+        else
+        {
+            UpdateColliderAndPivot(newConfig);
+        }
+
         if (GameManager.Instance != null)
         {
             GameManager.Instance.CollectTorso();
         }
 
-        if (playerHealth != null) playerHealth.OnPartConnected(BodyPart.Torso);
         UpdateStatusText();
         UpdateInstructions();
 
@@ -287,8 +517,6 @@ public class PlayerController : MonoBehaviour
         }
 
         if (laser != null) laser.SetUnlocked(true);
-
-        Debug.Log("TORSO RECONECTADO! Ensamblaje completo - Linterna disponible");
     }
 
     public bool IsFullyAssembled()
@@ -306,69 +534,75 @@ public class PlayerController : MonoBehaviour
         if (flashlight != null)
         {
             flashlight.SetActive(!flashlight.activeSelf);
-            Debug.Log($"Linterna: {(flashlight.activeSelf ? "ON" : "OFF")}");
         }
     }
 
-    private void UpdateInstructions()
+    private void EnforceAnimatorConnection()
     {
-        if (instructionsText == null) return;
+        if (animator == null)
+        {
+            animator = GetComponentInChildren<Animator>();
+        }
 
-        if (!hasLegs)
+        if (animator != null && animator.runtimeAnimatorController == null && animatorControllerAsset != null)
         {
-            instructionsText.text = "LEVEL 1: Assembly Zone - Find your LEGS";
-            instructionsText.color = new Color(1f, 0.3f, 0.3f);
-        }
-        else if (!hasArms)
-        {
-            instructionsText.text = "LEVEL 2: Tapes and Packaging - Find your ARMS";
-            instructionsText.color = new Color(1f, 0.8f, 0.2f);
-        }
-        else if (!hasTorso)
-        {
-            instructionsText.text = "LEVEL 3: Rooftop-Heliport - Find your TORSO";
-            instructionsText.color = new Color(0.3f, 0.8f, 1f);
-        }
-        else
-        {
-            instructionsText.text = "COMPLETE ASSEMBLY! - Head to the EXIT";
-            instructionsText.color = new Color(0.3f, 1f, 0.3f);
+            animator.runtimeAnimatorController = animatorControllerAsset;
+            animator.Update(0f);
         }
     }
 
-    private void UpdateStatusText()
+    public void UpdateStatusText()
     {
         if (statusText != null)
         {
-            string status = "";
+            string status = $"Status:\n";
+            status += $"Head: <color=green>Connected</color>\n";
+            status += $"Torso: {(hasTorso ? "<color=green>Connected</color>" : "<color=red>Missing</color>")}\n";
+            status += $"Arms: {(hasArms ? "<color=green>Connected</color>" : "<color=red>Missing</color>")}\n";
+            status += $"Legs: {(hasLegs ? "<color=green>Connected</color>" : "<color=red>Missing</color>")}\n";
 
-            if (hasLegs && hasArms && hasTorso)
+            if (playerHealth != null)
             {
-                status = "FULLY OPERATIONAL";
-                statusText.color = Color.cyan;
-            }
-            else if (hasLegs && hasArms)
-            {
-                status = "LEGS + ARMS - Find the TORSO";
-                statusText.color = Color.yellow;
-            }
-            else if (hasLegs)
-            {
-                status = "LEGS - Jump & Dash Available";
-                statusText.color = Color.green;
-            }
-            else if (hasArms)
-            {
-                status = "ARMS - You can push boxes";
-                statusText.color = Color.yellow;
-            }
-            else
-            {
-                status = "NO PARTS - Limited movement";
-                statusText.color = Color.red;
+                int currentHP = playerHealth.GetCurrentHP();
+                int ownedMaxHP = playerHealth.GetOwnedMax();
+                status += $"Health: {currentHP} / {ownedMaxHP}";
             }
 
             statusText.text = status;
+        }
+    }
+
+    public void UpdateInstructions()
+    {
+        if (instructionsText != null)
+        {
+            string instructions = "Controls:\n";
+            instructions += "- WASD/Arrows: Move\n";
+
+            if (hasLegs)
+            {
+                instructions += $"- Space: Jump ({availableJumps} / {maxJumps})\n";
+                if (playerDash != null)
+                {
+                    instructions += $"- Left Shift: Dash\n";
+                }
+            }
+            else
+            {
+                instructions += "- Movement is slow without legs.\n";
+            }
+
+            if (hasTorso)
+            {
+                instructions += "- F: Toggle Flashlight\n";
+            }
+
+            if (hasArms)
+            {
+                instructions += "- Automatically pushes objects in front.\n";
+            }
+
+            instructionsText.text = instructions;
         }
     }
 
@@ -387,4 +621,11 @@ public class PlayerController : MonoBehaviour
             Gizmos.DrawRay(rayStart, transform.forward * pushRayDistance);
         }
     }
+}
+
+public enum BodyConfig
+{
+    HeadOnly,
+    HeadAndTorso,
+    WithLegs
 }

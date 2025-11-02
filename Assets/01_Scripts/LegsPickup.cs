@@ -7,14 +7,20 @@ public class LegsPickup : MonoBehaviour
     [SerializeField] private float floatAmplitude = 0.3f;
     [SerializeField] private float floatSpeed = 2f;
 
+    [Header("Pickup Effects")]
+    [SerializeField] private GameObject pickupParticles;
+    [SerializeField] private AudioClip pickupSound;
+
     private Vector3 startPosition;
+    private AudioSource audioSource;
 
     void Start()
     {
         startPosition = transform.position;
+        audioSource = GetComponent<AudioSource>();
 
-        // Asegurarse que el Capsule Collider sea trigger
-        CapsuleCollider col = GetComponent<CapsuleCollider>();
+        // Asegurar que el collider sea trigger
+        Collider col = GetComponent<Collider>();
         if (col != null)
         {
             col.isTrigger = true;
@@ -33,19 +39,32 @@ public class LegsPickup : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        // Verificar si es el jugador
         PlayerController player = other.GetComponent<PlayerController>();
-
-        if (player != null)
+        if (player != null && !player.hasLegs)
         {
-            // Conectar las piernas
+            // Verificar que tenga el torso primero 
+            if (!player.hasTorso)
+            {
+                Debug.Log("¡Necesitas el TORSO primero!");
+                return;
+            }
+
+            // Efectos visuales/audio
+            if (pickupParticles != null)
+            {
+                Instantiate(pickupParticles, transform.position, Quaternion.identity);
+            }
+
+            if (pickupSound != null && audioSource != null)
+            {
+                audioSource.PlayOneShot(pickupSound);
+            }
+
+            // Conectar piernas 
             player.ConnectLegs();
 
-            // Guardar en GameManager
-            if (GameManager.Instance != null)
-            {
-                GameManager.Instance.CollectLegs();
-            }
+            Debug.Log("¡PIERNAS CONECTADAS! Salto y Dash desbloqueados. Busca los BRAZOS");
+
             // Destruir el pickup
             Destroy(gameObject);
         }

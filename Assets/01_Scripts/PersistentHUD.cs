@@ -603,19 +603,7 @@ public class PersistentHUD : MonoBehaviour
 
         if (GameManager.Instance != null)
         {
-            if (currentScene.Contains("Level_01") || currentScene.Contains("Ensamble"))
-            {
-                GameManager.Instance.hasLegs = false;
-            }
-            else if (currentScene.Contains("Level_02") || currentScene.Contains("Tapes"))
-            {
-                GameManager.Instance.hasArms = false;
-            }
-            else if (currentScene.Contains("Level_03") || currentScene.Contains("Azotea"))
-            {
-                GameManager.Instance.hasTorso = false;
-            }
-
+            GameManager.Instance.ResetPartsForRestart(currentScene);
             GameManager.Instance.ResetMemoriesForLevel(currentScene);
         }
 
