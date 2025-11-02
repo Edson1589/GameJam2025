@@ -50,7 +50,7 @@ public class PlayerController : MonoBehaviour
     [Header("Body Parts (Groups or Objects)")]
     [SerializeField] public GameObject headGO;
     [SerializeField] public GameObject legsGroup;
-    [SerializeField] public GameObject armsGroup; 
+    [SerializeField] public GameObject armsGroup;
     [SerializeField] public GameObject torsoGroup;
     [SerializeField] private Transform headGroupTransform;
     [SerializeField] private Transform torsoGroupTransform;
@@ -91,20 +91,24 @@ public class PlayerController : MonoBehaviour
         capsuleCollider = GetComponent<CapsuleCollider>();
         availableJumps = maxJumps;
 
-        LoadPartsState();
+        hasLegs = false;
+        hasArms = false;
+        hasTorso = false;
 
-        if (legsGroup) legsGroup.SetActive(hasLegs);
-        if (armsGroup) armsGroup.SetActive(hasArms);
-        if (torsoGroup) torsoGroup.SetActive(hasTorso);
+        if (legsGroup) legsGroup.SetActive(false);
+        if (armsGroup) armsGroup.SetActive(false);
+        if (torsoGroup) torsoGroup.SetActive(false);
+        if (flashlight) flashlight.SetActive(false);
 
-        if (playerDash != null)
+        if (GameManager.Instance != null)
         {
-            playerDash.InitializeUI(hasLegs);
+            GameManager.Instance.ApplyProgressToPlayer(this);
         }
-
-        BodyConfig initialConfig = GetCurrentBodyConfig();
-
-        UpdateColliderAndPivot(initialConfig);
+        else
+        {
+            BodyConfig initialConfig = BodyConfig.HeadOnly;
+            UpdateColliderAndPivot(initialConfig);
+        }
 
         if (rb != null)
         {
@@ -112,8 +116,28 @@ public class PlayerController : MonoBehaviour
             rb.angularVelocity = Vector3.zero;
         }
 
+        StartCoroutine(ForceInitialPosition());
         UpdateStatusText();
         UpdateInstructions();
+    }
+
+    private IEnumerator ForceInitialPosition()
+    {
+        yield return new WaitForFixedUpdate();
+
+        if (rb != null)
+        {
+            rb.position = new Vector3(rb.position.x, 1.2f, rb.position.z);
+            transform.position = new Vector3(transform.position.x, 1.2f, transform.position.z);
+        }
+
+        yield return null;
+
+        if (rb != null)
+        {
+            rb.position = new Vector3(rb.position.x, 1.2f, rb.position.z);
+            transform.position = new Vector3(transform.position.x, 1.2f, transform.position.z);
+        }
     }
 
     void Update()
@@ -135,15 +159,31 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void LoadPartsState()
+    public void ApplyProgressFromManager(bool _hasLegs, bool _hasArms, bool _hasTorso)
     {
-        if (GameManager.Instance != null)
+        // 1. Sincronizar las variables de estado
+        this.hasLegs = _hasLegs;
+        this.hasArms = _hasArms;
+        this.hasTorso = _hasTorso;
+
+        // 2. Aplicar el estado visual
+        if (legsGroup) legsGroup.SetActive(this.hasLegs);
+        if (armsGroup) armsGroup.SetActive(this.hasArms);
+        if (torsoGroup) torsoGroup.SetActive(this.hasTorso);
+
+        // 3. Re-inicializar el Dash
+        if (playerDash != null)
         {
-            hasLegs = GameManager.Instance.hasLegs;
-            hasArms = GameManager.Instance.hasArms;
-            hasTorso = GameManager.Instance.hasTorso;
+            playerDash.InitializeUI(this.hasLegs);
         }
+        // 4. Aplicar la configuración de altura y colisionador
+        BodyConfig currentConfig = GetCurrentBodyConfig();
+        AdjustHeightImmediate(currentConfig);
+        // 5. Actualizar UI
+        UpdateStatusText();
+        UpdateInstructions();
     }
+
 
     private void HandleInput()
     {
@@ -378,7 +418,7 @@ public class PlayerController : MonoBehaviour
         {
             float localArmsY = 0f;
 
-            if (hasArms) 
+            if (hasArms)
             {
                 localArmsY = armsStackingOffset;
             }
@@ -487,7 +527,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void UpdateStatusText()
+    public void UpdateStatusText()
     {
         if (statusText != null)
         {
@@ -508,7 +548,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void UpdateInstructions()
+    public void UpdateInstructions()
     {
         if (instructionsText != null)
         {

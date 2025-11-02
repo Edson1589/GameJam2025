@@ -8,7 +8,6 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public class GameManager : MonoBehaviour
 {
-    // Singleton instance
     public static GameManager Instance { get; private set; }
 
     [Header("Player Progress")]
@@ -26,7 +25,6 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
-        // Implementar Singleton
         if (Instance == null)
         {
             Instance = this;
@@ -35,7 +33,6 @@ public class GameManager : MonoBehaviour
             if (showDebugLogs)
                 Debug.Log("═══ GameManager creado - Progreso persistente activado ═══");
 
-            // Suscribirse a eventos de carga de escena
             SceneManager.sceneLoaded += OnSceneLoaded;
         }
         else
@@ -62,7 +59,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Evento cuando se carga una escena
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         if (showDebugLogs)
@@ -94,7 +90,6 @@ public class GameManager : MonoBehaviour
 
     private System.Collections.IEnumerator ApplyProgressToPlayerDelayed()
     {
-        // Esperar un frame para que el jugador se inicialice
         yield return null;
 
         GameObject playerGO = GameObject.FindGameObjectWithTag("Player");
@@ -167,7 +162,37 @@ public class GameManager : MonoBehaviour
             Debug.Log(">>> GameManager: Progreso RESETEADO");
     }
 
-    // NUEVO: Resetear solo las memorias del nivel actual
+
+    /// <summary>
+    /// Resetea el progreso de las partes del RUBO (hasLegs, hasArms, hasTorso)
+    /// a 'false' justo antes de recargar la escena de un nivel.
+    /// </summary>
+    public void ResetPartsForRestart(string sceneName)
+    {
+        if (sceneName.Contains("Level_01") || sceneName.Contains("Ensamble"))
+        {
+            hasLegs = false;
+        }
+        else if (sceneName.Contains("Level_02") || sceneName.Contains("Tapes"))
+        {
+            hasArms = false;
+        }
+        else if (sceneName.Contains("Level_03") || sceneName.Contains("Azotea"))
+        {
+            hasTorso = false;
+        }
+        else
+        {
+            // Para niveles no definidos o test, resetea todas.
+            hasLegs = false;
+            hasArms = false;
+            hasTorso = false;
+        }
+
+        if (showDebugLogs)
+            Debug.Log($">>> GameManager: Progreso de Partes reseteado para {sceneName}.");
+    }
+
     public void ResetMemoriesForLevel(string sceneName)
     {
         HashSet<int> memoriesToRemove = new HashSet<int>();
@@ -222,54 +247,26 @@ public class GameManager : MonoBehaviour
         return hasLegs && hasArms && hasTorso;
     }
 
+    /// <summary>
+    /// Aplica el progreso persistente al jugador. 
+    /// Delega la lógica de activación visual/física al PlayerController.
+    /// </summary>
     public void ApplyProgressToPlayer(PlayerController player)
     {
         if (player == null) return;
 
-        bool anyPartRestored = false;
+        player.ApplyProgressFromManager(hasLegs, hasArms, hasTorso);
 
-        if (hasLegs && !player.hasLegs)
+        if (showDebugLogs)
         {
-            player.hasLegs = true;
-            if (player.legsGroup != null)
-                player.legsGroup.SetActive(true);
-            anyPartRestored = true;
-        }
-
-        if (hasArms && !player.hasArms)
-        {
-            player.hasArms = true;
-            if (player.armsGroup != null)
-                player.armsGroup.SetActive(true);
-            anyPartRestored = true;
-        }
-
-        if (hasTorso && !player.hasTorso)
-        {
-            player.hasTorso = true;
-            if (player.torsoGroup != null)
-                player.torsoGroup.SetActive(true);
-            anyPartRestored = true;
-        }
-
-        if (anyPartRestored)
-        {
-            player.SendMessage("UpdateStatusText", SendMessageOptions.DontRequireReceiver);
-            player.SendMessage("UpdateInstructions", SendMessageOptions.DontRequireReceiver);
-
-            if (showDebugLogs)
-            {
-                Debug.Log($"═══ Progreso aplicado al jugador ═══");
-                Debug.Log($"Piernas: {hasLegs} | Brazos: {hasArms} | Torso: {hasTorso}");
-            }
+            Debug.Log($"═══ Progreso aplicado al jugador ═══");
+            Debug.Log($"Piernas: {hasLegs} | Brazos: {hasArms} | Torso: {hasTorso}");
         }
     }
 
     // Helpers
     private bool IsMainMenuScene(string sceneName)
     {
-        // Solo considerar MainMenu si es EXACTAMENTE el menú principal
-        // NO detectar escenas que contengan "Menu" en su nombre
         return sceneName.Equals("MainMenu", System.StringComparison.OrdinalIgnoreCase)
                || sceneName.Equals("Menu", System.StringComparison.OrdinalIgnoreCase)
                || sceneName.Equals("StartMenu", System.StringComparison.OrdinalIgnoreCase);

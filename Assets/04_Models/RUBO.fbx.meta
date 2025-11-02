@@ -15,7 +15,8 @@ ModelImporter:
     resampleCurves: 1
     optimizeGameObjects: 0
     motionNodeName: 
-    rigImportErrors: 
+    rigImportErrors: "Invalid Avatar Rig Configuration. Missing or invalid transform:\n\tRequired
+      human bone 'Hips' not found\n"
     rigImportWarnings: 
     animationImportErrors: 
     animationImportWarnings: 
@@ -23,7 +24,7 @@ ModelImporter:
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
     importConstraints: 0
-    animationCompression: 1
+    animationCompression: 3
     animationRotationError: 0.5
     animationPositionError: 0.5
     animationScaleError: 0.5
@@ -77,7 +78,82 @@ ModelImporter:
   humanDescription:
     serializedVersion: 3
     human: []
-    skeleton: []
+    skeleton:
+    - name: RUBO(Clone)
+      parentName: 
+      position: {x: 0, y: 0, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: RUBO_LeftFoot
+      parentName: RUBO(Clone)
+      position: {x: -0.0070132036, y: -0.46687898, z: -0.089399084}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: RUBO_LeftHand
+      parentName: RUBO(Clone)
+      position: {x: -0.031653266, y: -0.16149224, z: -0.20227006}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: RUBO_Head
+      parentName: RUBO(Clone)
+      position: {x: 0.0005522085, y: 0.27501643, z: -0.00017912756}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: RUBO_RightHand
+      parentName: RUBO(Clone)
+      position: {x: -0.03129837, y: -0.16190757, z: 0.20228761}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: RUBO_RightUpperArm
+      parentName: RUBO(Clone)
+      position: {x: 0.00036831386, y: 0.20735177, z: 0.18543422}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: RUBO_RightForearm
+      parentName: RUBO(Clone)
+      position: {x: 0.028507296, y: 0.03420554, z: 0.1969271}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: RUBO_LeftUpperArm
+      parentName: RUBO(Clone)
+      position: {x: 0.00070580095, y: 0.20472679, z: -0.18538189}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: RUBO_LeftForearm
+      parentName: RUBO(Clone)
+      position: {x: 0.027996236, y: 0.03442107, z: -0.19723436}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: RUBO_Torso
+      parentName: RUBO(Clone)
+      position: {x: 0.00010062195, y: -0.046908513, z: -0.0002835542}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: RUBO_RightFoot
+      parentName: RUBO(Clone)
+      position: {x: -0.008285955, y: -0.46795142, z: 0.090031736}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: RUBO_RightUpperLeg
+      parentName: RUBO(Clone)
+      position: {x: 0.00033455156, y: -0.090366736, z: 0.10133016}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: RUBO_RightCalf
+      parentName: RUBO(Clone)
+      position: {x: 0.029994065, y: -0.31124222, z: 0.090049684}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: RUBO_LeftUpperLeg
+      parentName: RUBO(Clone)
+      position: {x: 0.000054592267, y: -0.091113225, z: -0.10148382}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: RUBO_LeftCalf
+      parentName: RUBO(Clone)
+      position: {x: 0.029925564, y: -0.314371, z: -0.08993831}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
     armTwist: 0.5
     foreArmTwist: 0.5
     upperLegTwist: 0.5
@@ -88,13 +164,13 @@ ModelImporter:
     globalScale: 1
     rootMotionBoneName: 
     hasTranslationDoF: 0
-    hasExtraRoot: 0
+    hasExtraRoot: 1
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
   autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 2
   humanoidOversampling: 1
-  avatarSetup: 0
+  avatarSetup: 1
   addHumanoidExtraRootOnlyWhenUsingAvatar: 1
   remapMaterialsIfMaterialImportModeIsNone: 0
   additionalBone: 0

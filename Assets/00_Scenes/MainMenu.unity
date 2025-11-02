@@ -16615,7 +16615,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   level01SceneName: Level_01_Ensamblee
-  testSceneName: Level_01_Ensamble
+  testSceneName: TEST
   videoSceneName: VideoScene
   mainMenuPanel: {fileID: 2038802268}
   optionsPanel: {fileID: 321827487}
