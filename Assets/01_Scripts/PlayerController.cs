@@ -65,6 +65,9 @@ public class PlayerController : MonoBehaviour
     [Header("Height Adjustment System")]
     [SerializeField] private float initialYOffset = 0f;
 
+    [Header("Components")]
+    [SerializeField] private LaserRay laser;
+
     [SerializeField] private float headOnlyColliderHeight = 0.3f;
     [SerializeField] private float withTorsoColliderHeight = 0.6f;
     [SerializeField] private float withLegsColliderHeight = 1f;
@@ -90,6 +93,8 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
+        if (laser != null) laser.SetUnlocked(hasTorso);
+
         if (camTransform == null) camTransform = Camera.main?.transform;
 
         rb = GetComponent<Rigidbody>();
@@ -510,6 +515,8 @@ public class PlayerController : MonoBehaviour
         {
             flashlight.SetActive(false);
         }
+
+        if (laser != null) laser.SetUnlocked(true);
     }
 
     public bool IsFullyAssembled()
