@@ -12,14 +12,11 @@ EditorBuildSettings:
     path: Assets/00_Scenes/Level_Test.unity
     guid: c5df4fc88a44a034982b9583b0dd38f9
   - enabled: 1
-    path: Assets/00_Scenes/Level_01_Ensamblee 1.unity
+    path: Assets/00_Scenes/TEST.unity
     guid: 63560360189b95b46bc0b010b9a128db
-  - enabled: 0
+  - enabled: 1
     path: Assets/00_Scenes/Level_01_Ensamblee.unity
     guid: 6a83e54cf05007b498432cc28f72606f
-  - enabled: 1
-    path: Assets/00_Scenes/TEST.unity
-    guid: ac5f3f616b963fb47851b20c68ec433b
   - enabled: 1
     path: Assets/00_Scenes/Level_02_Tapes.unity
     guid: 44886179fdb9b4d40b099a9138ce50c5
@@ -32,4 +29,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/00_Scenes/VideoScene.unity
     guid: ffe246baf139d2247b6bdbc8563ded3c
+  - enabled: 0
+    path: 
+    guid: 00000000000000000000000000000000
   m_configObjects: {}
