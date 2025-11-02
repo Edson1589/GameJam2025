@@ -57,7 +57,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private PlayerHealth playerHealth;
 
     [Header("Components")]
-    [SerializeField] private PlayerDash playerDash; 
+    [SerializeField] private PlayerDash playerDash;
+
+    [SerializeField] private LaserRay laser;
 
 
     void Awake()
@@ -70,6 +72,8 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
+        if (laser != null) laser.SetUnlocked(hasTorso);
+
         if (camTransform == null) camTransform = Camera.main?.transform;
 
         rb = GetComponent<Rigidbody>();
@@ -222,7 +226,7 @@ public class PlayerController : MonoBehaviour
 
     private void InitializeAbilitiesUI()
     {
-       
+
     }
 
     public void ConnectLegs()
@@ -281,6 +285,8 @@ public class PlayerController : MonoBehaviour
         {
             flashlight.SetActive(false);
         }
+
+        if (laser != null) laser.SetUnlocked(true);
 
         Debug.Log("TORSO RECONECTADO! Ensamblaje completo - Linterna disponible");
     }

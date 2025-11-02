@@ -119,4 +119,10 @@ public class PusherBot : MonoBehaviour
         spawner?.OnBotDestroyed(this);
         Destroy(gameObject);
     }
+
+    public void KillByLaser()
+    {
+        DestroySelf();
+    }
+
 }
