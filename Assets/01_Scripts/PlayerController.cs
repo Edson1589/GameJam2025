@@ -8,8 +8,6 @@ public class PlayerController : MonoBehaviour
     [Header("Movement")]
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float jumpForce = 8f;
-    [SerializeField] private float dashSpeed = 15f;
-    [SerializeField] private float dashDuration = 0.2f;
 
     [Header("Ground Check")]
     [SerializeField] private Transform groundCheck;
@@ -32,22 +30,13 @@ public class PlayerController : MonoBehaviour
     [Header("UI")]
     [SerializeField] private TextMeshProUGUI statusText;
     [SerializeField] private TextMeshProUGUI instructionsText;
-    [SerializeField] private TextMeshProUGUI dashCooldownText;
-    [SerializeField] private UnityEngine.UI.Slider dashCooldownSlider;
-    [SerializeField] private UnityEngine.UI.Image dashFillImage;
 
-    [Header("Skills & Cooldown")]
+    [Header("Skills")]
     [SerializeField] private int maxJumps = 2;
-    [SerializeField] private float dashCooldownDuration = 10f;
 
     private int availableJumps;
-    private bool isDashAvailable = true;
-    private float dashCooldownTimer = 0f;
-
     private Rigidbody rb;
     private bool isGrounded;
-    private bool isDashing;
-    private float dashTimer;
 
     [Header("Camera")]
     [SerializeField] private Transform camTransform;
@@ -58,8 +47,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float pulseSpeed = 2f;
     [SerializeField] private float pulseMinScale = 0.98f;
     [SerializeField] private float pulseMaxScale = 1.02f;
-    [SerializeField] private Color glowColorMin = new Color(0f, 0.8f, 0f, 1f);
-    [SerializeField] private Color glowColorMax = new Color(0.5f, 1f, 0.5f, 1f);
 
     [Header("Body Parts (Groups or Objects)")]
     [SerializeField] public GameObject headGO;
@@ -68,6 +55,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] public GameObject torsoGroup;
 
     [SerializeField] private PlayerHealth playerHealth;
+
+    [Header("Components")]
+    [SerializeField] private PlayerDash playerDash; 
+
 
     void Awake()
     {
@@ -91,7 +82,12 @@ public class PlayerController : MonoBehaviour
         if (torsoGroup) torsoGroup.SetActive(false);
 
         LoadPartsState();
-        InitializeAbilitiesUI();
+
+        if (playerDash != null)
+        {
+            playerDash.InitializeUI(hasLegs);
+        }
+
         if (legsGroup) legsGroup.SetActive(hasLegs);
         if (armsGroup) armsGroup.SetActive(hasArms);
         if (torsoGroup) torsoGroup.SetActive(hasTorso);
@@ -111,26 +107,6 @@ public class PlayerController : MonoBehaviour
         CheckGrounded();
         HandleInput();
 
-        if (isDashing)
-        {
-            dashTimer -= Time.deltaTime;
-            if (dashTimer <= 0) isDashing = false;
-        }
-
-        if (dashCooldownTimer > 0)
-        {
-            dashCooldownTimer -= Time.deltaTime;
-
-            if (dashCooldownTimer <= 0)
-            {
-                Debug.Log("DASH RECHARGED!");
-                isDashAvailable = true;
-                dashCooldownTimer = 0f;
-            }
-        }
-
-        UpdateDashCooldownUI();
-
         if (headAnimator != null)
         {
             float planarSpeed = new Vector3(rb.velocity.x, 0f, rb.velocity.z).magnitude;
@@ -140,13 +116,10 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (!isDashing)
+        // El movimiento se ejecuta solo si PlayerDash NO está en estado Dashing
+        if (playerDash == null || !playerDash.IsDashing)
         {
             Move();
-        }
-        else
-        {
-            Dash();
         }
 
         if (hasArms)
@@ -172,15 +145,6 @@ public class PlayerController : MonoBehaviour
             rb.velocity = new Vector3(rb.velocity.x, jumpForce, rb.velocity.z);
             availableJumps--;
             Debug.Log($"Jump! {availableJumps} jumps remaining.");
-        }
-
-        if (InputManager.Instance != null && InputManager.Instance.GetKeyDown("Dash") && hasLegs && !isDashing && isDashAvailable)
-        {
-            isDashing = true;
-            dashTimer = dashDuration;
-            isDashAvailable = false;
-            dashCooldownTimer = dashCooldownDuration;
-            Debug.Log("Dash! Cooldown started.");
         }
 
         if (InputManager.Instance != null && hasTorso && InputManager.Instance.GetKeyDown("Flashlight"))
@@ -215,12 +179,6 @@ public class PlayerController : MonoBehaviour
             Quaternion targetRot = Quaternion.LookRotation(moveDir);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, Time.deltaTime * 12f);
         }
-    }
-
-    private void Dash()
-    {
-        Vector3 dashDir = transform.forward;
-        rb.velocity = new Vector3(dashDir.x * dashSpeed, 0, dashDir.z * dashSpeed);
     }
 
     private void CheckGrounded()
@@ -262,80 +220,9 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void UpdateDashCooldownUI()
-    {
-        if (!hasLegs) return;
-
-        if (dashCooldownSlider != null)
-        {
-            if (isDashAvailable)
-            {
-                dashCooldownSlider.value = 1f;
-
-                float pulse = (Mathf.Sin(Time.time * pulseSpeed) + 1f) / 2f;
-
-                // Animación de escala
-                float scaleMultiplierX = Mathf.Lerp(0.99f, 1.01f, pulse);
-                float scaleMultiplierY = Mathf.Lerp(pulseMinScale, pulseMaxScale, pulse);
-                dashCooldownSlider.transform.localScale = new Vector3(4f * scaleMultiplierX, 0.6f * scaleMultiplierY, 1f);
-
-                // Animación de brillo
-                if (dashFillImage != null)
-                {
-                    dashFillImage.color = Color.Lerp(glowColorMin, glowColorMax, pulse);
-                }
-            }
-            else
-            {
-                float progress = (dashCooldownDuration - dashCooldownTimer) / dashCooldownDuration;
-                dashCooldownSlider.value = progress;
-
-                dashCooldownSlider.transform.localScale = new Vector3(4f, 0.6f, 1f);
-
-                if (dashFillImage != null)
-                    dashFillImage.color = Color.yellow;
-            }
-        }
-
-        if (dashCooldownText != null)
-        {
-            if (isDashAvailable)
-            {
-                dashCooldownText.text = "DASH: READY";
-                dashCooldownText.color = Color.green;
-            }
-            else
-            {
-                float timeElapsed = dashCooldownDuration - dashCooldownTimer;
-                if (timeElapsed < 0) timeElapsed = 0;
-                dashCooldownText.text = $"DASH: {timeElapsed:0.0}s";
-                dashCooldownText.color = Color.yellow;
-            }
-        }
-    }
-
     private void InitializeAbilitiesUI()
     {
-        if (dashCooldownText != null)
-        {
-            dashCooldownText.gameObject.SetActive(hasLegs);
-            if (hasLegs)
-            {
-                UpdateDashCooldownUI();
-            }
-        }
-
-        if (dashCooldownSlider != null)
-        {
-            dashCooldownSlider.gameObject.SetActive(hasLegs);
-            if (hasLegs)
-            {
-                dashCooldownSlider.transform.localScale = new Vector3(4f, 0.6f, 1f);
-                dashCooldownSlider.value = 1f;
-                if (dashFillImage != null)
-                    dashFillImage.color = glowColorMin;
-            }
-        }
+       
     }
 
     public void ConnectLegs()
@@ -343,23 +230,10 @@ public class PlayerController : MonoBehaviour
         hasLegs = true;
         if (legsGroup) legsGroup.SetActive(true);
 
-        if (dashCooldownText != null)
+        // Notificar al componente PlayerDash para que actualice su UI
+        if (playerDash != null)
         {
-            dashCooldownText.gameObject.SetActive(true);
-            UpdateDashCooldownUI();
-        }
-
-        if (dashCooldownSlider != null)
-        {
-            dashCooldownSlider.gameObject.SetActive(true);
-            dashCooldownSlider.value = 1f;
-            if (dashFillImage != null)
-            {
-                Color colorHex;
-                if (ColorUtility.TryParseHtmlString("#28E2ED", out colorHex))
-                    dashFillImage.color = colorHex;
-            }
-
+            playerDash.OnLegsConnected();
         }
 
         if (GameManager.Instance != null)
