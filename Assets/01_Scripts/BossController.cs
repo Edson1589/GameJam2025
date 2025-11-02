@@ -67,6 +67,10 @@ public class BossController : MonoBehaviour
     [SerializeField] private AudioClip sfxShockwave;
     [SerializeField] private AudioClip sfxPunch;
     [SerializeField] private AudioClip sfxShoot;
+    [SerializeField] private AudioClip sfxDeath;
+    private static readonly int HashDie = Animator.StringToHash("Die");
+    [SerializeField] private float deathAnimTimeout = 3.0f;
+    [SerializeField] private float fadeOutTime = 1.0f;
     [SerializeField, Range(0f, 1f)] private float sfxVolume = 1f;
     [SerializeField] private Vector2 pitchRange = new Vector2(0.98f, 1.02f);
     private static readonly int HashSpeed = Animator.StringToHash("Speed");
@@ -135,6 +139,100 @@ public class BossController : MonoBehaviour
         }
 
         if (anim) anim.SetFloat(HashSpeed, 0f, 0.1f, Time.deltaTime);
+    }
+
+    public void OnBossDeathRequested()
+    {
+        if (!gameObject.activeInHierarchy) return;
+        StartCoroutine(DeathSequence());
+    }
+
+    private IEnumerator DeathSequence()
+    {
+        Deactivate();
+        if (chargeHitboxObj) chargeHitboxObj.SetActive(false);
+
+        DisableAllColliders();
+
+        PlayOne(sfxDeath, 1f);
+
+        if (anim)
+        {
+            anim.ResetTrigger(HashDoJump);
+            anim.ResetTrigger(HashDoShoot);
+            anim.ResetTrigger(HashDoCharge);
+            anim.SetTrigger(HashDie);
+        }
+
+        float t = 0f;
+        bool reachedEnd = false;
+        if (anim)
+        {
+            yield return null;
+            var info = anim.GetCurrentAnimatorStateInfo(0);
+            while (!info.IsTag("Death") && t < deathAnimTimeout)
+            {
+                yield return null;
+                t += Time.deltaTime;
+                info = anim.GetCurrentAnimatorStateInfo(0);
+            }
+
+            t = 0f;
+            while (info.IsTag("Death") && info.normalizedTime < 1f && t < deathAnimTimeout)
+            {
+                yield return null;
+                t += Time.deltaTime;
+                info = anim.GetCurrentAnimatorStateInfo(0);
+            }
+            reachedEnd = true;
+        }
+
+        yield return StartCoroutine(FadeOutVisuals(fadeOutTime));
+        Destroy(gameObject);
+    }
+
+    private void DisableAllColliders()
+    {
+        var cols = GetComponentsInChildren<Collider>(includeInactive: true);
+        foreach (var c in cols) c.enabled = false;
+    }
+
+    private IEnumerator FadeOutVisuals(float duration)
+    {
+        if (duration <= 0f) yield break;
+
+        Transform root = bossVisual ? bossVisual : transform;
+        var rends = root.GetComponentsInChildren<Renderer>(includeInactive: true);
+        if (rends.Length == 0) yield break;
+
+        var matsPerRenderer = new System.Collections.Generic.List<Material[]>();
+        foreach (var r in rends)
+        {
+            var instanced = r.materials;
+            matsPerRenderer.Add(instanced);
+            r.materials = instanced;
+        }
+
+        float t = 0f;
+        while (t < duration)
+        {
+            t += Time.deltaTime;
+            float a = Mathf.Lerp(1f, 0f, t / duration);
+
+            foreach (var mats in matsPerRenderer)
+                foreach (var m in mats)
+                {
+                    if (m.HasProperty("_BaseColor"))
+                    {
+                        var c = m.GetColor("_BaseColor"); c.a = a; m.SetColor("_BaseColor", c);
+                    }
+                    else if (m.HasProperty("_Color"))
+                    {
+                        var c = m.color; c.a = a; m.color = c;
+                    }
+                }
+            yield return null;
+        }
     }
 
     public void Activate()

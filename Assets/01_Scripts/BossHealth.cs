@@ -42,10 +42,10 @@ public class BossHealth : MonoBehaviour
         if (isDead) return;
         isDead = true;
 
-        if (boss) boss.Deactivate();
-
-        Destroy(gameObject);
+        if (boss) boss.OnBossDeathRequested();
+        else Destroy(gameObject);
     }
+
 
     public int CurrentHP => currentHP;
     public int MaxHP => maxHP;
