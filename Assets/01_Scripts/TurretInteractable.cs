@@ -1,10 +1,13 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections.Generic;
 
 [RequireComponent(typeof(Collider))]
 public class TurretInteractable : MonoBehaviour
 {
+    public static readonly HashSet<TurretInteractable> Instances = new HashSet<TurretInteractable>();
+
     [Header("Interacción")]
     [SerializeField] private float holdSeconds = 3f;
     [SerializeField] private KeyCode interactKey = KeyCode.E;
@@ -22,6 +25,12 @@ public class TurretInteractable : MonoBehaviour
     private float progress = 0f;
     private Collider triggerCol;
 
+    private bool requireKeyUpBeforeContinue = false;
+
+    public bool IsPlayerInRange => playerInRange;
+
+    void OnEnable() { Instances.Add(this); }
+    void OnDisable() { Instances.Remove(this); }
     void Awake()
     {
         triggerCol = GetComponent<Collider>();
@@ -58,15 +67,20 @@ public class TurretInteractable : MonoBehaviour
     {
         if (isDisabled || !playerInRange) return;
 
+        if (requireKeyUpBeforeContinue)
+        {
+            if (!Input.GetKey(interactKey))
+                requireKeyUpBeforeContinue = false;
+            return;
+        }
+
         if (Input.GetKey(interactKey))
         {
             progress += Time.deltaTime;
             UpdateCircle();
 
             if (progress >= holdSeconds)
-            {
                 CompleteAndDisable();
-            }
         }
     }
 
@@ -97,5 +111,11 @@ public class TurretInteractable : MonoBehaviour
         if (triggerCol) triggerCol.enabled = false;
 
         if (bossHealth) bossHealth.ApplyTurretDamage();
+    }
+
+    public void InterruptHold()
+    {
+        if (isDisabled) return;
+        requireKeyUpBeforeContinue = true;
     }
 }

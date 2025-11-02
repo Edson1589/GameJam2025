@@ -36,6 +36,7 @@ public class BossRoomTrigger : MonoBehaviour
     [SerializeField, Range(0f, 1f)] private float musicVolume = 0.85f;
     [SerializeField] private float musicFadeIn = 0.5f;
     [SerializeField] private bool loopBossMusic = true;
+    [SerializeField] private PusherBotSpawner pusherSpawner;
 
     private Coroutine musicFadeCo;
     private void OnTriggerEnter(Collider other)
@@ -55,6 +56,9 @@ public class BossRoomTrigger : MonoBehaviour
             DialogueUI.Instance.ShowText(startMessage);
             StartCoroutine(HideMsg());
         }
+
+        if (pusherSpawner != null)
+            pusherSpawner.BeginContinuous();
 
         StartCoroutine(CinematicSequence(other));
     }
