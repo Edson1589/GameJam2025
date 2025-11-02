@@ -6,6 +6,10 @@ public class PlayerController : MonoBehaviour
 {
     public static PlayerController Instance { get; private set; }
 
+    [Header("Animation")]
+    private Animator animator;
+    [SerializeField] private RuntimeAnimatorController animatorControllerAsset;
+
     [Header("Movement")]
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float jumpForce = 8f;
@@ -59,6 +63,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private PlayerDash playerDash;
 
     [Header("Height Adjustment System")]
+    [SerializeField] private float initialYOffset = 0f;
 
     [SerializeField] private float headOnlyColliderHeight = 0.3f;
     [SerializeField] private float withTorsoColliderHeight = 0.6f;
@@ -106,7 +111,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            BodyConfig initialConfig = BodyConfig.HeadOnly;
+            BodyConfig initialConfig = GetCurrentBodyConfig();
             UpdateColliderAndPivot(initialConfig);
         }
 
@@ -116,28 +121,17 @@ public class PlayerController : MonoBehaviour
             rb.angularVelocity = Vector3.zero;
         }
 
-        StartCoroutine(ForceInitialPosition());
+        BodyConfig initialConfigOnStart = GetCurrentBodyConfig();
+        UpdateColliderAndPivot(initialConfigOnStart);
+
+        if (rb != null)
+        {
+            float targetY = GetHeightForConfig(initialConfigOnStart) + initialYOffset;
+            rb.position = new Vector3(rb.position.x, targetY, rb.position.z);
+        }
+
         UpdateStatusText();
         UpdateInstructions();
-    }
-
-    private IEnumerator ForceInitialPosition()
-    {
-        yield return new WaitForFixedUpdate();
-
-        if (rb != null)
-        {
-            rb.position = new Vector3(rb.position.x, 1.2f, rb.position.z);
-            transform.position = new Vector3(transform.position.x, 1.2f, transform.position.z);
-        }
-
-        yield return null;
-
-        if (rb != null)
-        {
-            rb.position = new Vector3(rb.position.x, 1.2f, rb.position.z);
-            transform.position = new Vector3(transform.position.x, 1.2f, transform.position.z);
-        }
     }
 
     void Update()
@@ -146,7 +140,7 @@ public class PlayerController : MonoBehaviour
         HandleInput();
     }
 
-    void FixedUpdate()
+    private void FixedUpdate()
     {
         if (playerDash == null || !playerDash.IsDashing)
         {
@@ -157,29 +151,34 @@ public class PlayerController : MonoBehaviour
         {
             PushObjects();
         }
+
+        if (animator != null)
+        {
+            Vector3 horizontalVelocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
+            float currentSpeed = horizontalVelocity.magnitude;
+            animator.SetFloat("Speed", currentSpeed);
+        }
     }
 
     public void ApplyProgressFromManager(bool _hasLegs, bool _hasArms, bool _hasTorso)
     {
-        // 1. Sincronizar las variables de estado
         this.hasLegs = _hasLegs;
         this.hasArms = _hasArms;
         this.hasTorso = _hasTorso;
 
-        // 2. Aplicar el estado visual
         if (legsGroup) legsGroup.SetActive(this.hasLegs);
         if (armsGroup) armsGroup.SetActive(this.hasArms);
         if (torsoGroup) torsoGroup.SetActive(this.hasTorso);
 
-        // 3. Re-inicializar el Dash
         if (playerDash != null)
         {
             playerDash.InitializeUI(this.hasLegs);
         }
-        // 4. Aplicar la configuración de altura y colisionador
+
+        EnforceAnimatorConnection();
+
         BodyConfig currentConfig = GetCurrentBodyConfig();
         AdjustHeightImmediate(currentConfig);
-        // 5. Actualizar UI
         UpdateStatusText();
         UpdateInstructions();
     }
@@ -287,7 +286,8 @@ public class PlayerController : MonoBehaviour
 
     private void AdjustHeightImmediate(BodyConfig config)
     {
-        float targetHeight = GetHeightForConfig(config);
+        float baseColliderHeight = GetHeightForConfig(config);
+        float targetHeight = baseColliderHeight + initialYOffset;
 
         Vector3 targetPos = new Vector3(transform.position.x, targetHeight, transform.position.z);
 
@@ -311,7 +311,8 @@ public class PlayerController : MonoBehaviour
         if (rb != null) rb.isKinematic = true;
 
         float startHeight = transform.position.y;
-        float endHeight = GetHeightForConfig(newConfig);
+        float baseEndHeight = GetHeightForConfig(newConfig);
+        float endHeight = baseEndHeight + initialYOffset;
 
         float elapsed = 0f;
 
@@ -430,6 +431,8 @@ public class PlayerController : MonoBehaviour
         {
             groundCheck.localPosition = new Vector3(0, -(targetHeight * 0.5f), 0);
         }
+
+        EnforceAnimatorConnection();
     }
 
     public void ConnectLegs()
@@ -524,6 +527,20 @@ public class PlayerController : MonoBehaviour
         if (flashlight != null)
         {
             flashlight.SetActive(!flashlight.activeSelf);
+        }
+    }
+
+    private void EnforceAnimatorConnection()
+    {
+        if (animator == null)
+        {
+            animator = GetComponentInChildren<Animator>();
+        }
+
+        if (animator != null && animator.runtimeAnimatorController == null && animatorControllerAsset != null)
+        {
+            animator.runtimeAnimatorController = animatorControllerAsset;
+            animator.Update(0f);
         }
     }
 

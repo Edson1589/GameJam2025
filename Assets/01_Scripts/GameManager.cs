@@ -255,12 +255,21 @@ public class GameManager : MonoBehaviour
     {
         if (player == null) return;
 
-        player.ApplyProgressFromManager(hasLegs, hasArms, hasTorso);
+        bool currentHasLegs = hasLegs;
+        string currentSceneName = SceneManager.GetActiveScene().name;
+
+        if (currentSceneName.Contains("Level_02") || currentSceneName.Contains("Tapes"))
+        {
+            currentHasLegs = false;
+            if (showDebugLogs)
+                Debug.Log($"SOBREESCRITURA: Iniciando Nivel 2 ({currentSceneName}). Forzando hasLegs = FALSE.");
+        }
+        player.ApplyProgressFromManager(currentHasLegs, hasArms, hasTorso);
 
         if (showDebugLogs)
         {
             Debug.Log($"═══ Progreso aplicado al jugador ═══");
-            Debug.Log($"Piernas: {hasLegs} | Brazos: {hasArms} | Torso: {hasTorso}");
+            Debug.Log($"Piernas: {currentHasLegs} | Brazos: {hasArms} | Torso: {hasTorso}");
         }
     }
 
