@@ -28,6 +28,8 @@ public class AnchorMother : MonoBehaviour
     [SerializeField] private float shootInterval = 2f;
     [SerializeField] private float projectileSpeed = 10f;
 
+    [SerializeField] private float shootStartDelay = 20f;
+    private float shootStartTimer = 0f;
     private float shootTimer = 0f;
 
 
@@ -70,16 +72,22 @@ public class AnchorMother : MonoBehaviour
                 playerTransform = player.transform;
             }
         }
-        // Disparar proyectil si el campo está activo
+        // Disparar proyectil si el campo está activo y ha pasado el tiempo de espera
         if (fieldActive && projectilePrefab != null && firePoints.Length >= 2)
         {
-            shootTimer += Time.deltaTime;
-            if (shootTimer >= shootInterval)
+            shootStartTimer += Time.deltaTime;
+
+            if (shootStartTimer >= shootStartDelay)
             {
-                ShootProjectile();
-                shootTimer = 0f;
+                shootTimer += Time.deltaTime;
+                if (shootTimer >= shootInterval)
+                {
+                    ShootProjectile();
+                    shootTimer = 0f;
+                }
             }
         }
+
 
 
     }
