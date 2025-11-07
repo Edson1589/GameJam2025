@@ -1423,6 +1423,7 @@ MonoBehaviour:
   playerHealth: {fileID: 122415836}
   playerDash: {fileID: 122415837}
   initialYOffset: 0
+  laser: {fileID: 0}
   headOnlyColliderHeight: 0.3
   withTorsoColliderHeight: 0.6
   withLegsColliderHeight: 1
@@ -5039,7 +5040,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 447053910}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2c8e77b26eedab74d9d85423935209d5, type: 3}
   m_Name: 
@@ -11968,6 +11969,7 @@ MonoBehaviour:
   playerHealth: {fileID: 1351221088}
   playerDash: {fileID: 1351221089}
   initialYOffset: 28
+  laser: {fileID: 0}
   headOnlyColliderHeight: 0.3
   withTorsoColliderHeight: 0.6
   withLegsColliderHeight: 1
@@ -15141,6 +15143,9 @@ MonoBehaviour:
   sfxShockwave: {fileID: 8300000, guid: 675269e09fd6b2e45a3e86dbd30eb499, type: 3}
   sfxPunch: {fileID: 8300000, guid: 8ed2e48d672fa7f45a03b3e79767242e, type: 3}
   sfxShoot: {fileID: 8300000, guid: 1fec860c22de2a446bcf930646125e23, type: 3}
+  sfxDeath: {fileID: 0}
+  deathAnimTimeout: 3
+  fadeOutTime: 1
   sfxVolume: 1
   pitchRange: {x: 0.98, y: 1.02}
 --- !u!4 &1615839294
