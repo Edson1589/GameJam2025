@@ -1,7 +1,9 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
 using System.Collections;
+using TMPro;
 
 public class MainMenu : MonoBehaviour
 {
@@ -22,6 +24,10 @@ public class MainMenu : MonoBehaviour
     public Button creditsButton;
     public Button quitButton;
 
+    [Header("Credits Panel")]
+    public Button creditsBackButton;
+    private Vector3 creditsBackButtonOriginalScale;
+
     [Header("Button Selection")]
     public Button[] menuButtons;
     private int currentSelectedIndex = 0;
@@ -36,6 +42,7 @@ public class MainMenu : MonoBehaviour
 
     private Vector3[] originalScales;
     private bool canNavigate = true;
+    private bool isInCredits = false; // Bandera para saber si estamos en créditos
 
     private void Start()
     {
@@ -62,6 +69,17 @@ public class MainMenu : MonoBehaviour
         if (quitButton != null)
             quitButton.onClick.AddListener(QuitGame);
 
+        // Configurar botón de volver en créditos
+        // Configurar botón de volver en créditos
+        if (creditsBackButton != null)
+        {
+            creditsBackButtonOriginalScale = creditsBackButton.transform.localScale;
+
+            // Limpiar listeners anteriores y agregar el correcto
+            creditsBackButton.onClick.RemoveAllListeners();
+            creditsBackButton.onClick.AddListener(CloseCredits);
+        }
+
         // Mostrar solo el menú principal al inicio
         ShowMainMenu();
 
@@ -72,7 +90,37 @@ public class MainMenu : MonoBehaviour
 
     private void Update()
     {
-        // Navegación con teclado
+        // Si estamos en créditos, BLOQUEAR TODO
+        if (isInCredits)
+        {
+            // Solo permitir Enter para cerrar
+            if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
+            {
+                if (creditsBackButton != null)
+                {
+                    PlayClickSound();
+                    creditsBackButton.onClick.Invoke();
+                }
+            }
+
+            // BLOQUEAR toda navegación ignorando cualquier input de navegación
+            if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow) ||
+                Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow) ||
+                Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.S) ||
+                Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.D))
+            {
+                // Forzar de vuelta al botón de créditos
+                if (creditsBackButton != null)
+                {
+                    EventSystem.current.SetSelectedGameObject(creditsBackButton.gameObject);
+                }
+            }
+
+            return;
+        }
+
+
+        // Navegación con teclado en menú principal
         if (!canNavigate || menuButtons == null || menuButtons.Length == 0)
             return;
 
@@ -173,6 +221,7 @@ public class MainMenu : MonoBehaviour
     public void OpenOptions()
     {
         PlayClickSound();
+        isInCredits = false;
         if (mainMenuPanel != null)
             mainMenuPanel.SetActive(false);
         if (optionsPanel != null)
@@ -182,18 +231,116 @@ public class MainMenu : MonoBehaviour
     public void OpenCredits()
     {
         PlayClickSound();
-        Debug.Log("Créditos - Desarrollado para GameJam 2025");
+        isInCredits = true;
 
+        // Desactivar TODOS los botones del array de menuButtons PRIMERO
+        if (menuButtons != null)
+        {
+            foreach (Button btn in menuButtons)
+            {
+                if (btn != null)
+                    btn.interactable = false;
+            }
+        }
+
+        // Ocultar mainMenuPanel con CanvasGroup
         if (mainMenuPanel != null)
-            mainMenuPanel.SetActive(false);
+        {
+            CanvasGroup cg = mainMenuPanel.GetComponent<CanvasGroup>();
+            if (cg == null) cg = mainMenuPanel.AddComponent<CanvasGroup>();
+            cg.alpha = 0;
+            cg.interactable = false;
+            cg.blocksRaycasts = false;
+        }
+
+        // Desactivar options
+        if (optionsPanel != null)
+            optionsPanel.SetActive(false);
+
+        // Activar credits normalmente (SIN CanvasGroup)
         if (creditsPanel != null)
             creditsPanel.SetActive(true);
+
+        // ✅ CAMBIAR ESTO: Usar corrutina para seleccionar el botón
+        StartCoroutine(SelectCreditsButtonDelayed());
+    }
+
+    private IEnumerator SelectCreditsButtonDelayed()
+    {
+        yield return null;
+
+        if (creditsBackButton != null)
+        {
+            creditsBackButton.transform.localScale = creditsBackButtonOriginalScale * buttonHoverScale;
+            creditsBackButton.interactable = true;
+
+            TextMeshProUGUI buttonText = creditsBackButton.GetComponentInChildren<TextMeshProUGUI>();
+            if (buttonText != null)
+            {
+                buttonText.color = Color.yellow;
+            }
+
+            if (EventSystem.current != null)
+            {
+                EventSystem.current.sendNavigationEvents = false;
+            }
+
+            EventSystem.current.SetSelectedGameObject(null);
+            yield return null;
+            EventSystem.current.SetSelectedGameObject(creditsBackButton.gameObject);
+        }
+    }
+
+    public void CloseCredits()
+    {
+        PlayClickSound();
+        isInCredits = false;
+
+        // ✅ REACTIVAR navegación del EventSystem
+        if (EventSystem.current != null)
+        {
+            EventSystem.current.sendNavigationEvents = true;
+        }
+
+        // Reactivar los botones del menú
+        if (menuButtons != null)
+        {
+            foreach (Button btn in menuButtons)
+            {
+                if (btn != null)
+                    btn.interactable = true;
+            }
+        }
+
+        // Resetear escala y color del botón de créditos
+        if (creditsBackButton != null)
+        {
+            creditsBackButton.transform.localScale = creditsBackButtonOriginalScale;
+
+            TextMeshProUGUI buttonText = creditsBackButton.GetComponentInChildren<TextMeshProUGUI>();
+            if (buttonText != null)
+            {
+                buttonText.color = Color.white;
+            }
+        }
+
+        ShowMainMenu();
     }
 
     public void ShowMainMenu()
     {
+        isInCredits = false;
         if (mainMenuPanel != null)
+        {
+            CanvasGroup cg = mainMenuPanel.GetComponent<CanvasGroup>();
+            if (cg != null)
+            {
+                cg.alpha = 1;
+                cg.interactable = true;
+                cg.blocksRaycasts = true;
+            }
             mainMenuPanel.SetActive(true);
+        }
         if (optionsPanel != null)
             optionsPanel.SetActive(false);
         if (creditsPanel != null)
@@ -208,7 +355,7 @@ public class MainMenu : MonoBehaviour
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #else
-            Application.Quit();
+        Application.Quit();
 #endif
     }
 

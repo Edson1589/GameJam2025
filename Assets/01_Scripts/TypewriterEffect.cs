@@ -1,30 +1,56 @@
 using UnityEngine;
 using System.Collections;
-using TMPro; // Necesario si usas Text Mesh Pro
+using TMPro;
+using UnityEngine.Localization;
 
 public class TypewriterEffect : MonoBehaviour
 {
     public TextMeshProUGUI TextCredits;
 
-    [TextArea(3, 10)]
-    public string fullText = "Game made by:\r\nHector Manuel Arce León\r\nEdson Marcelo Cayo Ali\r\nDavid Andres Escalera Rocha\r\nEduardo Antezana Jau\r\nThanks for playing!";
+    [Header("Texto localizado")]
+    [SerializeField] private LocalizedString localizedFullText;
 
+    [Header("Configuración del efecto")]
     public float delay = 0.05f;
 
-    void Start()
+    private Coroutine currentCoroutine; 
+
+    void OnEnable()
     {
-        StartCoroutine(ShowText());
+        if (currentCoroutine != null)
+        {
+            StopCoroutine(currentCoroutine);
+        }
+        currentCoroutine = StartCoroutine(ShowText());
+    }
+
+    void OnDisable() 
+    {
+        if (currentCoroutine != null)
+        {
+            StopCoroutine(currentCoroutine);
+            currentCoroutine = null;
+        }
     }
 
     IEnumerator ShowText()
     {
         TextCredits.text = "";
+
+        if (localizedFullText == null)
+        {
+            Debug.LogWarning("No se asignó localizedFullText en TypewriterEffect.");
+            yield break;
+        }
+
+        string fullText = localizedFullText.GetLocalizedString();
+
         foreach (char character in fullText)
         {
             TextCredits.text += character;
-
             yield return new WaitForSeconds(delay);
         }
 
+        currentCoroutine = null; 
     }
 }

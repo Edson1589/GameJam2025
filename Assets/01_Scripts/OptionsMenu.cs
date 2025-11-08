@@ -107,6 +107,9 @@ public class OptionsMenu : MonoBehaviour
 
     private void Update()
     {
+        if (optionsPanel != null && !optionsPanel.activeSelf)
+            return;
+
         if (isWaitingForKey)
         {
             // Detectar cualquier tecla presionada
@@ -389,6 +392,12 @@ public class OptionsMenu : MonoBehaviour
 
         if (mainMenuPanel != null)
             mainMenuPanel.SetActive(true);
+
+        MainMenu mainMenu = FindObjectOfType<MainMenu>();
+        if (mainMenu != null)
+        {
+            mainMenu.ShowMainMenu();
+        }
     }
 
     public void OpenOptions()

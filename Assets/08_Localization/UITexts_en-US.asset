@@ -1,0 +1,298 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: UITexts_en-US
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: en-US
+  m_SharedData: {fileID: 11400000, guid: 17c2654aacae7b94382b24533b670dcc, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 93619724288
+    m_Localized: PLAY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 272737476608
+    m_Localized: OPTIONS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5604993900544
+    m_Localized: RECONNECTION
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6947146014720
+    m_Localized: ENGLISH
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7898376413184
+    m_Localized: SPANISH
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30150790717440
+    m_Localized: TEST LEVEL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257118173896704
+    m_Localized: CREDITS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257198557732864
+    m_Localized: QUIT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 257987435012096
+    m_Localized: OPTIONS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 258189688545280
+    m_Localized: 'Music:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 258380848144384
+    m_Localized: 'Effects:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 258484275486720
+    m_Localized: 'Jump:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 258541406101504
+    m_Localized: 'Interact:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 258617826320384
+    m_Localized: 'Dash:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 259030852018176
+    m_Localized: 'Flashlight:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 259111428792320
+    m_Localized: SAVE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 259153162117120
+    m_Localized: RESET
+    m_Metadata:
+      m_Items: []
+  - m_Id: 259245596188672
+    m_Localized: BACK
+    m_Metadata:
+      m_Items: []
+  - m_Id: 262223363284992
+    m_Localized: Options(ESC)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 262413478502400
+    m_Localized: Progress (TAB)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 262660405567488
+    m_Localized: 'Music:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 263225210544128
+    m_Localized: 'Effects:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 263552659857408
+    m_Localized: 'Jump:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 263805777715200
+    m_Localized: 'Interact:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 263893442863104
+    m_Localized: 'Dash:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 263945288654848
+    m_Localized: 'Flashlight:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 264038150545408
+    m_Localized: SAVE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 264092705857536
+    m_Localized: RESET
+    m_Metadata:
+      m_Items: []
+  - m_Id: 264405693210624
+    m_Localized: BACK
+    m_Metadata:
+      m_Items: []
+  - m_Id: 407535214108672
+    m_Localized: Press a key...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 409784862613504
+    m_Localized: PAUSED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 409969835614208
+    m_Localized: CONTINUE (ESC)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 410136731164672
+    m_Localized: CONFIGURATION
+    m_Metadata:
+      m_Items: []
+  - m_Id: 410273557749760
+    m_Localized: RESTART LEVEL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 410357502550016
+    m_Localized: MAIN MENU
+    m_Metadata:
+      m_Items: []
+  - m_Id: 412489320472576
+    m_Localized: 'CURRENT LEVEL: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 412552172118016
+    m_Localized: 'PARTS OF R.U.B.O:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 412655326830592
+    m_Localized: 'LEGS: Connected'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 412709953445888
+    m_Localized: 'LEGS: Disconnected'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 412765632831488
+    m_Localized: 'ARMS: Connected'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 412815557632000
+    m_Localized: 'ARMS: Disconnected'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 412877616553984
+    m_Localized: 'TORSO: Connected'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 412933371437056
+    m_Localized: 'TORSO: Disconnected'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 412986282582016
+    m_Localized: 'ECO-MEMORIES: {0}/{1}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 413091911933952
+    m_Localized: 'GOAL: Find your TORSO in the Assembly Zone'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 413176443936768
+    m_Localized: 'GOAL: Find your LEGS in Tapes and Packaging'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 413573216706560
+    m_Localized: 'GOAL: Find your ARMS on the Rooftop'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 413647648825344
+    m_Localized: 'GOAL: DEFEAT A.N.C.L.A.!'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 413705458917376
+    m_Localized: 1 - Assembly Zone
+    m_Metadata:
+      m_Items: []
+  - m_Id: 413768662884352
+    m_Localized: 2 - Tapes and Packaging
+    m_Metadata:
+      m_Items: []
+  - m_Id: 413924338671616
+    m_Localized: 3 - Rooftop-Heliport
+    m_Metadata:
+      m_Items: []
+  - m_Id: 413974095699968
+    m_Localized: TEST LEVEL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 414019083804672
+    m_Localized: "Press a key to {0} \n(ESC to cancel)"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 414078621949952
+    m_Localized: 'Key already used by {0}!
+
+      Press another key.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 414138080403456
+    m_Localized: Jump
+    m_Metadata:
+      m_Items: []
+  - m_Id: 414188261056512
+    m_Localized: Interact
+    m_Metadata:
+      m_Items: []
+  - m_Id: 414239238627328
+    m_Localized: Dash
+    m_Metadata:
+      m_Items: []
+  - m_Id: 414274978291712
+    m_Localized: Flashlight
+    m_Metadata:
+      m_Items: []
+  - m_Id: 415916251389952
+    m_Localized: R.U.B.O. PROGRESS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 430477994074112
+    m_Localized: '[E] Connect'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 430559342600192
+    m_Localized: Approach the door and follow the straight path.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 434807404994560
+    m_Localized: Take this... it will open the way. Don't let A.N.C.L.A. copy you.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 434838463815680
+    m_Localized: You already have the key. Go to the main door.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 439438688362496
+    m_Localized: 'Biomechanical harvester located.
+
+      Torso module available.
+
+      Ability
+      unlocked - Right Click'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 440821630083072
+    m_Localized: "\u26A0 ANCHOR: Intruder detected. Initiating containment protocol."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 441016300314624
+    m_Localized: ASSEMBLER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 444588689694720
+    m_Localized: "Game made by:\nHector Manuel Arce Le\xF3n\nEdson Marcelo Cayo Ali\nDavid
+      Andres Escalera Rocha\nEduardo Antezana Jau\n\nThanks for playing!"
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 1

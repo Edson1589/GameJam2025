@@ -171,15 +171,15 @@ public class GameManager : MonoBehaviour
     {
         if (sceneName.Contains("Level_01") || sceneName.Contains("Ensamble"))
         {
-            hasLegs = false;
+            hasTorso = false;  
         }
         else if (sceneName.Contains("Level_02") || sceneName.Contains("Tapes"))
         {
-            hasArms = false;
+            hasLegs = false;  
         }
         else if (sceneName.Contains("Level_03") || sceneName.Contains("Azotea"))
         {
-            hasTorso = false;
+            hasArms = false;  
         }
         else
         {

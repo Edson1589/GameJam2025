@@ -2,12 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.Localization;
 
 public class NPCNote : MonoBehaviour
 {
-    [Header("Mensaje que mostrará este NPC")]
-    [TextArea(2, 5)]
-    [SerializeField] private string npcMessage = "Zona inestable. Evita los pistones activos.";
+    [Header("Mensaje Localizado")]
+    [SerializeField] private LocalizedString localizedNpcMessage;
 
     [Header("Detección del jugador")]
     [SerializeField] private string playerTag = "Player";
@@ -15,6 +15,7 @@ public class NPCNote : MonoBehaviour
     [Header("UI flotante")]
     [SerializeField] private GameObject promptUI;
     [SerializeField] private TMP_Text promptText;
+    [SerializeField] private LocalizedString localizedPromptText; // "[E] Conectar"
 
     private bool playerInRange = false;
 
@@ -33,14 +34,15 @@ public class NPCNote : MonoBehaviour
 
         if (playerInRange && Input.GetKeyDown(KeyCode.E))
         {
-            if (DialogueUI.Instance != null)
+            if (DialogueUI.Instance != null && localizedNpcMessage != null)
             {
-                DialogueUI.Instance.ShowText(npcMessage);
-                Debug.Log("Mostrando mensaje: " + npcMessage);
+                string message = localizedNpcMessage.GetLocalizedString();
+                DialogueUI.Instance.ShowText(message);
+                Debug.Log("Mostrando mensaje: " + message);
             }
             else
             {
-                Debug.LogWarning("DialogueUI.Instance es NULL, no hay HUD para mostrar texto.");
+                Debug.LogWarning("DialogueUI.Instance es NULL o localizedNpcMessage no está configurado.");
             }
         }
 
@@ -64,9 +66,9 @@ public class NPCNote : MonoBehaviour
                 promptUI.SetActive(true);
             }
 
-            if (promptText != null)
+            if (promptText != null && localizedPromptText != null)
             {
-                promptText.text = "[E] Conectar";
+                promptText.text = localizedPromptText.GetLocalizedString();
             }
         }
     }
