@@ -256,20 +256,47 @@ public class GameManager : MonoBehaviour
         if (player == null) return;
 
         bool currentHasLegs = hasLegs;
+        bool currentHasArms = hasArms;
+        bool currentHasTorso = hasTorso;
         string currentSceneName = SceneManager.GetActiveScene().name;
 
+        // Nivel 2: Forzar sin piernas
         if (currentSceneName.Contains("Level_02") || currentSceneName.Contains("Tapes"))
         {
             currentHasLegs = false;
             if (showDebugLogs)
                 Debug.Log($"SOBREESCRITURA: Iniciando Nivel 2 ({currentSceneName}). Forzando hasLegs = FALSE.");
         }
-        player.ApplyProgressFromManager(currentHasLegs, hasArms, hasTorso);
+        // Nivel 3: Forzar todas las partes (delegar a Level3Manager si existe)
+        else if (Level3Manager.IsLevel3Scene(currentSceneName))
+        {
+            // Si Level3Manager está activo, dejar que él maneje la inicialización
+            if (Level3Manager.Instance != null && Level3Manager.Instance.IsActive())
+            {
+                if (showDebugLogs)
+                    Debug.Log($"Nivel 3 detectado - Level3Manager se encargará de la inicialización");
+                // Level3Manager se encargará de asegurar que el jugador tenga todas las partes
+                currentHasLegs = true;
+                currentHasArms = true;
+                currentHasTorso = true;
+            }
+            else
+            {
+                // Fallback: forzar todas las partes si Level3Manager no está disponible
+                currentHasLegs = true;
+                currentHasArms = true;
+                currentHasTorso = true;
+                if (showDebugLogs)
+                    Debug.Log($"Nivel 3 detectado - Forzando todas las partes (Level3Manager no disponible)");
+            }
+        }
+
+        player.ApplyProgressFromManager(currentHasLegs, currentHasArms, currentHasTorso);
 
         if (showDebugLogs)
         {
             Debug.Log($"═══ Progreso aplicado al jugador ═══");
-            Debug.Log($"Piernas: {currentHasLegs} | Brazos: {hasArms} | Torso: {hasTorso}");
+            Debug.Log($"Piernas: {currentHasLegs} | Brazos: {currentHasArms} | Torso: {currentHasTorso}");
         }
     }
 
