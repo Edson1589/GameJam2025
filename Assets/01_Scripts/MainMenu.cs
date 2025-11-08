@@ -277,7 +277,7 @@ public class MainMenu : MonoBehaviour
             TextMeshProUGUI buttonText = creditsBackButton.GetComponentInChildren<TextMeshProUGUI>();
             if (buttonText != null)
             {
-                buttonText.color = Color.yellow;
+                buttonText.color = Color.white;
             }
 
             if (EventSystem.current != null)
