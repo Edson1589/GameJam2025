@@ -2,14 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.Localization;
 
 public class NPCKeyGiver : MonoBehaviour
 {
-    [Header("Mensajes del NPC")]
-    [TextArea(2, 5)]
-    [SerializeField] private string firstMessage = "Toma esto... te abrirá el camino. No dejes que A.N.C.L.A. te copie.";
-    [TextArea(2, 5)]
-    [SerializeField] private string repeatMessage = "Ya tienes la llave. Ve a la puerta principal.";
+    [Header("Mensajes Localizados del NPC")]
+    [SerializeField] private LocalizedString localizedFirstMessage;
+    [SerializeField] private LocalizedString localizedRepeatMessage;
 
     [Header("Detección del jugador")]
     [SerializeField] private string playerTag = "Player";
@@ -17,6 +16,7 @@ public class NPCKeyGiver : MonoBehaviour
     [Header("UI flotante")]
     [SerializeField] private GameObject promptUI;
     [SerializeField] private TMP_Text promptText;
+    [SerializeField] private LocalizedString localizedPromptText; // "[E] Conectar"
 
     private bool playerInRange = false;
     private bool keyGiven = false;
@@ -39,18 +39,17 @@ public class NPCKeyGiver : MonoBehaviour
                     playerInv.GiveKey();
                     keyGiven = true;
 
-                    if (DialogueUI.Instance != null)
+                    if (DialogueUI.Instance != null && localizedFirstMessage != null)
                     {
-                        DialogueUI.Instance.ShowText(firstMessage);
+                        DialogueUI.Instance.ShowText(localizedFirstMessage.GetLocalizedString());
                     }
-
                     Debug.Log(">> NPCKeyGiver: llave entregada al jugador.");
                 }
                 else
                 {
-                    if (DialogueUI.Instance != null)
+                    if (DialogueUI.Instance != null && localizedRepeatMessage != null)
                     {
-                        DialogueUI.Instance.ShowText(repeatMessage);
+                        DialogueUI.Instance.ShowText(localizedRepeatMessage.GetLocalizedString());
                     }
                 }
             }
@@ -68,14 +67,13 @@ public class NPCKeyGiver : MonoBehaviour
         if (other.CompareTag(playerTag))
         {
             playerInRange = true;
-
             playerInv = other.GetComponent<PlayerInventory>();
 
             if (promptUI != null)
                 promptUI.SetActive(true);
 
-            if (promptText != null)
-                promptText.text = "[E] Conectar";
+            if (promptText != null && localizedPromptText != null)
+                promptText.text = localizedPromptText.GetLocalizedString();
         }
     }
 

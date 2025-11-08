@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Localization;
 
 public class BossRoomTrigger : MonoBehaviour
 {
@@ -12,10 +13,10 @@ public class BossRoomTrigger : MonoBehaviour
     [SerializeField] private BossController boss;
     [SerializeField] private BossHealthUI bossHpUI;
 
-    [Header("Mensaje inicial")]
-    [TextArea(2, 4)]
-    [SerializeField] private string startMessage = "⚠ ANCLA: Intruso detectado. Iniciando protocolo de contención.";
+    [Header("Mensaje inicial localizado")]
+    [SerializeField] private LocalizedString localizedStartMessage;
     [SerializeField] private float messageDuration = 2.5f;
+
     [Header("Cinemática")]
     [SerializeField] private float preAttackHold = 0.8f;
 
@@ -26,8 +27,8 @@ public class BossRoomTrigger : MonoBehaviour
 
     [SerializeField] private bool freezePlayerRigidbody = true;
 
-    [Header("Título del Jefe")]
-    [SerializeField] private string bossTitle = "ENSAMBLADOR";
+    [Header("Título del Jefe localizado")]
+    [SerializeField] private LocalizedString localizedBossTitle;
     [SerializeField] private float bossTitleHold = 2.2f;
 
     [Header("Música")]
@@ -39,21 +40,23 @@ public class BossRoomTrigger : MonoBehaviour
     [SerializeField] private PusherBotSpawner pusherSpawner;
 
     private Coroutine musicFadeCo;
+
     private void OnTriggerEnter(Collider other)
     {
         if (triggered) return;
         if (!other.CompareTag(playerTag)) return;
         triggered = true;
+
         StartBossMusic();
         bossHpUI.gameObject.SetActive(true);
         bossHpUI.Show(true);
 
-        if (BossTitleUI.Instance != null)
-            BossTitleUI.Instance.ShowTitle(bossTitle, bossTitleHold);
+        if (BossTitleUI.Instance != null && localizedBossTitle != null)
+            BossTitleUI.Instance.ShowTitle(localizedBossTitle.GetLocalizedString(), bossTitleHold);
 
-        if (DialogueUI.Instance != null)
+        if (DialogueUI.Instance != null && localizedStartMessage != null)
         {
-            DialogueUI.Instance.ShowText(startMessage);
+            DialogueUI.Instance.ShowText(localizedStartMessage.GetLocalizedString());
             StartCoroutine(HideMsg());
         }
 
@@ -124,11 +127,13 @@ public class BossRoomTrigger : MonoBehaviour
             prb.angularVelocity = prevAng;
         }
     }
+
     private IEnumerator HideMsg()
     {
         yield return new WaitForSeconds(messageDuration);
         if (DialogueUI.Instance != null) DialogueUI.Instance.HideText();
     }
+
     private void OnDrawGizmos()
     {
         Gizmos.color = new Color(1f, 0.3f, 0f, 0.2f);
@@ -190,5 +195,4 @@ public class BossRoomTrigger : MonoBehaviour
         if (musicFadeCo != null) StopCoroutine(musicFadeCo);
         musicFadeCo = StartCoroutine(FadeAudio(musicSource, musicVolume, musicFadeIn));
     }
-
 }
