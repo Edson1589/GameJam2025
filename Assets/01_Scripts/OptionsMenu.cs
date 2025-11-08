@@ -334,6 +334,7 @@ public class OptionsMenu : MonoBehaviour
 
     private void StartRemapping(string actionName)
     {
+        PlayClickSound(); 
         EventSystem.current.SetSelectedGameObject(null);
 
         currentActionToRemap = actionName;
