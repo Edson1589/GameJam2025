@@ -149,6 +149,8 @@ public class PersistentHUD : MonoBehaviour
     {
         if (Input.GetKeyDown(optionsKey))
         {
+            Debug.Log($"🔑 ESC presionado - configurationPanelOpen: {configurationPanelOpen}, optionsPanelOpen: {optionsPanelOpen}");
+            
             if (configurationPanelOpen)
             {
                 if (isWaitingForKey)
@@ -161,9 +163,15 @@ public class PersistentHUD : MonoBehaviour
                 }
             }
             else if (optionsPanelOpen)
+            {
+                Debug.Log("🔙 Cerrando menú de pausa");
                 CloseOptions();
+            }
             else
+            {
+                Debug.Log("🔓 Abriendo menú de pausa");
                 OpenOptions();
+            }
         }
 
         if (Input.GetKeyDown(progressKey))
@@ -268,7 +276,15 @@ public class PersistentHUD : MonoBehaviour
         if (IsInMainMenu()) return;
 
         optionsPanelOpen = true;
-        if (optionsPanel != null) optionsPanel.SetActive(true);
+        if (optionsPanel != null)
+        {
+            optionsPanel.SetActive(true);
+            Debug.Log("✅ PersistentHUD: Menú de pausa abierto");
+        }
+        else
+        {
+            Debug.LogWarning("⚠️ PersistentHUD: optionsPanel no está asignado. No se puede mostrar el menú de pausa.");
+        }
 
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;

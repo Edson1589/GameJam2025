@@ -31,9 +31,10 @@ public class PlayerDash : MonoBehaviour
 
         if (dashFillImage != null)
         {
-            dashUIRoot = dashFillImage.transform.parent.gameObject;
+            dashUIRoot = dashFillImage.gameObject;
             dashUIRoot.SetActive(false);
         }
+
     }
 
     public void InitializeUI(bool hasLegs)
@@ -129,6 +130,15 @@ public class PlayerDash : MonoBehaviour
     private void UpdateDashUI()
     {
         if (dashFillImage == null || !playerController.hasLegs) return;
+
+        // Verificar que no sea el mismo Image que la barra de vida
+        PlayerHealth playerHealth = GetComponent<PlayerHealth>();
+        if (playerHealth != null && playerHealth.GetHealthFillImage() == dashFillImage)
+        {
+            // Si es el mismo Image, no actualizar para evitar conflicto
+            Debug.LogWarning("⚠️ PlayerDash: dashFillImage es el mismo que healthFillImage. Usa imágenes separadas.");
+            return;
+        }
 
         if (isDashAvailable)
         {
