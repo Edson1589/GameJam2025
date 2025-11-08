@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections;
 using UnityEngine.EventSystems;
-using UnityEngine.Localization; // ✅ AGREGADO
+using UnityEngine.Localization;
 
 public class OptionsMenu : MonoBehaviour
 {
@@ -36,7 +36,6 @@ public class OptionsMenu : MonoBehaviour
     public GameObject waitingForKeyPanel;
     public TextMeshProUGUI waitingText;
 
-    // ✅ AGREGADO: Localized Strings para Key Remapping
     [Header("Localized Strings - Key Remapping")]
     [SerializeField] private LocalizedString localizedPressKeyFor;
     [SerializeField] private LocalizedString localizedKeyConflict;
@@ -67,7 +66,6 @@ public class OptionsMenu : MonoBehaviour
 
     private void Start()
     {
-        // Configurar sliders de audio
         if (musicSlider != null)
         {
             musicSlider.value = AudioManager.Instance.GetMusicVolume();
@@ -84,7 +82,6 @@ public class OptionsMenu : MonoBehaviour
 
         InitializeButtonColors();
 
-        // Configurar botones de teclas
         if (jumpButton != null)
             jumpButton.onClick.AddListener(() => StartRemapping("Jump"));
         if (interactButton != null)
@@ -94,7 +91,6 @@ public class OptionsMenu : MonoBehaviour
         if (flashlightButton != null)
             flashlightButton.onClick.AddListener(() => StartRemapping("Flashlight"));
 
-        // Otros botones
         if (saveButton != null)
             saveButton.onClick.AddListener(SaveSettings);
         if (resetButton != null)
@@ -102,11 +98,9 @@ public class OptionsMenu : MonoBehaviour
         if (backButton != null)
             backButton.onClick.AddListener(CloseOptions);
 
-        // Ocultar panel de espera
         if (waitingForKeyPanel != null)
             waitingForKeyPanel.SetActive(false);
 
-        // Inicialización de la navegación
         if (optionsMenuSelectables != null && optionsMenuSelectables.Length > 0)
         {
             originalScales = new Vector3[optionsMenuSelectables.Length];
@@ -338,7 +332,6 @@ public class OptionsMenu : MonoBehaviour
             sfxValueText.text = Mathf.RoundToInt(value * 100) + "%";
     }
 
-    // ✅ MODIFICADO: StartRemapping con localización
     private void StartRemapping(string actionName)
     {
         EventSystem.current.SetSelectedGameObject(null);
@@ -362,7 +355,6 @@ public class OptionsMenu : MonoBehaviour
         }
     }
 
-    // ✅ MODIFICADO: AssignKey con mensaje de error localizado
     private void AssignKey(KeyCode newKey)
     {
         string conflictingAction = null;
@@ -380,7 +372,6 @@ public class OptionsMenu : MonoBehaviour
         {
             Debug.LogWarning("Key " + newKey.ToString() + " already assigned to: " + conflictingAction);
 
-            // Mostrar mensaje de error con localización
             if (waitingText != null && localizedKeyConflict != null)
             {
                 StartCoroutine(ShowErrorMessage(conflictingAction));
@@ -399,7 +390,6 @@ public class OptionsMenu : MonoBehaviour
         CancelRemapping();
     }
 
-    // ✅ AGREGADO: Mostrar mensaje de error localizado con animación
     private IEnumerator ShowErrorMessage(string conflictingAction)
     {
         if (waitingText != null && localizedKeyConflict != null && localizedPressKeyFor != null)
@@ -452,7 +442,6 @@ public class OptionsMenu : MonoBehaviour
         }
     }
 
-    // ✅ AGREGADO: Obtener nombre de acción localizado
     private string GetLocalizedActionName(string actionName)
     {
         switch (actionName)
@@ -470,7 +459,6 @@ public class OptionsMenu : MonoBehaviour
         }
     }
 
-    // ⚠️ MANTENER: Fallback sin localización (por compatibilidad)
     private string GetActionName(string actionName)
     {
         switch (actionName)

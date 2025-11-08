@@ -16,7 +16,7 @@ public class NPCKeyGiver : MonoBehaviour
     [Header("UI flotante")]
     [SerializeField] private GameObject promptUI;
     [SerializeField] private TMP_Text promptText;
-    [SerializeField] private LocalizedString localizedPromptText; // "[E] Conectar"
+    [SerializeField] private LocalizedString localizedPromptText;
 
     private bool playerInRange = false;
     private bool keyGiven = false;

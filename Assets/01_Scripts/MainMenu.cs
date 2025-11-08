@@ -42,11 +42,10 @@ public class MainMenu : MonoBehaviour
 
     private Vector3[] originalScales;
     private bool canNavigate = true;
-    private bool isInCredits = false; // Bandera para saber si estamos en créditos
+    private bool isInCredits = false; 
 
     private void Start()
     {
-        // Guardar escalas originales de los botones
         if (menuButtons != null && menuButtons.Length > 0)
         {
             originalScales = new Vector3[menuButtons.Length];
@@ -57,7 +56,6 @@ public class MainMenu : MonoBehaviour
             }
         }
 
-        // Configurar listeners de botones
         if (playButton != null)
             playButton.onClick.AddListener(PlayGame);
         if (playTestButton != null)
@@ -69,31 +67,23 @@ public class MainMenu : MonoBehaviour
         if (quitButton != null)
             quitButton.onClick.AddListener(QuitGame);
 
-        // Configurar botón de volver en créditos
-        // Configurar botón de volver en créditos
         if (creditsBackButton != null)
         {
             creditsBackButtonOriginalScale = creditsBackButton.transform.localScale;
-
-            // Limpiar listeners anteriores y agregar el correcto
             creditsBackButton.onClick.RemoveAllListeners();
             creditsBackButton.onClick.AddListener(CloseCredits);
         }
 
-        // Mostrar solo el menú principal al inicio
         ShowMainMenu();
 
-        // Seleccionar primer botón si usas navegación por teclado
         if (menuButtons != null && menuButtons.Length > 0)
             SelectButton(0);
     }
 
     private void Update()
     {
-        // Si estamos en créditos, BLOQUEAR TODO
         if (isInCredits)
         {
-            // Solo permitir Enter para cerrar
             if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
             {
                 if (creditsBackButton != null)
@@ -103,13 +93,11 @@ public class MainMenu : MonoBehaviour
                 }
             }
 
-            // BLOQUEAR toda navegación ignorando cualquier input de navegación
             if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow) ||
                 Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow) ||
                 Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.S) ||
                 Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.D))
             {
-                // Forzar de vuelta al botón de créditos
                 if (creditsBackButton != null)
                 {
                     EventSystem.current.SetSelectedGameObject(creditsBackButton.gameObject);
@@ -119,8 +107,6 @@ public class MainMenu : MonoBehaviour
             return;
         }
 
-
-        // Navegación con teclado en menú principal
         if (!canNavigate || menuButtons == null || menuButtons.Length == 0)
             return;
 
@@ -148,7 +134,6 @@ public class MainMenu : MonoBehaviour
     {
         if (originalScales == null || originalScales.Length == 0) return;
 
-        // Resetear escala del botón anterior
         if (currentSelectedIndex >= 0 && currentSelectedIndex < menuButtons.Length)
         {
             if (menuButtons[currentSelectedIndex] != null)
@@ -157,7 +142,6 @@ public class MainMenu : MonoBehaviour
 
         currentSelectedIndex = index;
 
-        // Escalar nuevo botón
         if (menuButtons[currentSelectedIndex] != null)
         {
             StartCoroutine(ScaleButton(menuButtons[currentSelectedIndex].transform,
@@ -233,7 +217,6 @@ public class MainMenu : MonoBehaviour
         PlayClickSound();
         isInCredits = true;
 
-        // Desactivar TODOS los botones del array de menuButtons PRIMERO
         if (menuButtons != null)
         {
             foreach (Button btn in menuButtons)
@@ -243,7 +226,6 @@ public class MainMenu : MonoBehaviour
             }
         }
 
-        // Ocultar mainMenuPanel con CanvasGroup
         if (mainMenuPanel != null)
         {
             CanvasGroup cg = mainMenuPanel.GetComponent<CanvasGroup>();
@@ -253,15 +235,12 @@ public class MainMenu : MonoBehaviour
             cg.blocksRaycasts = false;
         }
 
-        // Desactivar options
         if (optionsPanel != null)
             optionsPanel.SetActive(false);
 
-        // Activar credits normalmente (SIN CanvasGroup)
         if (creditsPanel != null)
             creditsPanel.SetActive(true);
 
-        // ✅ CAMBIAR ESTO: Usar corrutina para seleccionar el botón
         StartCoroutine(SelectCreditsButtonDelayed());
     }
 
@@ -296,13 +275,11 @@ public class MainMenu : MonoBehaviour
         PlayClickSound();
         isInCredits = false;
 
-        // ✅ REACTIVAR navegación del EventSystem
         if (EventSystem.current != null)
         {
             EventSystem.current.sendNavigationEvents = true;
         }
 
-        // Reactivar los botones del menú
         if (menuButtons != null)
         {
             foreach (Button btn in menuButtons)
@@ -312,7 +289,6 @@ public class MainMenu : MonoBehaviour
             }
         }
 
-        // Resetear escala y color del botón de créditos
         if (creditsBackButton != null)
         {
             creditsBackButton.transform.localScale = creditsBackButtonOriginalScale;
@@ -363,7 +339,6 @@ public class MainMenu : MonoBehaviour
     {
         canNavigate = false;
 
-        // Pequeño delay para que se escuche el sonido del click
         yield return new WaitForSeconds(0.3f);
 
         SceneManager.LoadScene(sceneName);
