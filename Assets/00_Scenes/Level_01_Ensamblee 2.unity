@@ -2675,12 +2675,38 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00550e89bb3be344b8803a33a3ebd090, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  firstMessage: "Toma esto... te abrir\xE1 el camino. No dejes que A.N.C.L.A. te
-    copie."
-  repeatMessage: Ya tienes la llave. Ve a la puerta principal.
+  localizedFirstMessage:
+    m_TableReference:
+      m_TableCollectionName: GUID:17c2654aacae7b94382b24533b670dcc
+    m_TableEntryReference:
+      m_KeyId: 434807404994560
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  localizedRepeatMessage:
+    m_TableReference:
+      m_TableCollectionName: GUID:17c2654aacae7b94382b24533b670dcc
+    m_TableEntryReference:
+      m_KeyId: 434838463815680
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   playerTag: Player
   promptUI: {fileID: 130943709}
   promptText: {fileID: 1401501792}
+  localizedPromptText:
+    m_TableReference:
+      m_TableCollectionName: GUID:17c2654aacae7b94382b24533b670dcc
+    m_TableEntryReference:
+      m_KeyId: 430477994074112
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  references:
+    version: 1
 --- !u!4 &263459727
 Transform:
   m_ObjectHideFlags: 0
@@ -6641,10 +6667,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de1e1806118d3a14f9331d2fd851d1b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  npcMessage: Acercate a la puerta y sigue el camino recto.
+  localizedNpcMessage:
+    m_TableReference:
+      m_TableCollectionName: GUID:17c2654aacae7b94382b24533b670dcc
+    m_TableEntryReference:
+      m_KeyId: 430559342600192
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   playerTag: Player
   promptUI: {fileID: 796699761}
   promptText: {fileID: 970026984}
+  localizedPromptText:
+    m_TableReference:
+      m_TableCollectionName: GUID:17c2654aacae7b94382b24533b670dcc
+    m_TableEntryReference:
+      m_KeyId: 430477994074112
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  references:
+    version: 1
 --- !u!4 &815062737
 Transform:
   m_ObjectHideFlags: 0
@@ -10868,9 +10913,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerTag: Player
   capsuleController: {fileID: 1318151549}
-  message: "Recolector biomec\xE1nico localizado.\nM\xF3dulo Torso disponible.\nHabilidad
-    Desbloqueada - Click Derecho"
+  localizedMessage:
+    m_TableReference:
+      m_TableCollectionName: GUID:17c2654aacae7b94382b24533b670dcc
+    m_TableEntryReference:
+      m_KeyId: 439438688362496
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   messageDuration: 5
+  references:
+    version: 1
 --- !u!4 &1402118971
 Transform:
   m_ObjectHideFlags: 0
@@ -11789,13 +11843,29 @@ MonoBehaviour:
   playerTag: Player
   boss: {fileID: 1615839293}
   bossHpUI: {fileID: 2019703916}
-  startMessage: "\u26A0 ANCLA: Intruso detectado. Iniciando protocolo de contenci\xF3n."
+  localizedStartMessage:
+    m_TableReference:
+      m_TableCollectionName: GUID:17c2654aacae7b94382b24533b670dcc
+    m_TableEntryReference:
+      m_KeyId: 440821630083072
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   messageDuration: 2.5
   preAttackHold: 0.8
   lookDuration: 0.6
   disableDuringCinematic: []
   freezePlayerRigidbody: 1
-  bossTitle: ENSAMBLADOR
+  localizedBossTitle:
+    m_TableReference:
+      m_TableCollectionName: GUID:17c2654aacae7b94382b24533b670dcc
+    m_TableEntryReference:
+      m_KeyId: 441016300314624
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   bossTitleHold: 2.2
   musicSource: {fileID: 1489700485}
   bossMusic: {fileID: 8300000, guid: 65191b8801592b04ca6abc090f9958ef, type: 3}
@@ -11803,6 +11873,8 @@ MonoBehaviour:
   musicFadeIn: 0.5
   loopBossMusic: 1
   pusherSpawner: {fileID: 1489700486}
+  references:
+    version: 1
 --- !u!4 &1489700484
 Transform:
   m_ObjectHideFlags: 0

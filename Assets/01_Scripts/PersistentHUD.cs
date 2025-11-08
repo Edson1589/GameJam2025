@@ -4,6 +4,8 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using TMPro;
 using System.Collections;
+using UnityEngine.Localization;
+using UnityEngine.Localization.Settings;
 
 public class PersistentHUD : MonoBehaviour
 {
@@ -20,6 +22,35 @@ public class PersistentHUD : MonoBehaviour
     [SerializeField] private TextMeshProUGUI partsStatusText;
     [SerializeField] private TextMeshProUGUI ecoMemoriesText;
     [SerializeField] private TextMeshProUGUI instructionsText;
+
+    [Header("Localized Strings - Progress")]
+    [SerializeField] private LocalizedString localizedCurrentLevel;
+    [SerializeField] private LocalizedString localizedPartsTitle;
+    [SerializeField] private LocalizedString localizedLegsConnected;
+    [SerializeField] private LocalizedString localizedLegsDisconnected;
+    [SerializeField] private LocalizedString localizedArmsConnected;
+    [SerializeField] private LocalizedString localizedArmsDisconnected;
+    [SerializeField] private LocalizedString localizedTorsoConnected;
+    [SerializeField] private LocalizedString localizedTorsoDisconnected;
+    [SerializeField] private LocalizedString localizedEcoMemories;
+    [SerializeField] private LocalizedString localizedGoalTorso;
+    [SerializeField] private LocalizedString localizedGoalArms;
+    [SerializeField] private LocalizedString localizedGoalLegs;
+    [SerializeField] private LocalizedString localizedGoalFinal;
+
+    [Header("Localized Strings - Levels")]
+    [SerializeField] private LocalizedString localizedLevel1;
+    [SerializeField] private LocalizedString localizedLevel2;
+    [SerializeField] private LocalizedString localizedLevel3;
+    [SerializeField] private LocalizedString localizedTestLevel;
+
+    [Header("Localized Strings - Key Remapping")]
+    [SerializeField] private LocalizedString localizedPressKeyFor;
+    [SerializeField] private LocalizedString localizedKeyConflict;
+    [SerializeField] private LocalizedString localizedActionJump;
+    [SerializeField] private LocalizedString localizedActionInteract;
+    [SerializeField] private LocalizedString localizedActionDash;
+    [SerializeField] private LocalizedString localizedActionFlashlight;
 
     [Header("Settings")]
     [SerializeField] private bool hideInMainMenu = true;
@@ -478,8 +509,11 @@ public class PersistentHUD : MonoBehaviour
         if (waitingForKeyPanel != null)
             waitingForKeyPanel.SetActive(true);
 
-        if (waitingText != null)
-            waitingText.text = "Press a key to " + GetActionName(actionName) + "\n(ESC to cancel)";
+        if (waitingText != null && localizedPressKeyFor != null)
+        {
+            localizedPressKeyFor.Arguments = new object[] { GetLocalizedActionName(actionName) };
+            waitingText.text = localizedPressKeyFor.GetLocalizedString();
+        }
     }
 
     private void AssignKey(KeyCode newKey)
@@ -497,9 +531,9 @@ public class PersistentHUD : MonoBehaviour
 
         if (conflictingAction != null)
         {
-            if (waitingText != null)
+            if (waitingText != null && localizedKeyConflict != null)
             {
-                StartCoroutine(ShowErrorMessage("Key already used by " + GetActionName(conflictingAction) + "!\nPress another key."));
+                StartCoroutine(ShowErrorMessage(conflictingAction));
             }
             return;
         }
@@ -509,15 +543,18 @@ public class PersistentHUD : MonoBehaviour
         CancelRemapping();
     }
 
-    private IEnumerator ShowErrorMessage(string message)
+    private IEnumerator ShowErrorMessage(string conflictingAction)
     {
-        if (waitingText != null)
+        if (waitingText != null && localizedKeyConflict != null && localizedPressKeyFor != null)
         {
-            waitingText.text = message;
+            localizedKeyConflict.Arguments = new object[] { GetLocalizedActionName(conflictingAction) };
+            waitingText.text = localizedKeyConflict.GetLocalizedString();
             waitingText.color = Color.red;
             yield return new WaitForSecondsRealtime(1.5f);
             waitingText.color = Color.white;
-            waitingText.text = "Press a key to " + GetActionName(currentActionToRemap) + "\n(ESC to cancel)";
+
+            localizedPressKeyFor.Arguments = new object[] { GetLocalizedActionName(currentActionToRemap) };
+            waitingText.text = localizedPressKeyFor.GetLocalizedString();
         }
     }
 
@@ -555,15 +592,20 @@ public class PersistentHUD : MonoBehaviour
         }
     }
 
-    private string GetActionName(string actionName)
+    private string GetLocalizedActionName(string actionName)
     {
         switch (actionName)
         {
-            case "Jump": return "Jump";
-            case "Interact": return "Interact";
-            case "Dash": return "Dash";
-            case "Flashlight": return "Flashlight";
-            default: return actionName;
+            case "Jump":
+                return localizedActionJump != null ? localizedActionJump.GetLocalizedString() : "Jump";
+            case "Interact":
+                return localizedActionInteract != null ? localizedActionInteract.GetLocalizedString() : "Interact";
+            case "Dash":
+                return localizedActionDash != null ? localizedActionDash.GetLocalizedString() : "Dash";
+            case "Flashlight":
+                return localizedActionFlashlight != null ? localizedActionFlashlight.GetLocalizedString() : "Flashlight";
+            default:
+                return actionName;
         }
     }
 
@@ -636,67 +678,114 @@ public class PersistentHUD : MonoBehaviour
 
     private void UpdateProgressInfo()
     {
-        if (currentLevelText != null)
+        // Current Level
+        if (currentLevelText != null && localizedCurrentLevel != null)
         {
             string sceneName = SceneManager.GetActiveScene().name;
-            currentLevelText.text = $"CURRENT LEVEL: {GetLevelDisplayName(sceneName)}";
+            localizedCurrentLevel.Arguments = new object[] { GetLocalizedLevelName(sceneName) };
+            currentLevelText.text = localizedCurrentLevel.GetLocalizedString();
         }
 
+        // Parts Status
         if (partsStatusText != null && GameManager.Instance != null)
         {
-            string parts = "PARTS OF R.U.B.O:\n\n";
+            string parts = "";
 
-            if (GameManager.Instance.hasLegs)
-                parts += "<color=#00FF00>LEGS: Connected</color>\n";
-            else
-                parts += "<color=#888888>LEGS: Disconnected</color>\n";
+            if (localizedPartsTitle != null)
+                parts = localizedPartsTitle.GetLocalizedString() + "\n\n";
 
-            if (GameManager.Instance.hasArms)
-                parts += "<color=#00FF00>ARMS: Connected</color>\n";
-            else
-                parts += "<color=#888888>ARMS: Disconnected</color>\n";
+            // Torso
+            if (GameManager.Instance.hasTorso && localizedTorsoConnected != null)
+                parts += "<color=#00FF00>" + localizedTorsoConnected.GetLocalizedString() + "</color>\n";
+            else if (localizedTorsoDisconnected != null)
+                parts += "<color=#888888>" + localizedTorsoDisconnected.GetLocalizedString() + "</color>\n";
 
-            if (GameManager.Instance.hasTorso)
-                parts += "<color=#00FF00>TORSO: Connected</color>";
-            else
-                parts += "<color=#888888>TORSO: Disconnected</color>";
+            // Arms
+            if (GameManager.Instance.hasArms && localizedArmsConnected != null)
+                parts += "<color=#00FF00>" + localizedArmsConnected.GetLocalizedString() + "</color>\n";
+            else if (localizedArmsDisconnected != null)
+                parts += "<color=#888888>" + localizedArmsDisconnected.GetLocalizedString() + "</color>\n";
+
+            // Legs
+            if (GameManager.Instance.hasLegs && localizedLegsConnected != null)
+                parts += "<color=#00FF00>" + localizedLegsConnected.GetLocalizedString() + "</color>";
+            else if (localizedLegsDisconnected != null)
+                parts += "<color=#888888>" + localizedLegsDisconnected.GetLocalizedString() + "</color>";
+
 
             partsStatusText.text = parts;
         }
 
-        if (ecoMemoriesText != null)
+        // Eco-Memories
+        if (ecoMemoriesText != null && localizedEcoMemories != null)
         {
             MemoryManager memoryManager = FindObjectOfType<MemoryManager>();
             if (memoryManager != null)
             {
                 int collected = memoryManager.GetCollectedCount();
                 int total = memoryManager.GetTotalCount();
-                ecoMemoriesText.text = $"ECO-MEMORIES: {collected}/{total}";
+                localizedEcoMemories.Arguments = new object[] { collected, total };
+                ecoMemoriesText.text = localizedEcoMemories.GetLocalizedString();
             }
             else
             {
-                ecoMemoriesText.text = "ECO-MEMORIES: 0/9";
+                localizedEcoMemories.Arguments = new object[] { 0, 9 };
+                ecoMemoriesText.text = localizedEcoMemories.GetLocalizedString();
             }
         }
 
+        // Instructions/Goal - BASADO EN EL NIVEL ACTUAL
         if (instructionsText != null)
         {
+            string sceneName = SceneManager.GetActiveScene().name;
             GameObject playerGO = GameObject.FindGameObjectWithTag("Player");
             if (playerGO != null)
             {
                 PlayerController player = playerGO.GetComponent<PlayerController>();
                 if (player != null)
                 {
-                    if (!player.hasLegs)
-                        instructionsText.text = "GOAL:\nFind your LEGS in the Assembly Zone";
-                    else if (!player.hasArms)
-                        instructionsText.text = "GOAL:\nFind your ARMS in Tapes and Packaging";
-                    else if (!player.hasTorso)
-                        instructionsText.text = "GOAL:\nFind your TORSO on the Rooftop";
-                    else
-                        instructionsText.text = "GOAL:\nDEFEAT A.N.C.L.A.!";
+                    if (!player.hasTorso && localizedGoalTorso != null)
+                    {
+                        instructionsText.text = localizedGoalTorso.GetLocalizedString();
+                    }
+                    else if (!player.hasLegs && localizedGoalLegs != null)
+                    {
+                        instructionsText.text = localizedGoalLegs.GetLocalizedString();
+                    }
+                    else if (!player.hasArms && localizedGoalArms != null)
+                    {
+                        instructionsText.text = localizedGoalArms.GetLocalizedString();
+                    }
+                    else if (localizedGoalFinal != null)
+                    {
+                        instructionsText.text = localizedGoalFinal.GetLocalizedString();
+                    }
                 }
             }
+        }
+    }
+
+    private string GetLocalizedLevelName(string sceneName)
+    {
+        if (sceneName.Contains("Level_01") || sceneName.Contains("Ensamble"))
+        {
+            return localizedLevel1 != null ? localizedLevel1.GetLocalizedString() : "1 - Assembly Zone";
+        }
+        else if (sceneName.Contains("Level_02") || sceneName.Contains("Tapes"))
+        {
+            return localizedLevel2 != null ? localizedLevel2.GetLocalizedString() : "2 - Tapes and Packaging";
+        }
+        else if (sceneName.Contains("Level_03") || sceneName.Contains("Azotea"))
+        {
+            return localizedLevel3 != null ? localizedLevel3.GetLocalizedString() : "3 - Rooftop-Heliport";
+        }
+        else if (sceneName.Contains("Test"))
+        {
+            return localizedTestLevel != null ? localizedTestLevel.GetLocalizedString() : "TEST LEVEL";
+        }
+        else
+        {
+            return sceneName;
         }
     }
 
@@ -733,20 +822,6 @@ public class PersistentHUD : MonoBehaviour
     {
         string sceneName = SceneManager.GetActiveScene().name;
         return sceneName.Contains("Menu") || sceneName.Contains("MainMenu");
-    }
-
-    private string GetLevelDisplayName(string sceneName)
-    {
-        if (sceneName.Contains("Level_01") || sceneName.Contains("Ensamble"))
-            return "1 - Assembly Zone";
-        else if (sceneName.Contains("Level_02") || sceneName.Contains("Tapes"))
-            return "2 - Tapes and Packaging";
-        else if (sceneName.Contains("Level_03") || sceneName.Contains("Azotea"))
-            return "3 - Rooftop-Heliport";
-        else if (sceneName.Contains("Test"))
-            return "TEST LEVEL";
-        else
-            return sceneName;
     }
 
     public bool IsPaused()

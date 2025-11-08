@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Localization;
 
 public class EnterLegRoomTrigger : MonoBehaviour
 {
@@ -11,20 +12,20 @@ public class EnterLegRoomTrigger : MonoBehaviour
     [Header("Cápsula")]
     [SerializeField] private LegCapsuleController capsuleController;
 
-    [Header("Mensaje inicial")]
-    [TextArea(2, 4)]
-    [SerializeField] private string message = "Recolector biomecánico localizado.\nMódulo Piernas disponible.";
+    [Header("Mensaje inicial localizado")]
+    [SerializeField] private LocalizedString localizedMessage;
     [SerializeField] private float messageDuration = 2.5f;
 
     private void OnTriggerEnter(Collider other)
     {
         if (triggered) return;
         if (!other.CompareTag(playerTag)) return;
+
         triggered = true;
 
-        if (DialogueUI.Instance != null)
+        if (DialogueUI.Instance != null && localizedMessage != null)
         {
-            DialogueUI.Instance.ShowText(message);
+            DialogueUI.Instance.ShowText(localizedMessage.GetLocalizedString());
             StartCoroutine(HideMessageAfterDelay());
         }
 
