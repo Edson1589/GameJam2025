@@ -80,7 +80,6 @@ public class InputManager : MonoBehaviour
         }
     }
 
-    // Métodos helper para usar en tu código de juego
     public bool GetKeyDown(string actionName)
     {
         return Input.GetKeyDown(GetKeyForAction(actionName));
