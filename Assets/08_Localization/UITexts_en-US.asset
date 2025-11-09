@@ -377,5 +377,21 @@ MonoBehaviour:
       voice matters.'
     m_Metadata:
       m_Items: []
+  - m_Id: 781643407925248
+    m_Localized: ECO-MEMORY #{0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 781726190903296
+    m_Localized: 'Memories: {0}/{1}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 781689515909120
+    m_Localized: Press E to close
+    m_Metadata:
+      m_Items: []
+  - m_Id: 783258244325376
+    m_Localized: 'Ammo: {0}/{1}'
+    m_Metadata:
+      m_Items: []
   references:
     version: 1

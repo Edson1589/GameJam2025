@@ -1,5 +1,7 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.Localization;
+using UnityEngine.Localization.Settings;
 
 public class PlayerAmmoSystem : MonoBehaviour
 {
@@ -10,16 +12,16 @@ public class PlayerAmmoSystem : MonoBehaviour
 
     [Header("UI")]
     [SerializeField] private TextMeshProUGUI ammoText;
-    [SerializeField] private string ammoTextFormat = "Munición: {0}/{1}";
+    [SerializeField] private LocalizedString localizedAmmoText; // "Munición: {0}/{1}" o "Ammo: {0}/{1}"
 
     [Header("Audio")]
     [SerializeField] private AudioClip noAmmoSound;
     [SerializeField] private AudioClip reloadSound;
     [SerializeField, Range(0f, 1f)] private float soundVolume = 0.7f;
+
     private AudioSource audioSource;
 
     public static PlayerAmmoSystem Instance { get; private set; }
-
     public int CurrentAmmo => currentAmmo;
     public int MaxAmmo => maxAmmo;
     public bool HasAmmo => currentAmmo > 0;
@@ -43,11 +45,31 @@ public class PlayerAmmoSystem : MonoBehaviour
         {
             audioSource = gameObject.AddComponent<AudioSource>();
             audioSource.playOnAwake = false;
-            audioSource.spatialBlend = 0f; // 2D sound para UI
+            audioSource.spatialBlend = 0f;
         }
     }
 
     private void Start()
+    {
+        UpdateUI();
+
+        // Suscribirse al evento de cambio de idioma
+        LocalizationSettings.SelectedLocaleChanged += OnLocaleChanged;
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this)
+        {
+            Instance = null;
+        }
+
+        // Desuscribirse del evento
+        LocalizationSettings.SelectedLocaleChanged -= OnLocaleChanged;
+    }
+
+    // Callback cuando cambia el idioma
+    private void OnLocaleChanged(UnityEngine.Localization.Locale locale)
     {
         UpdateUI();
     }
@@ -75,7 +97,6 @@ public class PlayerAmmoSystem : MonoBehaviour
     {
         if (currentAmmo < amount)
         {
-            // No hay suficiente munición
             if (noAmmoSound != null && audioSource != null)
             {
                 audioSource.PlayOneShot(noAmmoSound, soundVolume);
@@ -122,18 +143,10 @@ public class PlayerAmmoSystem : MonoBehaviour
 
     private void UpdateUI()
     {
-        if (ammoText != null)
+        if (ammoText != null && localizedAmmoText != null)
         {
-            ammoText.text = string.Format(ammoTextFormat, currentAmmo, maxAmmo);
-        }
-    }
-
-    private void OnDestroy()
-    {
-        if (Instance == this)
-        {
-            Instance = null;
+            string ammoFormat = localizedAmmoText.GetLocalizedString();
+            ammoText.text = string.Format(ammoFormat, currentAmmo, maxAmmo);
         }
     }
 }
-

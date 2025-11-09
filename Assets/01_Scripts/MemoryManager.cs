@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using TMPro;
 using System.Collections.Generic;
+using UnityEngine.Localization;
 
 public class MemoryManager : MonoBehaviour
 {
@@ -10,6 +11,10 @@ public class MemoryManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI memoryContentText;
     [SerializeField] private TextMeshProUGUI counterText;
     [SerializeField] private float displayDuration = 5f;
+
+    [Header("Localized Texts")]
+    [SerializeField] private LocalizedString localizedMemoryTitle; // "ECO-MEMORY #{0}"
+    [SerializeField] private LocalizedString localizedCounterText; // "Memories: {0}/{1}"
 
     [Header("Stats")]
     [SerializeField] private int totalMemories = 9;
@@ -82,9 +87,11 @@ public class MemoryManager : MonoBehaviour
         isDisplaying = true;
         displayTimer = displayDuration;
 
-        if (memoryTitleText != null)
+        if (memoryTitleText != null && localizedMemoryTitle != null)
         {
-            memoryTitleText.text = $"ECO-MEMORIE #{memoryID}";
+            // Usar localización con formato
+            string titleFormat = localizedMemoryTitle.GetLocalizedString();
+            memoryTitleText.text = string.Format(titleFormat, memoryID);
         }
 
         if (memoryContentText != null)
@@ -104,10 +111,11 @@ public class MemoryManager : MonoBehaviour
 
     private void UpdateCounter()
     {
-        if (counterText != null)
+        if (counterText != null && localizedCounterText != null)
         {
             int collected = GetCollectedCount();
-            counterText.text = $"Memories: {collected}/{totalMemories}";
+            string counterFormat = localizedCounterText.GetLocalizedString();
+            counterText.text = string.Format(counterFormat, collected, totalMemories);
         }
     }
 
