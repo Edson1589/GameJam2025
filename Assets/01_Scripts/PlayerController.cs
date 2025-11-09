@@ -23,11 +23,11 @@ public class PlayerController : MonoBehaviour
     public bool hasLegs = false;
     public bool hasArms = false;
     public bool hasTorso = false;
-    
+
     [Header("Level 3 Override")]
     [SerializeField] private bool allowJumpWithoutLegs = false; // Permite saltar sin piernas (útil para nivel 3)
 
-  
+
     public void SetAllowJumpWithoutLegs(bool allow)
     {
         allowJumpWithoutLegs = allow;
@@ -92,6 +92,40 @@ public class PlayerController : MonoBehaviour
     private CapsuleCollider capsuleCollider;
     private bool isTransitioningHeight = false;
 
+    [SerializeField] private float groundSnapUp = 2.0f;
+    [SerializeField] private float groundSnapDown = 5.0f;
+    [SerializeField] private LayerMask groundSnapMask = ~0;
+
+    private float GetHalfHeight()
+    {
+        if (capsuleCollider) return capsuleCollider.height * 0.5f;
+        return 0.5f;
+    }
+
+    private IEnumerator SnapToGroundNextFixed()
+    {
+        yield return new WaitForFixedUpdate();
+        SnapToGroundNow();
+    }
+
+    private void SnapToGroundNow()
+    {
+        if (!rb) return;
+
+        float halfH = GetHalfHeight();
+        Vector3 origin = transform.position + Vector3.up * groundSnapUp;
+
+        if (Physics.Raycast(origin, Vector3.down, out RaycastHit hit, groundSnapUp + groundSnapDown, groundSnapMask, QueryTriggerInteraction.Ignore))
+        {
+            float epsilon = 0.01f;
+            Vector3 target = hit.point + Vector3.up * (halfH + epsilon);
+            rb.position = target;
+
+            rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+            rb.angularVelocity = Vector3.zero;
+        }
+    }
+
     void Awake()
     {
         if (Instance == null)
@@ -107,6 +141,12 @@ public class PlayerController : MonoBehaviour
         if (camTransform == null) camTransform = Camera.main?.transform;
 
         rb = GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            rb.interpolation = RigidbodyInterpolation.Interpolate;
+            rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+            rb.constraints = RigidbodyConstraints.FreezeRotation;
+        }
         capsuleCollider = GetComponent<CapsuleCollider>();
         availableJumps = maxJumps;
 
@@ -208,7 +248,7 @@ public class PlayerController : MonoBehaviour
     private void HandleInput()
     {
         bool canJump = (hasLegs || allowJumpWithoutLegs) && availableJumps > 0;
-        
+
         // Debug del salto
         if (Input.GetKeyDown(KeyCode.Space))
         {
@@ -225,7 +265,7 @@ public class PlayerController : MonoBehaviour
             Debug.Log($"rb: {(rb != null ? "EXISTE" : "NULL")}");
             Debug.Log($"isGrounded: {isGrounded}");
         }
-        
+
         // Intentar salto con InputManager primero
         if (InputManager.Instance != null && InputManager.Instance.GetKeyDown("Jump") && canJump)
         {
@@ -289,13 +329,13 @@ public class PlayerController : MonoBehaviour
                 Debug.Log($"Jugador tocó el suelo. Saltos restablecidos: {availableJumps}");
             }
         }
-        
+
         // Si está en el suelo y no tiene saltos disponibles, restablecerlos (por seguridad)
         if (isGrounded && availableJumps == 0)
         {
             availableJumps = maxJumps;
         }
-        
+
         // Limitar availableJumps al máximo para evitar bugs
         if (availableJumps > maxJumps)
         {
@@ -352,21 +392,8 @@ public class PlayerController : MonoBehaviour
 
     private void AdjustHeightImmediate(BodyConfig config)
     {
-        float baseColliderHeight = GetHeightForConfig(config);
-        float targetHeight = baseColliderHeight + initialYOffset;
-
-        Vector3 targetPos = new Vector3(transform.position.x, targetHeight, transform.position.z);
-
-        if (rb != null)
-        {
-            rb.position = targetPos;
-        }
-        else
-        {
-            transform.position = targetPos;
-        }
-
         UpdateColliderAndPivot(config);
+        SnapToGroundNow();
     }
 
     private IEnumerator TransitionHeight(BodyConfig newConfig)
@@ -374,33 +401,14 @@ public class PlayerController : MonoBehaviour
         if (isTransitioningHeight) yield break;
         isTransitioningHeight = true;
 
-        if (rb != null) rb.isKinematic = true;
-
-        float startHeight = transform.position.y;
-        float baseEndHeight = GetHeightForConfig(newConfig);
-        float endHeight = baseEndHeight + initialYOffset;
-
-        float elapsed = 0f;
+        bool hadRB = rb != null;
+        if (hadRB) rb.isKinematic = true;
 
         UpdateColliderAndPivot(newConfig);
 
-        while (elapsed < heightTransitionDuration)
-        {
-            elapsed += Time.deltaTime;
-            float t = Mathf.SmoothStep(0, 1, elapsed / heightTransitionDuration);
+        yield return StartCoroutine(SnapToGroundNextFixed());
 
-            float newY = Mathf.Lerp(startHeight, endHeight, t);
-            Vector3 targetPos = new Vector3(transform.position.x, newY, transform.position.z);
-
-            transform.position = targetPos;
-
-            yield return null;
-        }
-
-        Vector3 finalPos = new Vector3(transform.position.x, endHeight, transform.position.z);
-        transform.position = finalPos;
-
-        if (rb != null)
+        if (hadRB)
         {
             rb.isKinematic = false;
             rb.velocity = Vector3.zero;
@@ -495,8 +503,11 @@ public class PlayerController : MonoBehaviour
 
         if (groundCheck != null)
         {
-            groundCheck.localPosition = new Vector3(0, -(targetHeight * 0.5f), 0);
+            float bottomLocal = (capsuleCollider.center.y - capsuleCollider.height * 0.5f);
+            float probeOffset = -0.05f;
+            groundCheck.localPosition = new Vector3(0f, bottomLocal + probeOffset, 0f);
         }
+
 
         EnforceAnimatorConnection();
     }
@@ -562,6 +573,7 @@ public class PlayerController : MonoBehaviour
         else
         {
             UpdateColliderAndPivot(newConfig);
+            StartCoroutine(SnapToGroundNextFixed());
         }
 
         if (GameManager.Instance != null)
@@ -572,13 +584,10 @@ public class PlayerController : MonoBehaviour
         UpdateStatusText();
         UpdateInstructions();
 
-        if (flashlight != null)
-        {
-            flashlight.SetActive(false);
-        }
-
+        if (flashlight != null) flashlight.SetActive(false);
         if (laser != null) laser.SetUnlocked(true);
     }
+
 
     public bool IsFullyAssembled()
     {

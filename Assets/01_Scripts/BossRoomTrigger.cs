@@ -31,15 +31,7 @@ public class BossRoomTrigger : MonoBehaviour
     [SerializeField] private LocalizedString localizedBossTitle;
     [SerializeField] private float bossTitleHold = 2.2f;
 
-    [Header("Música")]
-    [SerializeField] private AudioSource musicSource;
-    [SerializeField] private AudioClip bossMusic;
-    [SerializeField, Range(0f, 1f)] private float musicVolume = 0.85f;
-    [SerializeField] private float musicFadeIn = 0.5f;
-    [SerializeField] private bool loopBossMusic = true;
     [SerializeField] private PusherBotSpawner pusherSpawner;
-
-    private Coroutine musicFadeCo;
 
     private void OnTriggerEnter(Collider other)
     {
@@ -47,7 +39,6 @@ public class BossRoomTrigger : MonoBehaviour
         if (!other.CompareTag(playerTag)) return;
         triggered = true;
 
-        StartBossMusic();
         bossHpUI.gameObject.SetActive(true);
         bossHpUI.Show(true);
 
@@ -145,54 +136,5 @@ public class BossRoomTrigger : MonoBehaviour
             Gizmos.DrawCube(box.center, box.size);
             Gizmos.matrix = old;
         }
-    }
-
-    private void EnsureMusicSource()
-    {
-        if (musicSource) return;
-
-        var go = new GameObject("BossMusicSource");
-        go.transform.SetParent(transform);
-        musicSource = go.AddComponent<AudioSource>();
-        musicSource.playOnAwake = false;
-        musicSource.loop = loopBossMusic;
-        musicSource.spatialBlend = 0f;
-        musicSource.priority = 128;
-        musicSource.volume = 0f;
-    }
-
-    private IEnumerator FadeAudio(AudioSource src, float targetVol, float time)
-    {
-        time = Mathf.Max(0.0001f, time);
-        float start = src.volume, t = 0f;
-        while (t < 1f)
-        {
-            t += Time.deltaTime / time;
-            float k = t * t * (3f - 2f * t);
-            src.volume = Mathf.Lerp(start, targetVol, k);
-            yield return null;
-        }
-        src.volume = targetVol;
-    }
-
-    private void StartBossMusic()
-    {
-        if (!bossMusic)
-        {
-            Debug.LogWarning("Asigna el AudioClip de bossMusic en el Inspector.");
-            return;
-        }
-
-        EnsureMusicSource();
-
-        if (musicSource.isPlaying && musicSource.clip == bossMusic) return;
-
-        musicSource.clip = bossMusic;
-        musicSource.loop = loopBossMusic;
-        musicSource.volume = 0f;
-        musicSource.Play();
-
-        if (musicFadeCo != null) StopCoroutine(musicFadeCo);
-        musicFadeCo = StartCoroutine(FadeAudio(musicSource, musicVolume, musicFadeIn));
     }
 }

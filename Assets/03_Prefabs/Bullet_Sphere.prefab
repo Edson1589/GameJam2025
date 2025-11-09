@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7416451074615137122}
-  - component: {fileID: 3566201339968360871}
+  - component: {fileID: 5498652020190644291}
   - component: {fileID: 6922006472163447702}
   - component: {fileID: 1650947077827504077}
   - component: {fileID: 6571219419889409196}
@@ -35,7 +35,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3566201339968360871
+--- !u!114 &5498652020190644291
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

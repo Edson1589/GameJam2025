@@ -45,7 +45,8 @@ public class LaserRay : MonoBehaviour
     {
         // Verificar input de disparo
         bool shootInput = false;
-        
+        bool shootInput1 = false;
+
         if (useInputManager && InputManager.Instance != null)
         {
             // Intentar usar InputManager si está disponible
@@ -55,6 +56,7 @@ public class LaserRay : MonoBehaviour
         {
             // Usar input directo con la tecla K
             shootInput = Input.GetKeyDown(shootKey);
+            shootInput1 = Input.GetMouseButtonDown(0);
         }
 
         // Debug del input
@@ -63,7 +65,7 @@ public class LaserRay : MonoBehaviour
             Debug.Log($"LaserRay: Tecla {shootKey} presionada. shootInput: {shootInput}, unlocked: {unlocked}, requiresTorso: {requiresTorso}");
         }
 
-        if (shootInput)
+        if (shootInput || shootInput1)
         {
             TryFire();
         }
@@ -88,19 +90,19 @@ public class LaserRay : MonoBehaviour
             Debug.LogWarning("LaserRay: No está listo (cooldown activo)");
             return;
         }
-        
+
         if (requiresTorso && !unlocked)
         {
             Debug.LogWarning($"LaserRay: Requiere torso y no está desbloqueado. requiresTorso: {requiresTorso}, unlocked: {unlocked}");
             return;
         }
-        
+
         if (!projectilePrefab)
         {
             Debug.LogError("LaserRay: No hay projectilePrefab asignado!");
             return;
         }
-        
+
         if (!firePoint)
         {
             Debug.LogError("LaserRay: No hay firePoint asignado!");
@@ -116,7 +118,7 @@ public class LaserRay : MonoBehaviour
                 Debug.LogWarning("LaserRay: PlayerAmmoSystem no encontrado. ¿Está agregado al jugador?");
                 return;
             }
-            
+
             if (!ammoSystem.CanShoot(ammoPerShot))
             {
                 Debug.LogWarning($"LaserRay: No hay munición suficiente. Actual: {ammoSystem.CurrentAmmo}, Necesario: {ammoPerShot}");
@@ -152,7 +154,7 @@ public class LaserRay : MonoBehaviour
         Debug.Log($"LaserRay: Instanciando proyectil en {origin}, dirección: {dir}, velocidad: {projectileSpeed}");
 
         GameObject go = Instantiate(projectilePrefab, origin, Quaternion.LookRotation(dir, Vector3.up));
-        
+
         if (go == null)
         {
             Debug.LogError("LaserRay: No se pudo instanciar el proyectil!");
@@ -161,7 +163,7 @@ public class LaserRay : MonoBehaviour
 
         // Asegurar que el objeto esté activo
         go.SetActive(true);
-        
+
         Debug.Log($"LaserRay: Proyectil instanciado: {go.name}, activo: {go.activeSelf}");
 
         // Buscar scripts en el objeto y sus hijos (con más detalle)
@@ -171,7 +173,7 @@ public class LaserRay : MonoBehaviour
         {
             bullet = go.GetComponentInChildren<BulletProjectile>(true); // Incluir inactivos
         }
-        
+
         if (bullet != null)
         {
             bullet.Init(transform.root, dir, projectileSpeed, projectileLifetime);
@@ -185,7 +187,7 @@ public class LaserRay : MonoBehaviour
             {
                 playerBullet = go.GetComponentInChildren<PlayerBossBullet>(true);
             }
-            
+
             if (playerBullet != null)
             {
                 playerBullet.Init(transform.root, dir, projectileSpeed, projectileLifetime);
@@ -199,7 +201,7 @@ public class LaserRay : MonoBehaviour
                 {
                     proyeclvl3 = go.GetComponentInChildren<proyeclvl3>(true);
                 }
-                
+
                 if (proyeclvl3 != null)
                 {
                     // Usar la sobrecarga que incluye el owner para evitar colisiones con el jugador
@@ -215,7 +217,7 @@ public class LaserRay : MonoBehaviour
                     {
                         bossProjectile = go.GetComponentInChildren<BossProjectile>(true);
                     }
-                    
+
                     if (bossProjectile != null)
                     {
                         // Usar la sobrecarga que incluye el owner para evitar colisiones con el jugador
@@ -230,20 +232,20 @@ public class LaserRay : MonoBehaviour
                         {
                             Debug.LogWarning($"  - {comp.GetType().Name}");
                         }
-                        
+
                         var rb = go.GetComponent<Rigidbody>();
                         if (rb)
                         {
                             // Asegurar que el Rigidbody esté configurado correctamente
                             rb.useGravity = false;
                             rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
-                            
+
                             // Aplicar velocidad
                             rb.velocity = dir.normalized * projectileSpeed;
-                            
+
                             Debug.Log($"LaserRay: Proyectil configurado con Rigidbody. Velocidad: {rb.velocity}, Magnitud: {rb.velocity.magnitude}");
                             Debug.Log($"LaserRay: Posición inicial: {go.transform.position}, Destrucción en: {projectileLifetime}s");
-                            
+
                             Destroy(go, projectileLifetime);
                         }
                         else
@@ -298,7 +300,7 @@ public class LaserRay : MonoBehaviour
     private IEnumerator CheckProjectileAfterFrame(GameObject projectile)
     {
         yield return null; // Esperar un frame
-        
+
         if (projectile == null)
         {
             Debug.LogError("LaserRay: El proyectil fue destruido inmediatamente después de crearse!");
