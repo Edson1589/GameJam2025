@@ -35,6 +35,7 @@ public class ZoneTransitionTrigger : MonoBehaviour
         {
             if (nextZoneSpawnPoint)
             {
+                ZoneSpawnManager.Instance?.SetSpawnPoint(nextZoneSpawnPoint);
                 var rb = player.GetComponent<Rigidbody>();
                 if (rb) { rb.velocity = Vector3.zero; rb.angularVelocity = Vector3.zero; }
                 player.position = nextZoneSpawnPoint.position;

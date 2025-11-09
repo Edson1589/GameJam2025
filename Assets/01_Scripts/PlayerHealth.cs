@@ -99,7 +99,7 @@ public class PlayerHealth : MonoBehaviour
             // En el nivel 3, ownedMax debería ser 120 (todas las partes), pero si es 40, usamos eso
             float fill = ownedMax > 0 ? (float)currentHP / ownedMax : 0f;
             healthFillImage.fillAmount = Mathf.Clamp01(fill);
-            
+
             // Debug para verificar
             Debug.Log($"🩺 UI: {currentHP}/{ownedMax} = {fill * 100f:F1}% | fillAmount: {healthFillImage.fillAmount}");
         }
@@ -112,7 +112,14 @@ public class PlayerHealth : MonoBehaviour
     public int GetCurrentHP() => currentHP;
     public int GetOwnedMax() => ownedMax;
     public int GetFinalMax() => finalMax;
-    
+
     // Método público para que otros scripts verifiquen qué Image está usando
     public Image GetHealthFillImage() => healthFillImage;
+
+    public void KillInstant()
+    {
+        currentHP = 0;
+        DieAndRespawn();
+    }
+
 }

@@ -18,6 +18,13 @@ public class NPCKeyGiver : MonoBehaviour
     [SerializeField] private TMP_Text promptText;
     [SerializeField] private LocalizedString localizedPromptText;
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource sfxSource;
+    [SerializeField] private AudioClip sfxGive;
+    [SerializeField] private AudioClip sfxRepeat;
+    [SerializeField, Range(0f, 1f)] private float sfxVolume = 1f;
+    [SerializeField] private Vector2 pitchRange = new Vector2(0.98f, 1.02f);
+
     private bool playerInRange = false;
     private bool keyGiven = false;
     private PlayerInventory playerInv;
@@ -26,6 +33,16 @@ public class NPCKeyGiver : MonoBehaviour
     {
         if (promptUI != null)
             promptUI.SetActive(false);
+
+        if (!sfxSource)
+        {
+            sfxSource = GetComponent<AudioSource>();
+            if (!sfxSource) sfxSource = gameObject.AddComponent<AudioSource>();
+            sfxSource.playOnAwake = false;
+            sfxSource.loop = false;
+            sfxSource.spatialBlend = 1f;
+            sfxSource.dopplerLevel = 0f;
+        }
     }
 
     private void Update()
@@ -38,6 +55,7 @@ public class NPCKeyGiver : MonoBehaviour
                 {
                     playerInv.GiveKey();
                     keyGiven = true;
+                    PlayOne(sfxGive);
 
                     if (DialogueUI.Instance != null && localizedFirstMessage != null)
                     {
@@ -47,6 +65,7 @@ public class NPCKeyGiver : MonoBehaviour
                 }
                 else
                 {
+                    PlayOne(sfxRepeat);
                     if (DialogueUI.Instance != null && localizedRepeatMessage != null)
                     {
                         DialogueUI.Instance.ShowText(localizedRepeatMessage.GetLocalizedString());
@@ -89,6 +108,22 @@ public class NPCKeyGiver : MonoBehaviour
 
             if (DialogueUI.Instance != null)
                 DialogueUI.Instance.HideText();
+        }
+    }
+
+    private void PlayOne(AudioClip clip, float volMul = 1f)
+    {
+        if (!clip) return;
+
+        if (sfxSource)
+        {
+            sfxSource.pitch = Random.Range(pitchRange.x, pitchRange.y);
+            sfxSource.PlayOneShot(clip, sfxVolume * volMul);
+        }
+        else
+        {
+            // Fallback: si no hay AudioSource por alguna razón
+            AudioSource.PlayClipAtPoint(clip, transform.position, sfxVolume * volMul);
         }
     }
 }

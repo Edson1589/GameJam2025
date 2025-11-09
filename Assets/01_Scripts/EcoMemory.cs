@@ -13,6 +13,10 @@ public class EcoMemory : MonoBehaviour
     [SerializeField] private float pulseSpeed = 2f;
     [SerializeField] private float pulseIntensity = 0.3f;
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip pickupSfx;
+    [SerializeField, Range(0f, 1f)] private float pickupVolume = 1f;
+
     private Vector3 startPosition;
     private Renderer memoryRenderer;
     private Material memoryMaterial;
@@ -60,6 +64,8 @@ public class EcoMemory : MonoBehaviour
 
     private void CollectMemory(PlayerController player)
     {
+        if (pickupSfx)
+            AudioSource.PlayClipAtPoint(pickupSfx, transform.position, pickupVolume);
         // Registrar en el gestor de coleccionables (si existe)
         MemoryManager manager = FindObjectOfType<MemoryManager>();
         if (manager != null)
@@ -78,7 +84,7 @@ public class EcoMemory : MonoBehaviour
         Destroy(gameObject);
     }
 
-    // Visualización en editor
+    // Visualizaciï¿½n en editor
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.cyan;

@@ -25,6 +25,14 @@ public class TorsoPickup : MonoBehaviour
     private AudioSource audioSource;
     [SerializeField] private PlayerAmmoSystem Ammo;
 
+    [Header("Activar al recoger el torso")]
+    [SerializeField] private GameObject[] objectsToEnable;
+
+    [SerializeField] private Collider[] collidersToEnable;
+
+    [Header("Estado inicial (opcional)")]
+    [SerializeField] private bool forceDisableTargetsOnStart = true;
+
     void Start()
     {
         startPosition = transform.position;
@@ -81,6 +89,7 @@ public class TorsoPickup : MonoBehaviour
 
         // 1) Cambios de gameplay
         player.ConnectTorso();
+        ActivateTargets();
         if (Ammo) Ammo.AddAmmo(10);
 
         // 2) Garantizar colisión válida en el player
@@ -112,5 +121,20 @@ public class TorsoPickup : MonoBehaviour
 
         // 4) Destruir el pickup
         Destroy(gameObject);
+    }
+
+    private void ActivateTargets()
+    {
+        if (objectsToEnable != null)
+        {
+            foreach (var go in objectsToEnable)
+                if (go) go.SetActive(true);
+        }
+
+        if (collidersToEnable != null)
+        {
+            foreach (var c in collidersToEnable)
+                if (c) c.enabled = true;
+        }
     }
 }

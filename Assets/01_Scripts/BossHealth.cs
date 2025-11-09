@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class BossHealth : MonoBehaviour
 {
@@ -13,6 +14,13 @@ public class BossHealth : MonoBehaviour
     [SerializeField] private BossController boss;
 
     private bool isDead = false;
+
+    [Header("Activar al morir")]
+    [SerializeField] private GameObject[] enableOnDeath;
+
+    [SerializeField] private Collider[] enableCollidersOnDeath;
+
+    [SerializeField] private float showTriggerDelay = 0f;
 
     void Awake()
     {
@@ -44,8 +52,33 @@ public class BossHealth : MonoBehaviour
 
         if (boss) boss.OnBossDeathRequested();
         else Destroy(gameObject);
+
+        if (showTriggerDelay > 0f)
+            StartCoroutine(EnableTargetsAfterDelay(showTriggerDelay));
+        else
+            EnableTargets();
     }
 
+    private IEnumerator EnableTargetsAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        EnableTargets();
+    }
+
+    private void EnableTargets()
+    {
+        if (enableOnDeath != null)
+        {
+            foreach (var go in enableOnDeath)
+                if (go) go.SetActive(true);
+        }
+
+        if (enableCollidersOnDeath != null)
+        {
+            foreach (var col in enableCollidersOnDeath)
+                if (col) col.enabled = true;
+        }
+    }
 
     public int CurrentHP => currentHP;
     public int MaxHP => maxHP;

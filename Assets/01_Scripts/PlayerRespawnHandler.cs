@@ -1,20 +1,32 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerRespawnHandler : MonoBehaviour
 {
-    [Header("Punto donde reaparece el jugador")]
+    [Header("Fallback (opcional) si no hay manager")]
     [SerializeField] private Transform respawnPoint;
+    [SerializeField] private bool alignRotationToSpawn = true;
 
-    [Header("Opcional si usas Rigidbody")]
+    [Header("Física (opcional)")]
     [SerializeField] private Rigidbody rb;
+    [SerializeField] private CharacterController characterController;
 
     public void RespawnNow()
     {
-        if (respawnPoint != null)
+        TeleportToSpawn();
+        OnPlayerRespawned();
+    }
+
+    private void TeleportToSpawn()
+    {
+        Transform spawn = ZoneSpawnManager.Instance ? ZoneSpawnManager.Instance.GetSpawnPoint() : null;
+
+        if (spawn == null) spawn = respawnPoint;
+
+        if (spawn == null)
         {
-            transform.position = respawnPoint.position;
+            Debug.LogWarning("PlayerRespawnHandler: No hay punto de respawn disponible.");
+            return;
         }
 
         if (rb != null)
@@ -23,22 +35,29 @@ public class PlayerRespawnHandler : MonoBehaviour
             rb.angularVelocity = Vector3.zero;
         }
 
-        Debug.Log("Jugador respawneado al inicio del pasillo 4.");
+        bool reEnableCC = false;
+        if (characterController && characterController.enabled)
+        {
+            characterController.enabled = false;
+            reEnableCC = true;
+        }
 
-        // Notificar que el jugador ha respawneado (para restaurar boss y munición)
-        OnPlayerRespawned();
+        transform.position = spawn.position;
+        if (alignRotationToSpawn) transform.rotation = spawn.rotation;
+
+        if (reEnableCC) characterController.enabled = true;
+
+        Debug.Log($"Jugador respawneado en: {spawn.name}");
     }
 
     private void OnPlayerRespawned()
     {
-        // Restaurar salud del boss
         AnchorMother boss = FindObjectOfType<AnchorMother>();
         if (boss != null)
         {
             boss.RestoreFullHealth();
         }
 
-        // Restaurar todos los AmmoPickup
         AmmoPickup[] allAmmoPickups = FindObjectsOfType<AmmoPickup>();
         foreach (AmmoPickup pickup in allAmmoPickups)
         {

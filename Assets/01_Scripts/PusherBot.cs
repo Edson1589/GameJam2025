@@ -23,6 +23,26 @@ public class PusherBot : MonoBehaviour
     private float remaining;
     private Vector3 forwardDir;
     private PusherBotSpawner spawner;
+    [Header("Audio")]
+    [SerializeField] private AudioSource sfxSource;
+    [SerializeField] private AudioClip sfxPusher;
+    [SerializeField, Range(0f, 1f)] private float sfxVolume = 1f;
+    [SerializeField] private Vector2 pitchRange = new Vector2(0.98f, 1.02f);
+
+    private void PlayOne(AudioClip clip, float volMul = 1f)
+    {
+        if (!clip) return;
+
+        if (sfxSource)
+        {
+            sfxSource.pitch = Random.Range(pitchRange.x, pitchRange.y);
+            sfxSource.PlayOneShot(clip, sfxVolume * volMul);
+        }
+        else
+        {
+            AudioSource.PlayClipAtPoint(clip, transform.position, sfxVolume * volMul);
+        }
+    }
 
     public void Init(Transform playerRef, float lifetimeOverride, PusherBotSpawner owner)
     {
@@ -44,9 +64,11 @@ public class PusherBot : MonoBehaviour
 
     void Awake()
     {
+        if (!sfxSource) sfxSource = GetComponent<AudioSource>();
         if (remaining <= 0f) remaining = lifeSeconds;
         if (forwardDir.sqrMagnitude < 0.0001f) forwardDir = transform.forward.normalized;
         UpdateLifeUI();
+        PlayOne(sfxPusher, 1f);
     }
 
     void Update()
