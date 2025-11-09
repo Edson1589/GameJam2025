@@ -366,5 +366,19 @@ MonoBehaviour:
     m_Localized: "Munici\xF3n: {0}/{1}"
     m_Metadata:
       m_Items: []
+  - m_Id: 876776342134784
+    m_Localized: 'ALERTA: Unidad R.U.B.O. detectada.
+
+      Procediendo a captura.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 877689467281408
+    m_Localized: '[E] Abrir'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 877727471869952
+    m_Localized: Encuentra la llave
+    m_Metadata:
+      m_Items: []
   references:
     version: 1

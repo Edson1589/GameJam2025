@@ -1,12 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Localization;
 
 public class ChaseCorridorTriggerSimple : MonoBehaviour
 {
-    [Header("Mensaje de alerta")]
-    [TextArea(2, 4)]
-    [SerializeField] private string alertText = "ALERTA: Unidad R.U.B.O. detectada.\nProcediendo a captura.";
+    [Header("Mensaje de alerta localizado")]
+    [SerializeField] private LocalizedString localizedAlertText;
     [SerializeField] private float alertDuration = 2.5f;
 
     [Header("Spawn del dron")]
@@ -25,9 +25,9 @@ public class ChaseCorridorTriggerSimple : MonoBehaviour
 
         triggered = true;
 
-        if (DialogueUI.Instance != null)
+        if (DialogueUI.Instance != null && localizedAlertText != null)
         {
-            DialogueUI.Instance.ShowText(alertText);
+            DialogueUI.Instance.ShowText(localizedAlertText.GetLocalizedString());
             StartCoroutine(HideAlertAfter(alertDuration));
         }
 

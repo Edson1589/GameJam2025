@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.12704206, g: 0.13238367, b: 0.10719695, a: 1}
+  m_IndirectSpecularColor: {r: 0.39453125, g: 0.4024032, b: 0.36376193, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -4334,7 +4334,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   respawnPoint: {fileID: 250789804}
+  alignRotationToSpawn: 1
   rb: {fileID: 897100807}
+  characterController: {fileID: 0}
+  maxHP: 100
 --- !u!114 &897100810
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4484,10 +4487,20 @@ MonoBehaviour:
   currentAmmo: 0
   startingAmmo: 0
   ammoText: {fileID: 1872694962}
-  ammoTextFormat: 'Ammunition: {0}/{1}'
+  localizedAmmoText:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   noAmmoSound: {fileID: 0}
   reloadSound: {fileID: 0}
   soundVolume: 0.7
+  references:
+    version: 1
 --- !u!114 &897100818
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6816,7 +6829,27 @@ MonoBehaviour:
   memoryContentText: {fileID: 847127968}
   counterText: {fileID: 1773094948}
   displayDuration: 5
+  localizedMemoryTitle:
+    m_TableReference:
+      m_TableCollectionName: GUID:17c2654aacae7b94382b24533b670dcc
+    m_TableEntryReference:
+      m_KeyId: 781643407925248
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  localizedCounterText:
+    m_TableReference:
+      m_TableCollectionName: GUID:17c2654aacae7b94382b24533b670dcc
+    m_TableEntryReference:
+      m_KeyId: 781726190903296
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   totalMemories: 9
+  references:
+    version: 1
 --- !u!4 &1286024913
 Transform:
   m_ObjectHideFlags: 0
@@ -11712,6 +11745,49 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d904146aff794c44caa8edd1f4f19454, type: 3}
+--- !u!1 &1297507913
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1297507915}
+  - component: {fileID: 1297507914}
+  m_Layer: 0
+  m_Name: LevelInitializer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1297507914
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1297507913}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 804e51e330e7f634dafa987c1d4654a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &1297507915
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1297507913}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 353.16257, y: 32.54771, z: 18.941946}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 81
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1317401374
 GameObject:
   m_ObjectHideFlags: 0
@@ -12157,13 +12233,14 @@ MonoBehaviour:
       m_KeyId: 747176849022976
       m_Key: 
     m_FallbackState: 0
-    m_WaitForCompletion: 0
+    m_WaitForCompletion: 1
     m_LocalVariables: []
   rotationSpeed: 60
   floatAmplitude: 0.2
   floatSpeed: 3
   pulseSpeed: 2
   pulseIntensity: 0.3
+  pickupSfx: {fileID: 0}
   references:
     version: 1
 --- !u!33 &1345880645
@@ -12648,13 +12725,14 @@ MonoBehaviour:
       m_KeyId: 747187523526656
       m_Key: 
     m_FallbackState: 0
-    m_WaitForCompletion: 0
+    m_WaitForCompletion: 1
     m_LocalVariables: []
   rotationSpeed: 60
   floatAmplitude: 0.2
   floatSpeed: 3
   pulseSpeed: 2
   pulseIntensity: 0.3
+  pickupSfx: {fileID: 0}
   references:
     version: 1
 --- !u!33 &1422230752
@@ -15414,6 +15492,7 @@ GameObject:
   - component: {fileID: 2003356236}
   - component: {fileID: 2003356238}
   - component: {fileID: 2003356237}
+  - component: {fileID: 2003356239}
   m_Layer: 10
   m_Name: Text_MemoryInstruction
   m_TagString: Untagged
@@ -15537,6 +15616,45 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2003356235}
   m_CullTransparentMesh: 1
+--- !u!114 &2003356239
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2003356235}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56eb0353ae6e5124bb35b17aff880f16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_StringReference:
+    m_TableReference:
+      m_TableCollectionName: GUID:17c2654aacae7b94382b24533b670dcc
+    m_TableEntryReference:
+      m_KeyId: 781689515909120
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  m_FormatArguments: []
+  m_UpdateString:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2003356237}
+        m_TargetAssemblyTypeName: TMPro.TMP_Text, Unity.TextMeshPro
+        m_MethodName: set_text
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  references:
+    version: 1
 --- !u!1 &2013730521
 GameObject:
   m_ObjectHideFlags: 0

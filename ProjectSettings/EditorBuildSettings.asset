@@ -18,11 +18,11 @@ EditorBuildSettings:
     path: Assets/00_Scenes/TEST.unity
     guid: 63560360189b95b46bc0b010b9a128db
   - enabled: 1
+    path: Assets/00_Scenes/VideoScene.unity
+    guid: ffe246baf139d2247b6bdbc8563ded3c
+  - enabled: 1
     path: Assets/00_Scenes/Level_01_Ensamblee 5.unity
     guid: 705b7bedbbebfad42a9874196c2302d6
-  - enabled: 1
-    path: Assets/00_Scenes/Level_01_Ensamblee.unity
-    guid: 6a83e54cf05007b498432cc28f72606f
   - enabled: 1
     path: Assets/00_Scenes/Level_02_Tapes.unity
     guid: 44886179fdb9b4d40b099a9138ce50c5
@@ -33,11 +33,11 @@ EditorBuildSettings:
     path: Assets/00_Scenes/Level_03_Azotea.unity
     guid: 471c4c96844ad3d4eb0c5d1d5d0aeffc
   - enabled: 1
-    path: Assets/00_Scenes/VideoScene.unity
-    guid: ffe246baf139d2247b6bdbc8563ded3c
-  - enabled: 1
     path: Assets/00_Scenes/VideoSceneFinal.unity
     guid: 16df3f0e770d83844b7e6d4ed578325d
+  - enabled: 0
+    path: Assets/00_Scenes/Level_01_Ensamblee.unity
+    guid: 6a83e54cf05007b498432cc28f72606f
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: 7ad20eba81f05474ca84602fd5698525, type: 2}
     com.unity.localization.settings: {fileID: 11400000, guid: da99cd83901342340ac8ece5bbcd80e7, type: 2}

@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44557828, g: 0.52106774, b: 0.54623896, a: 1}
+  m_IndirectSpecularColor: {r: 0.70325184, g: 0.7543926, b: 0.7704332, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -418,6 +418,7 @@ MonoBehaviour:
   onMaterial: {fileID: 2100000, guid: eb36a8d142177f041884b73c6c1638ce, type: 2}
   offMaterial: {fileID: 2100000, guid: 58b238ec894568f46ac8ac7ecff24e30, type: 2}
   jammedMaterial: {fileID: 2100000, guid: afdb84d5f1a862f498f93b2e34c999bb, type: 2}
+  canActivate: 1
 --- !u!33 &22409902
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -1450,6 +1451,7 @@ MonoBehaviour:
   alignRotationToSpawn: 1
   rb: {fileID: 122415828}
   characterController: {fileID: 0}
+  maxHP: 100
 --- !u!114 &122415836
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2452,7 +2454,27 @@ MonoBehaviour:
   memoryContentText: {fileID: 353273981}
   counterText: {fileID: 1130297396}
   displayDuration: 5
+  localizedMemoryTitle:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  localizedCounterText:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   totalMemories: 9
+  references:
+    version: 1
 --- !u!4 &179196590
 Transform:
   m_ObjectHideFlags: 0
@@ -6303,7 +6325,6 @@ MonoBehaviour:
   pulseSpeed: 2
   pulseIntensity: 0.3
   pickupSfx: {fileID: 0}
-  pickupVolume: 1
   references:
     version: 1
 --- !u!33 &651170573
@@ -10157,7 +10178,6 @@ MonoBehaviour:
   pulseSpeed: 2
   pulseIntensity: 0.3
   pickupSfx: {fileID: 0}
-  pickupVolume: 1
   references:
     version: 1
 --- !u!33 &1264349981
@@ -14292,13 +14312,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d23c14045cf28a747a86b5ef10b69dec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  alertText: 'ALERTA: Unidad R.U.B.O. detectada.
-
-    Procediendo a captura.'
+  localizedAlertText:
+    m_TableReference:
+      m_TableCollectionName: GUID:17c2654aacae7b94382b24533b670dcc
+    m_TableEntryReference:
+      m_KeyId: 876776342134784
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   alertDuration: 2.5
   dronePrefab: {fileID: 5221888410546046341, guid: 2c154d6c678494e4f839a689e774d681, type: 3}
   droneSpawnPoint: {fileID: 1767488799}
   playerTag: Player
+  references:
+    version: 1
 --- !u!4 &1642640687
 Transform:
   m_ObjectHideFlags: 0
@@ -14752,7 +14780,6 @@ MonoBehaviour:
   pulseSpeed: 2
   pulseIntensity: 0.3
   pickupSfx: {fileID: 0}
-  pickupVolume: 1
   references:
     version: 1
 --- !u!33 &1702304860

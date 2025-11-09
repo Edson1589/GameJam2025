@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Localization;
+using System.Collections;
 
 public class EcoMemory : MonoBehaviour
 {
@@ -53,14 +54,13 @@ public class EcoMemory : MonoBehaviour
         PlayerController player = other.GetComponent<PlayerController>();
         if (player != null)
         {
-            CollectMemory(player);
+            StartCoroutine(CollectMemoryCoroutine(player));
         }
     }
 
-    private void CollectMemory(PlayerController player)
+    private IEnumerator CollectMemoryCoroutine(PlayerController player)
     {
         AudioSource playerSFXSource = player.GetComponent<AudioSource>();
-
         if (playerSFXSource != null && pickupSfx != null)
         {
             playerSFXSource.PlayOneShot(pickupSfx);
@@ -70,7 +70,18 @@ public class EcoMemory : MonoBehaviour
 
         if (localizedMemoryText != null)
         {
-            memoryText = localizedMemoryText.GetLocalizedString();
+            var op = localizedMemoryText.GetLocalizedStringAsync();
+            yield return op;
+
+            if (op.IsDone && op.Status == UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
+            {
+                memoryText = op.Result;
+            }
+            else
+            {
+                Debug.LogError("Fallo al cargar la memoria localizada: " + localizedMemoryText.TableEntryReference.Key);
+                memoryText = "ERROR DE CARGA: " + localizedMemoryText.TableEntryReference.Key;
+            }
         }
 
         MemoryManager manager = FindObjectOfType<MemoryManager>();
@@ -80,7 +91,7 @@ public class EcoMemory : MonoBehaviour
         }
         else
         {
-            Debug.Log($"=== ECO-MEMORIA #{memoryID} ===");
+            Debug.Log("=== ECO-MEMORIA #" + memoryID + " ===");
             Debug.Log(memoryText);
             Debug.Log("========================");
         }

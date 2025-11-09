@@ -393,5 +393,19 @@ MonoBehaviour:
     m_Localized: 'Ammo: {0}/{1}'
     m_Metadata:
       m_Items: []
+  - m_Id: 876776342134784
+    m_Localized: 'ALERT: R.U.B.O. unit detected.
+
+      Proceeding to capture.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 877689467281408
+    m_Localized: '[E] Open'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 877727471869952
+    m_Localized: Find the key
+    m_Metadata:
+      m_Items: []
   references:
     version: 1

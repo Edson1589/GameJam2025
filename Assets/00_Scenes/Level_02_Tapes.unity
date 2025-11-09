@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44557828, g: 0.52106774, b: 0.54623896, a: 1}
+  m_IndirectSpecularColor: {r: 0.70325184, g: 0.7543926, b: 0.7704332, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1173,13 +1173,14 @@ MonoBehaviour:
       m_KeyId: 747152400424960
       m_Key: 
     m_FallbackState: 0
-    m_WaitForCompletion: 0
+    m_WaitForCompletion: 1
     m_LocalVariables: []
   rotationSpeed: 60
   floatAmplitude: 0.2
   floatSpeed: 3
   pulseSpeed: 2
   pulseIntensity: 0.3
+  pickupSfx: {fileID: 0}
   references:
     version: 1
 --- !u!33 &281603611
@@ -1379,6 +1380,49 @@ Transform:
   m_Father: {fileID: 1321073531}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 45, y: 0, z: 0}
+--- !u!1 &348807631
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 348807633}
+  - component: {fileID: 348807632}
+  m_Layer: 0
+  m_Name: LevelInitializer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &348807632
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 348807631}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 804e51e330e7f634dafa987c1d4654a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &348807633
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 348807631}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 353.16257, y: 32.54771, z: 18.941946}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 55
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &381194443
 GameObject:
   m_ObjectHideFlags: 0
@@ -2047,7 +2091,27 @@ MonoBehaviour:
   memoryContentText: {fileID: 1331793977}
   counterText: {fileID: 1726342357}
   displayDuration: 5
+  localizedMemoryTitle:
+    m_TableReference:
+      m_TableCollectionName: GUID:17c2654aacae7b94382b24533b670dcc
+    m_TableEntryReference:
+      m_KeyId: 781643407925248
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  localizedCounterText:
+    m_TableReference:
+      m_TableCollectionName: GUID:17c2654aacae7b94382b24533b670dcc
+    m_TableEntryReference:
+      m_KeyId: 781726190903296
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   totalMemories: 9
+  references:
+    version: 1
 --- !u!4 &505369427
 Transform:
   m_ObjectHideFlags: 0
@@ -2412,7 +2476,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   respawnPoint: {fileID: 0}
+  alignRotationToSpawn: 1
   rb: {fileID: 601994755}
+  characterController: {fileID: 0}
+  maxHP: 100
 --- !u!114 &601994758
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2473,7 +2540,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animatorControllerAsset: {fileID: 0}
-  moveSpeed: 30
+  moveSpeed: 17
   jumpForce: 8
   groundCheck: {fileID: 799633461}
   groundCheckRadius: 0.15
@@ -2490,7 +2557,7 @@ MonoBehaviour:
   magneticResistance: 0.5
   statusText: {fileID: 1184497809}
   instructionsText: {fileID: 455530487}
-  maxJumps: 123
+  maxJumps: 2
   camTransform: {fileID: 0}
   pulseSpeed: 2
   pulseMinScale: 0.95
@@ -3394,13 +3461,14 @@ MonoBehaviour:
       m_KeyId: 747128924905472
       m_Key: 
     m_FallbackState: 0
-    m_WaitForCompletion: 0
+    m_WaitForCompletion: 1
     m_LocalVariables: []
   rotationSpeed: 60
   floatAmplitude: 0.2
   floatSpeed: 3
   pulseSpeed: 2
   pulseIntensity: 0.3
+  pickupSfx: {fileID: 0}
   references:
     version: 1
 --- !u!33 &738139572
@@ -4973,13 +5041,14 @@ MonoBehaviour:
       m_KeyId: 747115360526336
       m_Key: 
     m_FallbackState: 0
-    m_WaitForCompletion: 0
+    m_WaitForCompletion: 1
     m_LocalVariables: []
   rotationSpeed: 60
   floatAmplitude: 0.2
   floatSpeed: 3
   pulseSpeed: 2
   pulseIntensity: 0.3
+  pickupSfx: {fileID: 0}
   references:
     version: 1
 --- !u!33 &1049826422
@@ -7954,6 +8023,7 @@ GameObject:
   - component: {fileID: 1579344450}
   - component: {fileID: 1579344452}
   - component: {fileID: 1579344451}
+  - component: {fileID: 1579344453}
   m_Layer: 5
   m_Name: Text_MemoryInstruction
   m_TagString: Untagged
@@ -8077,6 +8147,45 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1579344449}
   m_CullTransparentMesh: 1
+--- !u!114 &1579344453
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1579344449}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56eb0353ae6e5124bb35b17aff880f16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_StringReference:
+    m_TableReference:
+      m_TableCollectionName: GUID:17c2654aacae7b94382b24533b670dcc
+    m_TableEntryReference:
+      m_KeyId: 781689515909120
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  m_FormatArguments: []
+  m_UpdateString:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1579344451}
+        m_TargetAssemblyTypeName: TMPro.TMP_Text, Unity.TextMeshPro
+        m_MethodName: set_text
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  references:
+    version: 1
 --- !u!1 &1621709617
 GameObject:
   m_ObjectHideFlags: 0
@@ -11643,6 +11752,7 @@ MonoBehaviour:
   onMaterial: {fileID: 2100000, guid: eb36a8d142177f041884b73c6c1638ce, type: 2}
   offMaterial: {fileID: 2100000, guid: 58b238ec894568f46ac8ac7ecff24e30, type: 2}
   jammedMaterial: {fileID: 2100000, guid: afdb84d5f1a862f498f93b2e34c999bb, type: 2}
+  canActivate: 1
 --- !u!33 &2095727743
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -11923,13 +12033,14 @@ MonoBehaviour:
       m_KeyId: 747164115116032
       m_Key: 
     m_FallbackState: 0
-    m_WaitForCompletion: 0
+    m_WaitForCompletion: 1
     m_LocalVariables: []
   rotationSpeed: 60
   floatAmplitude: 0.2
   floatSpeed: 3
   pulseSpeed: 2
   pulseIntensity: 0.3
+  pickupSfx: {fileID: 0}
   references:
     version: 1
 --- !u!33 &2128497689

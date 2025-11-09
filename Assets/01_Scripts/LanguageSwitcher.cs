@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.Localization.Settings;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,6 +9,11 @@ public class LanguageSwitcher : MonoBehaviour
 {
     public static LanguageSwitcher Instance;
     private bool isReady = false;
+
+    [Header("Settings")]
+    [SerializeField] private bool useSystemLanguage = true;
+    [SerializeField] private string fallbackLanguage = "en";
+    [SerializeField] private string mainMenuSceneName = "00_Scenes/MainMenu";
 
     void Awake()
     {
@@ -30,34 +35,135 @@ public class LanguageSwitcher : MonoBehaviour
 
     IEnumerator InitializeLocalization()
     {
-        yield return LocalizationSettings.InitializationOperation;
+        var initOp = LocalizationSettings.InitializationOperation;
+        yield return initOp;
+
+        if (!initOp.IsDone || initOp.Status != UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationStatus.Succeeded)
+        {
+            Debug.LogError("Error al inicializar el sistema de localizaciÃ³n");
+            yield break;
+        }
+
         isReady = true;
+
+        string savedLanguage = PlayerPrefs.GetString("SelectedLanguage", "");
+
+        if (!string.IsNullOrEmpty(savedLanguage))
+        {
+            Debug.Log($"Cargando idioma guardado: {savedLanguage}");
+            SetLocaleWithoutSceneReload(savedLanguage);
+        }
+        else if (useSystemLanguage)
+        {
+            SetSystemLanguage();
+        }
+
+        yield return null;
+    }
+
+    private void SetSystemLanguage()
+    {
+        SystemLanguage systemLang = Application.systemLanguage;
+        string localeCode = fallbackLanguage;
+
+        switch (systemLang)
+        {
+            case SystemLanguage.Spanish:
+                localeCode = "es-MX";
+                break;
+            case SystemLanguage.English:
+                localeCode = "en-US";
+                break;
+            case SystemLanguage.Portuguese:
+                localeCode = "pt-PT";
+                break;
+            case SystemLanguage.French:
+                localeCode = "fr-FR";
+                break;
+            default:
+                localeCode = fallbackLanguage;
+                break;
+        }
+
+        Debug.Log($"Idioma del sistema: {systemLang} â†’ Aplicando: {localeCode}");
+        SetLocaleWithoutSceneReload(localeCode);
+    }
+
+    private void SetLocaleWithoutSceneReload(string localeCode)
+    {
+        if (!isReady)
+        {
+            Debug.LogWarning("Sistema de localizaciÃ³n no estÃ¡ listo");
+            return;
+        }
+
+        Locale targetLocale = GetLocaleByCode(localeCode);
+
+        if (targetLocale != null)
+        {
+            LocalizationSettings.SelectedLocale = targetLocale;
+            Debug.Log($"Idioma aplicado: {targetLocale.Identifier.Code}");
+        }
+        else
+        {
+            Debug.LogWarning($"No se encontrÃ³ locale: {localeCode}, usando fallback: {fallbackLanguage}");
+            targetLocale = GetLocaleByCode(fallbackLanguage);
+            if (targetLocale != null)
+            {
+                LocalizationSettings.SelectedLocale = targetLocale;
+            }
+        }
     }
 
     public void SetLocale(string localeCode)
     {
-        if (!isReady) return;
+        if (!isReady)
+        {
+            Debug.LogWarning("Sistema de localizaciÃ³n no estÃ¡ listo");
+            return;
+        }
 
+        Locale targetLocale = GetLocaleByCode(localeCode);
+
+        if (targetLocale != null)
+        {
+            LocalizationSettings.SelectedLocale = targetLocale;
+            Debug.Log($"Idioma cambiado manualmente a: {targetLocale.Identifier.Code}");
+
+            PlayerPrefs.SetString("SelectedLanguage", localeCode);
+            PlayerPrefs.Save();
+
+            StartCoroutine(LoadMainMenuAfterDelay(0.1f));
+        }
+        else
+        {
+            Debug.LogWarning($"No se encontrÃ³ el locale: {localeCode}");
+        }
+    }
+
+    private IEnumerator LoadMainMenuAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        SceneManager.LoadScene(mainMenuSceneName);
+    }
+
+    private Locale GetLocaleByCode(string localeCode)
+    {
         List<Locale> availableLocales = LocalizationSettings.AvailableLocales.Locales;
 
         foreach (var locale in availableLocales)
         {
-            if (locale.Identifier.Code.StartsWith(localeCode, System.StringComparison.OrdinalIgnoreCase))
+            if (locale.Identifier.Code.Equals(localeCode, System.StringComparison.OrdinalIgnoreCase))
             {
-                if (LocalizationSettings.SelectedLocale != locale)
-                {
-                    LocalizationSettings.SelectedLocale = locale;
-                    Debug.Log("Idioma cambiado a: " + locale.Identifier.Code);
-                }
-
-                // Forzamos la actualización de la selección del idioma
-                LocalizationSettings.SelectedLocale = locale;
-
-                // Cargar la escena de menú principal
-                SceneManager.LoadScene("MainMenu");
-                return;
+                return locale;
             }
         }
-        Debug.LogWarning("No se encontró el Locale con el código: " + localeCode);
+
+        return null;
+    }
+
+    public string GetSavedLanguage()
+    {
+        return PlayerPrefs.GetString("SelectedLanguage", "");
     }
 }

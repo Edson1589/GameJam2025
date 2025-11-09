@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.Localization;
 
 public class DoorWithKey : MonoBehaviour
 {
@@ -15,6 +16,10 @@ public class DoorWithKey : MonoBehaviour
     [Header("UI flotante cerca de la puerta")]
     [SerializeField] private GameObject promptUI;
     [SerializeField] private TMP_Text promptText;
+
+    [Header("Textos localizados")]
+    [SerializeField] private LocalizedString localizedOpenText; // "[E] Abrir" / "[E] Open"
+    [SerializeField] private LocalizedString localizedNeedKeyText; // "Encuentra la llave" / "Find the key"
 
     [Header("Detección del jugador")]
     [SerializeField] private string playerTag = "Player";
@@ -40,17 +45,16 @@ public class DoorWithKey : MonoBehaviour
     private void Update()
     {
         if (!playerInRange) return;
-
         if (playerInv == null) return;
 
         if (!isOpen)
         {
             if (playerInv.HasKey)
             {
-                if (promptUI != null && promptText != null)
+                if (promptUI != null && promptText != null && localizedOpenText != null)
                 {
                     promptUI.SetActive(true);
-                    promptText.text = "[E] Abrir";
+                    promptText.text = localizedOpenText.GetLocalizedString();
                 }
 
                 if (Input.GetKeyDown(KeyCode.E))
@@ -60,10 +64,10 @@ public class DoorWithKey : MonoBehaviour
             }
             else
             {
-                if (promptUI != null && promptText != null)
+                if (promptUI != null && promptText != null && localizedNeedKeyText != null)
                 {
                     promptUI.SetActive(true);
-                    promptText.text = "Encuentra la llave";
+                    promptText.text = localizedNeedKeyText.GetLocalizedString();
                 }
             }
         }
@@ -77,6 +81,7 @@ public class DoorWithKey : MonoBehaviour
     private IEnumerator OpenDoor()
     {
         isOpen = true;
+
         while (Vector3.Distance(doorMesh.position, openPos) > 0.01f)
         {
             doorMesh.position = Vector3.MoveTowards(
@@ -86,6 +91,7 @@ public class DoorWithKey : MonoBehaviour
             );
             yield return null;
         }
+
         doorMesh.position = openPos;
 
         if (promptUI != null)

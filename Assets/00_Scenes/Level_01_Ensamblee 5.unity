@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44557828, g: 0.52106774, b: 0.54623896, a: 1}
+  m_IndirectSpecularColor: {r: 0.70325184, g: 0.7543926, b: 0.7704332, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -13226,7 +13226,7 @@ AudioSource:
   m_GameObject: {fileID: 1280846512}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 7847305576430624790, guid: c68630fbecfffe3429e84c52b13e9fd3, type: 2}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -18375,13 +18375,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d23c14045cf28a747a86b5ef10b69dec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  alertText: 'ALERTA: Unidad R.U.B.O. detectada.
-
-    Procediendo a captura.'
+  localizedAlertText:
+    m_TableReference:
+      m_TableCollectionName: GUID:17c2654aacae7b94382b24533b670dcc
+    m_TableEntryReference:
+      m_KeyId: 876776342134784
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   alertDuration: 2.5
   dronePrefab: {fileID: 5221888410546046341, guid: 2c154d6c678494e4f839a689e774d681, type: 3}
   droneSpawnPoint: {fileID: 1767488799}
   playerTag: Player
+  references:
+    version: 1
 --- !u!4 &1642640687
 Transform:
   m_ObjectHideFlags: 0
@@ -18813,7 +18821,27 @@ MonoBehaviour:
   openSpeed: 3
   promptUI: {fileID: 282850388}
   promptText: {fileID: 170580195}
+  localizedOpenText:
+    m_TableReference:
+      m_TableCollectionName: GUID:17c2654aacae7b94382b24533b670dcc
+    m_TableEntryReference:
+      m_KeyId: 877689467281408
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  localizedNeedKeyText:
+    m_TableReference:
+      m_TableCollectionName: GUID:17c2654aacae7b94382b24533b670dcc
+    m_TableEntryReference:
+      m_KeyId: 877727471869952
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   playerTag: Player
+  references:
+    version: 1
 --- !u!4 &1700558836
 Transform:
   m_ObjectHideFlags: 0

@@ -335,6 +335,18 @@ MonoBehaviour:
     m_Key: AmmoText
     m_Metadata:
       m_Items: []
+  - m_Id: 876776342134784
+    m_Key: chase_alert
+    m_Metadata:
+      m_Items: []
+  - m_Id: 877689467281408
+    m_Key: door_open_prompt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 877727471869952
+    m_Key: door_need_key
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
