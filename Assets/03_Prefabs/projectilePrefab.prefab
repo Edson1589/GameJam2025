@@ -48,7 +48,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifeTime: 4
-  damage: 5
+  damage: 4
   hitForce: 5
 --- !u!33 &3592887437007638529
 MeshFilter:

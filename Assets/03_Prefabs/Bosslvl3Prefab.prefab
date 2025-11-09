@@ -48,7 +48,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifeTime: 15
-  damage: 15
+  damage: 20
   hitForce: 7
   baseSpeed: 10
   enableHoming: 1
