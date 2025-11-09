@@ -4436,6 +4436,11 @@ MonoBehaviour:
   legsStackingOffset: 0.468
   armsStackingOffset: 0.46
   heightTransitionDuration: 0.5
+  groundSnapUp: 2
+  groundSnapDown: 5
+  groundSnapMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!33 &897100814
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -12145,17 +12150,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   memoryID: 8
-  memoryText: 'The Mother Anchor clones my pattern.
-
-    Thousands of soulless R.U.B.O.s.
-
-    I
-    must stop it.'
+  localizedMemoryText:
+    m_TableReference:
+      m_TableCollectionName: GUID:17c2654aacae7b94382b24533b670dcc
+    m_TableEntryReference:
+      m_KeyId: 747176849022976
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   rotationSpeed: 60
   floatAmplitude: 0.2
   floatSpeed: 3
   pulseSpeed: 2
   pulseIntensity: 0.3
+  references:
+    version: 1
 --- !u!33 &1345880645
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -12631,17 +12641,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   memoryID: 9
-  memoryText: 'We are not perfect pieces.
-
-    We are a finely tuned us.
-
-    Every
-    voice matters.'
+  localizedMemoryText:
+    m_TableReference:
+      m_TableCollectionName: GUID:17c2654aacae7b94382b24533b670dcc
+    m_TableEntryReference:
+      m_KeyId: 747187523526656
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   rotationSpeed: 60
   floatAmplitude: 0.2
   floatSpeed: 3
   pulseSpeed: 2
   pulseIntensity: 0.3
+  references:
+    version: 1
 --- !u!33 &1422230752
 MeshFilter:
   m_ObjectHideFlags: 0

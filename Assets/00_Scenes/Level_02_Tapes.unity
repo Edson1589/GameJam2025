@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.4455761, g: 0.5212605, b: 0.54665613, a: 1}
+  m_IndirectSpecularColor: {r: 0.44557828, g: 0.52106774, b: 0.54623896, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1166,17 +1166,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   memoryID: 6
-  memoryText: 'Log: Controlled magnetic storm.
-
-    A.N.C.L.A. caused all this.
-
-    My
-    Torso is powering the factory.'
+  localizedMemoryText:
+    m_TableReference:
+      m_TableCollectionName: GUID:17c2654aacae7b94382b24533b670dcc
+    m_TableEntryReference:
+      m_KeyId: 747152400424960
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   rotationSpeed: 60
   floatAmplitude: 0.2
   floatSpeed: 3
   pulseSpeed: 2
   pulseIntensity: 0.3
+  references:
+    version: 1
 --- !u!33 &281603611
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -3382,17 +3387,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   memoryID: 5
-  memoryText: 'The prototypes in stasis...
-
-    They are weakly pulsing.
-
-    They
-    were also fragmented.'
+  localizedMemoryText:
+    m_TableReference:
+      m_TableCollectionName: GUID:17c2654aacae7b94382b24533b670dcc
+    m_TableEntryReference:
+      m_KeyId: 747128924905472
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   rotationSpeed: 60
   floatAmplitude: 0.2
   floatSpeed: 3
   pulseSpeed: 2
   pulseIntensity: 0.3
+  references:
+    version: 1
 --- !u!33 &738139572
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -4956,17 +4966,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   memoryID: 4
-  memoryText: 'My Arms used to build. They created.
-
-    Now they run away from me.
-
-    What
-    kind of unit was I?'
+  localizedMemoryText:
+    m_TableReference:
+      m_TableCollectionName: GUID:17c2654aacae7b94382b24533b670dcc
+    m_TableEntryReference:
+      m_KeyId: 747115360526336
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   rotationSpeed: 60
   floatAmplitude: 0.2
   floatSpeed: 3
   pulseSpeed: 2
   pulseIntensity: 0.3
+  references:
+    version: 1
 --- !u!33 &1049826422
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -11901,17 +11916,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   memoryID: 7
-  memoryText: 'My Head reasons. It calculates. It fears.
-
-    But without a body,
-    I am only fear.
-
-    I must be whole.'
+  localizedMemoryText:
+    m_TableReference:
+      m_TableCollectionName: GUID:17c2654aacae7b94382b24533b670dcc
+    m_TableEntryReference:
+      m_KeyId: 747164115116032
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   rotationSpeed: 60
   floatAmplitude: 0.2
   floatSpeed: 3
   pulseSpeed: 2
   pulseIntensity: 0.3
+  references:
+    version: 1
 --- !u!33 &2128497689
 MeshFilter:
   m_ObjectHideFlags: 0

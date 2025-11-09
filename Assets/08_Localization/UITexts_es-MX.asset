@@ -293,5 +293,62 @@ MonoBehaviour:
       Ali\nDavid Andres Escalera Rocha\nEduardo Antezana Jau\n\nGracias por jugar!"
     m_Metadata:
       m_Items: []
+  - m_Id: 747012499415040
+    m_Localized: "D\xEDa 1: Despert\xE9 en la Zona de Ensamblaje.\nMis partes...
+      dispersas.\n\xBFQu\xE9 me hizo A.N.C.L.A.?"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 747090878373888
+    m_Localized: "Registro: Tormenta magn\xE9tica controlada.\nA.N.C.L.A. caus\xF3
+      todo esto.\nMi Torso alimenta la f\xE1brica."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 747103935242240
+    m_Localized: 'A.N.C.L.A. me ve como la plantilla perfecta.
+
+      Demasiado humano,
+      dice.
+
+      Quiere copiarme... sin voluntad.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 747115360526336
+    m_Localized: "Oigo a mis Piernas... discutiendo.\n'Libertad', dicen. 'Movimiento.'\n\xBFConfiar\xE1n
+      en m\xED otra vez?"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 747128924905472
+    m_Localized: 'Mi Cabeza razona. Calcula. Teme.
+
+      Pero sin cuerpo, solo soy
+      miedo.
+
+      Debo estar completo.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 747152400424960
+    m_Localized: "Los prototipos en estasis...\nPulsan d\xE9bilmente.\nTambi\xE9n
+      fueron fragmentados."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 747164115116032
+    m_Localized: "Mis Brazos sol\xEDan construir. Creaban.\nAhora huyen de m\xED.\n\xBFQu\xE9
+      tipo de unidad era yo?"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 747176849022976
+    m_Localized: "El Ancla Madre clona mi patr\xF3n.\nMiles de R.U.B.O.s sin alma.\nDebo
+      detenerlo."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 747187523526656
+    m_Localized: 'No somos piezas perfectas.
+
+      Somos un nosotros finamente ajustado.
+
+      Cada
+      voz importa.'
+    m_Metadata:
+      m_Items: []
   references:
     version: 1

@@ -1,10 +1,11 @@
 using UnityEngine;
+using UnityEngine.Localization;
 
 public class EcoMemory : MonoBehaviour
 {
     [Header("Memory Data")]
     [SerializeField] private int memoryID = 1;
-    [SerializeField][TextArea(3, 6)] private string memoryText = "Eco-Memoria sin configurar";
+    [SerializeField] private LocalizedString localizedMemoryText;
 
     [Header("Visual Feedback")]
     [SerializeField] private float rotationSpeed = 60f;
@@ -21,7 +22,6 @@ public class EcoMemory : MonoBehaviour
     void Start()
     {
         startPosition = transform.position;
-
         memoryRenderer = GetComponent<Renderer>();
         if (memoryRenderer != null)
         {
@@ -51,7 +51,6 @@ public class EcoMemory : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         PlayerController player = other.GetComponent<PlayerController>();
-
         if (player != null)
         {
             CollectMemory(player);
@@ -60,6 +59,13 @@ public class EcoMemory : MonoBehaviour
 
     private void CollectMemory(PlayerController player)
     {
+        // Obtener el texto localizado
+        string memoryText = "";
+        if (localizedMemoryText != null)
+        {
+            memoryText = localizedMemoryText.GetLocalizedString();
+        }
+
         // Registrar en el gestor de coleccionables (si existe)
         MemoryManager manager = FindObjectOfType<MemoryManager>();
         if (manager != null)
