@@ -296,5 +296,86 @@ MonoBehaviour:
       Andres Escalera Rocha\nEduardo Antezana Jau\n\nThanks for playing!"
     m_Metadata:
       m_Items: []
+  - m_Id: 747012499415040
+    m_Localized: 'Day 1: I woke up in the Assembly Zone.
+
+      My parts... scattered.
+
+      What
+      did A.N.C.L.A. do to me?'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 747090878373888
+    m_Localized: 'Log: Controlled magnetic storm.
+
+      A.N.C.L.A. caused all this.
+
+      My
+      Torso is powering the factory.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 747103935242240
+    m_Localized: 'A.N.C.L.A. sees me as the perfect template.
+
+      Too human, it
+      says.
+
+      It wants to copy me... without will.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 747115360526336
+    m_Localized: 'I hear my Legs... arguing.
+
+      ''Freedom,'' they say. ''Movement.''
+
+      Will
+      they trust me again?'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 747128924905472
+    m_Localized: 'My Head reasons. It calculates. It fears.
+
+      But without a
+      body, I am only fear.
+
+      I must be whole.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 747152400424960
+    m_Localized: 'The prototypes in stasis...
+
+      They are weakly pulsing.
+
+      They
+      were also fragmented.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 747164115116032
+    m_Localized: 'My Arms used to build. They created.
+
+      Now they run away from
+      me.
+
+      What kind of unit was I?'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 747176849022976
+    m_Localized: 'The Mother Anchor clones my pattern.
+
+      Thousands of soulless
+      R.U.B.O.s.
+
+      I must stop it.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 747187523526656
+    m_Localized: 'We are not perfect pieces.
+
+      We are a finely tuned us.
+
+      Every
+      voice matters.'
+    m_Metadata:
+      m_Items: []
   references:
     version: 1

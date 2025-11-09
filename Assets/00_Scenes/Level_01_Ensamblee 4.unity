@@ -7836,19 +7836,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   memoryID: 1
-  memoryText: 'Day 1: I woke up in the Assembly Zone.
-
-    My parts... scattered.
-
-    What
-    did A.N.C.L.A. do to me?'
+  localizedMemoryText:
+    m_TableReference:
+      m_TableCollectionName: GUID:17c2654aacae7b94382b24533b670dcc
+    m_TableEntryReference:
+      m_KeyId: 747012499415040
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   rotationSpeed: 60
   floatAmplitude: 0.2
   floatSpeed: 3
   pulseSpeed: 2
   pulseIntensity: 0.3
+<<<<<<< HEAD
   pickupSfx: {fileID: 8300000, guid: 6d9172a5e1f427349b79c16295183034, type: 3}
   pickupVolume: 1
+=======
+  references:
+    version: 1
+>>>>>>> b7a69bf8341de4ae33ca8b9298ced87e196e99ea
 --- !u!33 &651170573
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -12906,19 +12914,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   memoryID: 2
-  memoryText: 'I hear my Legs... arguing.
-
-    "Freedom," they say. "Movement."
-
-    Will
-    they trust me again?'
+  localizedMemoryText:
+    m_TableReference:
+      m_TableCollectionName: GUID:17c2654aacae7b94382b24533b670dcc
+    m_TableEntryReference:
+      m_KeyId: 747090878373888
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   rotationSpeed: 60
   floatAmplitude: 0.2
   floatSpeed: 3
   pulseSpeed: 2
   pulseIntensity: 0.3
+<<<<<<< HEAD
   pickupSfx: {fileID: 0}
   pickupVolume: 1
+=======
+  references:
+    version: 1
+>>>>>>> b7a69bf8341de4ae33ca8b9298ced87e196e99ea
 --- !u!33 &1264349981
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -18664,19 +18680,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   memoryID: 3
-  memoryText: 'A.N.C.L.A. sees me as the perfect template.
-
-    Too human, it says.
-
-    It
-    wants to copy me... without will.'
+  localizedMemoryText:
+    m_TableReference:
+      m_TableCollectionName: GUID:17c2654aacae7b94382b24533b670dcc
+    m_TableEntryReference:
+      m_KeyId: 747103935242240
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   rotationSpeed: 60
   floatAmplitude: 0.2
   floatSpeed: 3
   pulseSpeed: 2
   pulseIntensity: 0.3
+<<<<<<< HEAD
   pickupSfx: {fileID: 0}
   pickupVolume: 1
+=======
+  references:
+    version: 1
+>>>>>>> b7a69bf8341de4ae33ca8b9298ced87e196e99ea
 --- !u!33 &1702304860
 MeshFilter:
   m_ObjectHideFlags: 0
