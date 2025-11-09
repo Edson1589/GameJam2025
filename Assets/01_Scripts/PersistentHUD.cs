@@ -573,16 +573,22 @@ public class PersistentHUD : MonoBehaviour
         button.localScale = targetScale;
     }
 
-    private void PlayHoverSound()
+    public void PlayHoverSound()
     {
         if (buttonHoverSound != null)
+        {
+            buttonHoverSound.Stop();
             buttonHoverSound.Play();
+        }
     }
 
-    private void PlayClickSound()
+    public void PlayClickSound()
     {
         if (buttonClickSound != null)
+        {
+            buttonHoverSound.Stop();
             buttonClickSound.Play();
+        }
     }
 
     private void OnMusicVolumeChanged(float value)
