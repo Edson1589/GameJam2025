@@ -16,7 +16,6 @@ public class EcoMemory : MonoBehaviour
 
     [Header("Audio")]
     [SerializeField] private AudioClip pickupSfx;
-    [SerializeField, Range(0f, 1f)] private float pickupVolume = 1f;
 
     private Vector3 startPosition;
     private Renderer memoryRenderer;
@@ -36,14 +35,11 @@ public class EcoMemory : MonoBehaviour
 
     void Update()
     {
-        // Rotar suavemente
         transform.Rotate(Vector3.up, rotationSpeed * Time.deltaTime);
 
-        // Flotar arriba y abajo
         float newY = startPosition.y + Mathf.Sin(Time.time * floatSpeed) * floatAmplitude;
         transform.position = new Vector3(startPosition.x, newY, startPosition.z);
 
-        // Pulso de brillo
         if (memoryMaterial != null)
         {
             float pulse = Mathf.Sin(Time.time * pulseSpeed) * pulseIntensity;
@@ -63,8 +59,12 @@ public class EcoMemory : MonoBehaviour
 
     private void CollectMemory(PlayerController player)
     {
-        if (pickupSfx)
-            AudioSource.PlayClipAtPoint(pickupSfx, transform.position, pickupVolume);
+        AudioSource playerSFXSource = player.GetComponent<AudioSource>();
+
+        if (playerSFXSource != null && pickupSfx != null)
+        {
+            playerSFXSource.PlayOneShot(pickupSfx);
+        }
 
         string memoryText = "";
 
@@ -73,7 +73,6 @@ public class EcoMemory : MonoBehaviour
             memoryText = localizedMemoryText.GetLocalizedString();
         }
 
-        // Registrar en el gestor de coleccionables (si existe)
         MemoryManager manager = FindObjectOfType<MemoryManager>();
         if (manager != null)
         {
@@ -81,17 +80,14 @@ public class EcoMemory : MonoBehaviour
         }
         else
         {
-            // Si no hay manager, mostrar directamente
             Debug.Log($"=== ECO-MEMORIA #{memoryID} ===");
             Debug.Log(memoryText);
             Debug.Log("========================");
         }
 
-        // Destruir el objeto
         Destroy(gameObject);
     }
 
-    // Visualizaci�n en editor
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.cyan;
