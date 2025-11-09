@@ -32,6 +32,11 @@ public class AnchorMother : MonoBehaviour
     private float shootStartTimer = 0f;
     private float shootTimer = 0f;
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip shootSound;
+    [SerializeField, Range(0f, 1f)] private float shootSoundVolume = 0.7f;
+
 
 
     private int panelsActivated = 0;
@@ -46,17 +51,26 @@ public class AnchorMother : MonoBehaviour
             coreRenderer = coreVisual.GetComponent<Renderer>();
         }
 
+        // Configurar AudioSource si no existe
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+            audioSource.playOnAwake = false;
+            audioSource.spatialBlend = 1f;
+            audioSource.maxDistance = 50f;
+        }
+
         UpdateVisual();
 
         Debug.Log($"=== BOSS FIGHT: ANCLA MADRE ===");
-        Debug.Log($"Activa {totalPanelsToActivate} paneles para debilitar el campo magnético");
+        Debug.Log($"Activa {totalPanelsToActivate} paneles para debilitar el campo magnï¿½tico");
     }
 
     void Update()
     {
         if (isBossDefeated) return;
 
-        // Rotar el núcleo
+        // Rotar el nï¿½cleo
         if (coreVisual != null)
         {
             coreVisual.transform.Rotate(Vector3.up, rotationSpeed * Time.deltaTime);
@@ -72,7 +86,7 @@ public class AnchorMother : MonoBehaviour
                 playerTransform = player.transform;
             }
         }
-        // Disparar proyectil si el campo está activo y ha pasado el tiempo de espera
+        // Disparar proyectil si el campo estï¿½ activo y ha pasado el tiempo de espera
         if (fieldActive && projectilePrefab != null && firePoints.Length >= 2)
         {
             shootStartTimer += Time.deltaTime;
@@ -96,7 +110,7 @@ public class AnchorMother : MonoBehaviour
     {
         if (isBossDefeated || !fieldActive) return;
 
-        // Aplicar campo magnético al jugador
+        // Aplicar campo magnï¿½tico al jugador
         if (playerTransform != null)
         {
             float distance = Vector3.Distance(transform.position, playerTransform.position);
@@ -149,8 +163,8 @@ public class AnchorMother : MonoBehaviour
     {
         fieldActive = false;
 
-        Debug.Log("=== ¡CAMPO MAGNÉTICO DESACTIVADO! ===");
-        Debug.Log("Acércate al núcleo para desactivar el Ancla Madre");
+        Debug.Log("=== ï¿½CAMPO MAGNï¿½TICO DESACTIVADO! ===");
+        Debug.Log("Acï¿½rcate al nï¿½cleo para desactivar el Ancla Madre");
 
         // Cambiar visual
         if (coreRenderer != null && damagedMaterial != null)
@@ -180,7 +194,7 @@ public class AnchorMother : MonoBehaviour
         }
         else if (other.CompareTag("Player") && fieldActive)
         {
-            Debug.Log("¡El campo magnético te impide acercarte! Desactiva todos los paneles primero");
+            Debug.Log("ï¿½El campo magnï¿½tico te impide acercarte! Desactiva todos los paneles primero");
         }
     }
 
@@ -189,11 +203,11 @@ public class AnchorMother : MonoBehaviour
         isBossDefeated = true;
 
         Debug.Log("=================================");
-        Debug.Log("=== ¡ANCLA MADRE DESACTIVADA! ===");
-        Debug.Log("=== ¡VICTORIA! ===");
+        Debug.Log("=== ï¿½ANCLA MADRE DESACTIVADA! ===");
+        Debug.Log("=== ï¿½VICTORIA! ===");
         Debug.Log("=================================");
 
-        // Desactivar el núcleo visualmente
+        // Desactivar el nï¿½cleo visualmente
         if (coreVisual != null)
         {
             coreVisual.SetActive(false);
@@ -209,10 +223,10 @@ public class AnchorMother : MonoBehaviour
         SceneManager.LoadScene(nextSceneName);
     }
 
-    // Visualización en editor
+    // Visualizaciï¿½n en editor
     private void OnDrawGizmosSelected()
     {
-        // Campo magnético
+        // Campo magnï¿½tico
         Gizmos.color = fieldActive ? new Color(1f, 0f, 0f, 0.3f) : new Color(0.5f, 0.5f, 0.5f, 0.3f);
         Gizmos.DrawWireSphere(transform.position, fieldRange);
 
@@ -250,7 +264,13 @@ public class AnchorMother : MonoBehaviour
             Debug.LogWarning("El proyectil no tiene Rigidbody asignado.");
         }
 
-        Debug.Log($"¡Disparo desde punto {currentFireIndex}!");
+        // Reproducir sonido de disparo
+        if (shootSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(shootSound, shootSoundVolume);
+        }
+
+        Debug.Log($"ï¿½Disparo desde punto {currentFireIndex}!");
     }
 
 

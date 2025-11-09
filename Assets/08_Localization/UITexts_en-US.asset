@@ -91,7 +91,9 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 262223363284992
-    m_Localized: Options(ESC)
+    m_Localized: 'Options
+
+      (ESC)'
     m_Metadata:
       m_Items: []
   - m_Id: 262413478502400

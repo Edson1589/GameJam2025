@@ -64,6 +64,10 @@ public class PersistentHUD : MonoBehaviour
     [SerializeField] private Button restartButton;
     [SerializeField] private Button mainMenuButton;
 
+    [Header("Configuration Panel - Colors")]
+    [SerializeField] private Color normalTextColor = new Color(0.6f, 0.6f, 0.6f, 1f);
+    [SerializeField] private Color highlightedTextColor = Color.white;
+
     [Header("Configuration Panel - Audio")]
     [SerializeField] private Slider musicSlider;
     [SerializeField] private Slider sfxSlider;
@@ -91,6 +95,9 @@ public class PersistentHUD : MonoBehaviour
     [SerializeField] private float buttonHoverScale = 1.1f;
     [SerializeField] private float animationSpeed = 0.2f;
 
+    [Header("Options Panel Navigation")]
+    [SerializeField] private Button[] optionsPanelButtons;
+
     [Header("Audio")]
     [SerializeField] private AudioSource buttonHoverSound;
     [SerializeField] private AudioSource buttonClickSound;
@@ -103,6 +110,8 @@ public class PersistentHUD : MonoBehaviour
     private string currentActionToRemap = "";
     private int currentSelectedIndex = 0;
     private Vector3[] originalScales;
+    private Vector3[] optionsButtonsOriginalScales;
+    private int currentOptionsSelectedIndex = 0;
 
     void Awake()
     {
@@ -127,6 +136,7 @@ public class PersistentHUD : MonoBehaviour
         if (waitingForKeyPanel != null) waitingForKeyPanel.SetActive(false);
 
         SetupConfigurationPanel();
+        SetupOptionsPanel();
         UpdateVisibility();
     }
 
@@ -176,6 +186,7 @@ public class PersistentHUD : MonoBehaviour
 
         HandleKeyRemapping();
         HandleConfigNavigation();
+        HandleOptionsNavigation();
     }
 
     private void SetupConfigurationPanel()
@@ -195,6 +206,8 @@ public class PersistentHUD : MonoBehaviour
             sfxSlider.onValueChanged.AddListener(OnSFXVolumeChanged);
             UpdateSFXText(sfxSlider.value);
         }
+
+        InitializeButtonColors();
 
         if (jumpButton != null)
         {
@@ -246,6 +259,43 @@ public class PersistentHUD : MonoBehaviour
         UpdateAllKeyTexts();
     }
 
+    private void InitializeButtonColors()
+    {
+        if (jumpButtonText != null) jumpButtonText.color = normalTextColor;
+        if (interactButtonText != null) interactButtonText.color = normalTextColor;
+        if (dashButtonText != null) dashButtonText.color = normalTextColor;
+        if (flashlightButtonText != null) flashlightButtonText.color = normalTextColor;
+
+        if (saveButton != null)
+        {
+            TextMeshProUGUI text = saveButton.GetComponentInChildren<TextMeshProUGUI>();
+            if (text != null) text.color = normalTextColor;
+        }
+        if (resetButton != null)
+        {
+            TextMeshProUGUI text = resetButton.GetComponentInChildren<TextMeshProUGUI>();
+            if (text != null) text.color = normalTextColor;
+        }
+        if (backFromConfigButton != null)
+        {
+            TextMeshProUGUI text = backFromConfigButton.GetComponentInChildren<TextMeshProUGUI>();
+            if (text != null) text.color = normalTextColor;
+        }
+    }
+
+    private void SetupOptionsPanel()
+    {
+        if (optionsPanelButtons != null && optionsPanelButtons.Length > 0)
+        {
+            optionsButtonsOriginalScales = new Vector3[optionsPanelButtons.Length];
+            for (int i = 0; i < optionsPanelButtons.Length; i++)
+            {
+                if (optionsPanelButtons[i] != null)
+                    optionsButtonsOriginalScales[i] = optionsPanelButtons[i].transform.localScale;
+            }
+        }
+    }
+
     private void RefreshConfigurationValues()
     {
         if (musicSlider != null)
@@ -268,12 +318,17 @@ public class PersistentHUD : MonoBehaviour
         if (IsInMainMenu()) return;
 
         optionsPanelOpen = true;
-        if (optionsPanel != null) optionsPanel.SetActive(true);
+        if (optionsPanel != null)
+            optionsPanel.SetActive(true);
 
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
 
-        if (resumeButton != null && EventSystem.current != null)
+        if (optionsPanelButtons != null && optionsPanelButtons.Length > 0)
+        {
+            SelectOptionsButton(0);
+        }
+        else if (resumeButton != null && EventSystem.current != null)
         {
             EventSystem.current.SetSelectedGameObject(resumeButton.gameObject);
         }
@@ -389,12 +444,33 @@ public class PersistentHUD : MonoBehaviour
         {
             if (configMenuSelectables[currentSelectedIndex] != null)
             {
-                Button selectedButton = configMenuSelectables[currentSelectedIndex] as Button;
-                if (selectedButton != null)
-                {
-                    PlayClickSound();
-                    selectedButton.onClick.Invoke();
-                }
+                PlayClickSound();
+                UnityEngine.EventSystems.ExecuteEvents.Execute(configMenuSelectables[currentSelectedIndex].gameObject, new UnityEngine.EventSystems.PointerEventData(UnityEngine.EventSystems.EventSystem.current), UnityEngine.EventSystems.ExecuteEvents.submitHandler);
+            }
+        }
+    }
+
+    private void HandleOptionsNavigation()
+    {
+        if (!optionsPanelOpen) return;
+        if (optionsPanelButtons == null || optionsPanelButtons.Length == 0) return;
+
+        if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S))
+        {
+            SelectOptionsButton((currentOptionsSelectedIndex + 1) % optionsPanelButtons.Length);
+            PlayHoverSound();
+        }
+        else if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
+        {
+            SelectOptionsButton((currentOptionsSelectedIndex - 1 + optionsPanelButtons.Length) % optionsPanelButtons.Length);
+            PlayHoverSound();
+        }
+        else if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter) || Input.GetKeyDown(KeyCode.Space))
+        {
+            if (optionsPanelButtons[currentOptionsSelectedIndex] != null)
+            {
+                PlayClickSound();
+                optionsPanelButtons[currentOptionsSelectedIndex].onClick.Invoke();
             }
         }
     }
@@ -419,7 +495,7 @@ public class PersistentHUD : MonoBehaviour
                 {
                     StartCoroutine(ScaleButton(previousButton.transform, originalScales[currentSelectedIndex]));
                     TextMeshProUGUI previousText = previousButton.GetComponentInChildren<TextMeshProUGUI>();
-                    if (previousText != null) previousText.color = Color.white;
+                    if (previousText != null) previousText.color = normalTextColor;
                 }
             }
         }
@@ -441,10 +517,44 @@ public class PersistentHUD : MonoBehaviour
                 StartCoroutine(ScaleButton(newButton.transform, originalScales[currentSelectedIndex] * buttonHoverScale));
 
                 TextMeshProUGUI newText = newButton.GetComponentInChildren<TextMeshProUGUI>();
-                if (newText != null) newText.color = Color.white;
+                if (newText != null) newText.color = highlightedTextColor;
             }
 
             EventSystem.current.SetSelectedGameObject(newSelectable.gameObject);
+        }
+    }
+
+    private void SelectOptionsButton(int index)
+    {
+        if (optionsButtonsOriginalScales == null || optionsButtonsOriginalScales.Length == 0) return;
+
+        if (currentOptionsSelectedIndex >= 0 && currentOptionsSelectedIndex < optionsPanelButtons.Length)
+        {
+            if (optionsPanelButtons[currentOptionsSelectedIndex] != null)
+            {
+                StartCoroutine(ScaleButton(
+                    optionsPanelButtons[currentOptionsSelectedIndex].transform,
+                    optionsButtonsOriginalScales[currentOptionsSelectedIndex]
+                ));
+
+                TextMeshProUGUI previousText = optionsPanelButtons[currentOptionsSelectedIndex].GetComponentInChildren<TextMeshProUGUI>();
+                if (previousText != null) previousText.color = Color.white;
+            }
+        }
+
+        currentOptionsSelectedIndex = index;
+
+        if (optionsPanelButtons[currentOptionsSelectedIndex] != null)
+        {
+            StartCoroutine(ScaleButton(
+                optionsPanelButtons[currentOptionsSelectedIndex].transform,
+                optionsButtonsOriginalScales[currentOptionsSelectedIndex] * buttonHoverScale
+            ));
+
+            TextMeshProUGUI newText = optionsPanelButtons[currentOptionsSelectedIndex].GetComponentInChildren<TextMeshProUGUI>();
+            if (newText != null) newText.color = Color.yellow;
+
+            EventSystem.current.SetSelectedGameObject(optionsPanelButtons[currentOptionsSelectedIndex].gameObject);
         }
     }
 
@@ -514,6 +624,10 @@ public class PersistentHUD : MonoBehaviour
             localizedPressKeyFor.Arguments = new object[] { GetLocalizedActionName(actionName) };
             waitingText.text = localizedPressKeyFor.GetLocalizedString();
         }
+        else if (waitingText != null)
+        {
+            waitingText.text = "Press a key to " + GetActionName(actionName) + "\n(ESC to cancel)";
+        }
     }
 
     private void AssignKey(KeyCode newKey)
@@ -531,10 +645,17 @@ public class PersistentHUD : MonoBehaviour
 
         if (conflictingAction != null)
         {
+            Debug.LogWarning("Key " + newKey.ToString() + " already assigned to: " + conflictingAction);
+
             if (waitingText != null && localizedKeyConflict != null)
             {
                 StartCoroutine(ShowErrorMessage(conflictingAction));
             }
+            else if (waitingText != null)
+            {
+                waitingText.text = "Error! Key already used by " + GetActionName(conflictingAction) + ".\nPress another key.";
+            }
+
             return;
         }
 
@@ -550,9 +671,10 @@ public class PersistentHUD : MonoBehaviour
             localizedKeyConflict.Arguments = new object[] { GetLocalizedActionName(conflictingAction) };
             waitingText.text = localizedKeyConflict.GetLocalizedString();
             waitingText.color = Color.red;
-            yield return new WaitForSecondsRealtime(1.5f);
-            waitingText.color = Color.white;
 
+            yield return new WaitForSecondsRealtime(1.5f);
+
+            waitingText.color = Color.white;
             localizedPressKeyFor.Arguments = new object[] { GetLocalizedActionName(currentActionToRemap) };
             waitingText.text = localizedPressKeyFor.GetLocalizedString();
         }
@@ -606,6 +728,18 @@ public class PersistentHUD : MonoBehaviour
                 return localizedActionFlashlight != null ? localizedActionFlashlight.GetLocalizedString() : "Flashlight";
             default:
                 return actionName;
+        }
+    }
+
+    private string GetActionName(string actionName)
+    {
+        switch (actionName)
+        {
+            case "Jump": return "Jump";
+            case "Interact": return "Interact";
+            case "Dash": return "Dash";
+            case "Flashlight": return "Flashlight";
+            default: return actionName;
         }
     }
 
@@ -678,7 +812,6 @@ public class PersistentHUD : MonoBehaviour
 
     private void UpdateProgressInfo()
     {
-        // Current Level
         if (currentLevelText != null && localizedCurrentLevel != null)
         {
             string sceneName = SceneManager.GetActiveScene().name;
@@ -686,7 +819,6 @@ public class PersistentHUD : MonoBehaviour
             currentLevelText.text = localizedCurrentLevel.GetLocalizedString();
         }
 
-        // Parts Status
         if (partsStatusText != null && GameManager.Instance != null)
         {
             string parts = "";
@@ -694,29 +826,24 @@ public class PersistentHUD : MonoBehaviour
             if (localizedPartsTitle != null)
                 parts = localizedPartsTitle.GetLocalizedString() + "\n\n";
 
-            // Torso
             if (GameManager.Instance.hasTorso && localizedTorsoConnected != null)
                 parts += "<color=#00FF00>" + localizedTorsoConnected.GetLocalizedString() + "</color>\n";
             else if (localizedTorsoDisconnected != null)
                 parts += "<color=#888888>" + localizedTorsoDisconnected.GetLocalizedString() + "</color>\n";
 
-            // Arms
             if (GameManager.Instance.hasArms && localizedArmsConnected != null)
                 parts += "<color=#00FF00>" + localizedArmsConnected.GetLocalizedString() + "</color>\n";
             else if (localizedArmsDisconnected != null)
                 parts += "<color=#888888>" + localizedArmsDisconnected.GetLocalizedString() + "</color>\n";
 
-            // Legs
             if (GameManager.Instance.hasLegs && localizedLegsConnected != null)
                 parts += "<color=#00FF00>" + localizedLegsConnected.GetLocalizedString() + "</color>";
             else if (localizedLegsDisconnected != null)
                 parts += "<color=#888888>" + localizedLegsDisconnected.GetLocalizedString() + "</color>";
 
-
             partsStatusText.text = parts;
         }
 
-        // Eco-Memories
         if (ecoMemoriesText != null && localizedEcoMemories != null)
         {
             MemoryManager memoryManager = FindObjectOfType<MemoryManager>();
@@ -734,7 +861,6 @@ public class PersistentHUD : MonoBehaviour
             }
         }
 
-        // Instructions/Goal - BASADO EN EL NIVEL ACTUAL
         if (instructionsText != null)
         {
             string sceneName = SceneManager.GetActiveScene().name;

@@ -67,6 +67,7 @@ public class BossController : MonoBehaviour
     [SerializeField] private AudioClip sfxShockwave;
     [SerializeField] private AudioClip sfxPunch;
     [SerializeField] private AudioClip sfxShoot;
+    [SerializeField] private AudioClip sfxShootProjectile; // Sonido por cada proyectil disparado
     [SerializeField] private AudioClip sfxDeath;
     private static readonly int HashDie = Animator.StringToHash("Die");
     [SerializeField] private float deathAnimTimeout = 3.0f;
@@ -403,6 +404,12 @@ public class BossController : MonoBehaviour
         if (bullet != null)
         {
             bullet.Init(dir, speed);
+        }
+
+        // Reproducir sonido de disparo individual
+        if (sfxShootProjectile != null)
+        {
+            PlayOne(sfxShootProjectile, 0.8f);
         }
     }
 

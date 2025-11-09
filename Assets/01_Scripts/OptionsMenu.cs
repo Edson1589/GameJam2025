@@ -2,7 +2,8 @@
 using UnityEngine.UI;
 using TMPro;
 using System.Collections;
-using UnityEngine.EventSystems; 
+using UnityEngine.EventSystems;
+using UnityEngine.Localization;
 
 public class OptionsMenu : MonoBehaviour
 {
@@ -10,7 +11,7 @@ public class OptionsMenu : MonoBehaviour
     public Slider musicSlider;
     public Slider sfxSlider;
     public TextMeshProUGUI musicValueText;
-    public TextMeshProUGUI sfxValueText; 
+    public TextMeshProUGUI sfxValueText;
 
     [Header("Key Binding Buttons")]
     public Button jumpButton;
@@ -24,6 +25,10 @@ public class OptionsMenu : MonoBehaviour
     public TextMeshProUGUI dashButtonText;
     public TextMeshProUGUI flashlightButtonText;
 
+    [Header("Colors")]
+    public Color normalTextColor = new Color(0.6f, 0.6f, 0.6f, 1f);
+    public Color highlightedTextColor = Color.white;
+
     [Header("UI Panels")]
     public GameObject mainMenuPanel;
     public GameObject optionsPanel;
@@ -31,13 +36,21 @@ public class OptionsMenu : MonoBehaviour
     public GameObject waitingForKeyPanel;
     public TextMeshProUGUI waitingText;
 
+    [Header("Localized Strings - Key Remapping")]
+    [SerializeField] private LocalizedString localizedPressKeyFor;
+    [SerializeField] private LocalizedString localizedKeyConflict;
+    [SerializeField] private LocalizedString localizedActionJump;
+    [SerializeField] private LocalizedString localizedActionInteract;
+    [SerializeField] private LocalizedString localizedActionDash;
+    [SerializeField] private LocalizedString localizedActionFlashlight;
+
     [Header("Other Buttons")]
     public Button saveButton;
     public Button resetButton;
     public Button backButton;
 
     [Header("Navigation Settings")]
-    public Selectable[] optionsMenuSelectables; 
+    public Selectable[] optionsMenuSelectables;
     public float buttonHoverScale = 1.1f;
     public float animationSpeed = 0.2f;
 
@@ -53,7 +66,6 @@ public class OptionsMenu : MonoBehaviour
 
     private void Start()
     {
-        // Configurar sliders de audio
         if (musicSlider != null)
         {
             musicSlider.value = AudioManager.Instance.GetMusicVolume();
@@ -68,7 +80,8 @@ public class OptionsMenu : MonoBehaviour
             UpdateSFXText(sfxSlider.value);
         }
 
-        // Configurar botones de teclas
+        InitializeButtonColors();
+
         if (jumpButton != null)
             jumpButton.onClick.AddListener(() => StartRemapping("Jump"));
         if (interactButton != null)
@@ -78,7 +91,6 @@ public class OptionsMenu : MonoBehaviour
         if (flashlightButton != null)
             flashlightButton.onClick.AddListener(() => StartRemapping("Flashlight"));
 
-        // Otros botones
         if (saveButton != null)
             saveButton.onClick.AddListener(SaveSettings);
         if (resetButton != null)
@@ -86,11 +98,9 @@ public class OptionsMenu : MonoBehaviour
         if (backButton != null)
             backButton.onClick.AddListener(CloseOptions);
 
-        // Ocultar panel de espera
         if (waitingForKeyPanel != null)
             waitingForKeyPanel.SetActive(false);
 
-        // Inicialización de la navegación
         if (optionsMenuSelectables != null && optionsMenuSelectables.Length > 0)
         {
             originalScales = new Vector3[optionsMenuSelectables.Length];
@@ -112,12 +122,10 @@ public class OptionsMenu : MonoBehaviour
 
         if (isWaitingForKey)
         {
-            // Detectar cualquier tecla presionada
             foreach (KeyCode key in System.Enum.GetValues(typeof(KeyCode)))
             {
                 if (Input.GetKeyDown(key))
                 {
-                    // Ignorar botones del mouse
                     if (key >= KeyCode.Mouse0 && key <= KeyCode.Mouse6)
                         continue;
 
@@ -149,16 +157,76 @@ public class OptionsMenu : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter) || Input.GetKeyDown(KeyCode.Space))
         {
-            if (optionsMenuSelectables[currentSelectedIndex] != null)
+            Selectable currentSelectable = optionsMenuSelectables[currentSelectedIndex];
+            if (currentSelectable != null)
             {
-                // Solo invocamos la acción si es un botón
-                Button selectedButton = optionsMenuSelectables[currentSelectedIndex] as Button;
-                if (selectedButton != null)
+                PlayClickSound();
+                UnityEngine.EventSystems.ExecuteEvents.Execute(currentSelectable.gameObject, new UnityEngine.EventSystems.PointerEventData(UnityEngine.EventSystems.EventSystem.current), UnityEngine.EventSystems.ExecuteEvents.submitHandler);
+            }
+        }
+
+        bool isHorizontalNavigation = Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.D);
+
+        if (isHorizontalNavigation)
+        {
+            int saveIndex = 6;
+            int resetIndex = 7;
+            int backIndex = 8;
+
+            bool canNavigateHorizontally = (currentSelectedIndex >= saveIndex && currentSelectedIndex <= backIndex);
+
+            if (canNavigateHorizontally)
+            {
+                int newIndex = currentSelectedIndex;
+                bool shouldMove = false;
+
+                if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
                 {
-                    PlayClickSound();
-                    selectedButton.onClick.Invoke();
+                    if (currentSelectedIndex < backIndex)
+                    {
+                        newIndex = currentSelectedIndex + 1;
+                        shouldMove = true;
+                    }
+                }
+                else if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
+                {
+                    if (currentSelectedIndex > saveIndex)
+                    {
+                        newIndex = currentSelectedIndex - 1;
+                        shouldMove = true;
+                    }
+                }
+
+                if (shouldMove)
+                {
+                    SelectSelectable(newIndex);
+                    PlayHoverSound();
                 }
             }
+        }
+    }
+
+    private void InitializeButtonColors()
+    {
+        if (jumpButtonText != null) jumpButtonText.color = normalTextColor;
+        if (interactButtonText != null) interactButtonText.color = normalTextColor;
+        if (dashButtonText != null) dashButtonText.color = normalTextColor;
+        if (flashlightButtonText != null) flashlightButtonText.color = normalTextColor;
+
+        if (saveButton != null)
+        {
+            TextMeshProUGUI text = saveButton.GetComponentInChildren<TextMeshProUGUI>();
+            if (text != null) text.color = normalTextColor;
+        }
+        if (resetButton != null)
+        {
+            TextMeshProUGUI text = resetButton.GetComponentInChildren<TextMeshProUGUI>();
+            if (text != null) text.color = normalTextColor;
+        }
+        if (backButton != null)
+        {
+            TextMeshProUGUI text = backButton.GetComponentInChildren<TextMeshProUGUI>();
+            if (text != null) text.color = normalTextColor;
         }
     }
 
@@ -166,44 +234,38 @@ public class OptionsMenu : MonoBehaviour
     {
         if (originalScales == null || originalScales.Length == 0) return;
 
-        // 1. Resetear escala y color del anterior
         if (currentSelectedIndex >= 0 && currentSelectedIndex < optionsMenuSelectables.Length)
         {
             Selectable previousSelectable = optionsMenuSelectables[currentSelectedIndex];
             if (previousSelectable != null)
             {
-                // Resetear el color del Slider
                 Slider previousSlider = previousSelectable as Slider;
                 if (previousSlider != null && previousSlider.targetGraphic != null)
                 {
-                    // Restauramos el color original
                     previousSlider.targetGraphic.color = Color.white;
                 }
 
-                // Resetear escala y color del Botón
                 Button previousButton = previousSelectable as Button;
                 if (previousButton != null)
                 {
                     StartCoroutine(ScaleButton(previousButton.transform, originalScales[currentSelectedIndex]));
                     TextMeshProUGUI previousText = previousButton.GetComponentInChildren<TextMeshProUGUI>();
-                    if (previousText != null) previousText.color = Color.white;
+                    if (previousText != null)
+                        previousText.color = normalTextColor;
                 }
             }
         }
 
         currentSelectedIndex = index;
-
         Selectable newSelectable = optionsMenuSelectables[currentSelectedIndex];
         if (newSelectable != null)
         {
-            // Aplicar Highlight al Slider
             Slider newSlider = newSelectable as Slider;
             if (newSlider != null && newSlider.targetGraphic != null)
             {
-                newSlider.targetGraphic.color = Color.white; 
+                newSlider.targetGraphic.color = Color.white;
             }
 
-            // Aplicar animación al Botón
             Button newButton = newSelectable as Button;
             if (newButton != null)
             {
@@ -211,7 +273,8 @@ public class OptionsMenu : MonoBehaviour
                     originalScales[currentSelectedIndex] * buttonHoverScale));
 
                 TextMeshProUGUI newText = newButton.GetComponentInChildren<TextMeshProUGUI>();
-                if (newText != null) newText.color = Color.white;
+                if (newText != null)
+                    newText.color = highlightedTextColor;
             }
 
             EventSystem.current.SetSelectedGameObject(newSelectable.gameObject);
@@ -271,6 +334,7 @@ public class OptionsMenu : MonoBehaviour
 
     private void StartRemapping(string actionName)
     {
+        PlayClickSound(); 
         EventSystem.current.SetSelectedGameObject(null);
 
         currentActionToRemap = actionName;
@@ -279,32 +343,70 @@ public class OptionsMenu : MonoBehaviour
         if (waitingForKeyPanel != null)
             waitingForKeyPanel.SetActive(true);
 
-        if (waitingText != null)
+        // Usar localización si está disponible
+        if (waitingText != null && localizedPressKeyFor != null)
+        {
+            localizedPressKeyFor.Arguments = new object[] { GetLocalizedActionName(actionName) };
+            waitingText.text = localizedPressKeyFor.GetLocalizedString();
+        }
+        else if (waitingText != null)
+        {
+            // Fallback sin localización
             waitingText.text = "Press a key to " + GetActionName(actionName) + "\n(ESC to cancel)";
+        }
     }
 
     private void AssignKey(KeyCode newKey)
     {
-        // 1. Verificar si la tecla ya está asignada a otra acción
+        string conflictingAction = null;
+
         foreach (var binding in InputManager.Instance.keyBindings)
         {
-            // Si la tecla ya está asignada a OTRA acción
             if (binding.currentKey == newKey && binding.actionName != currentActionToRemap)
             {
-                Debug.LogWarning("Key " + newKey.ToString() + " already assigned to: " + binding.actionName);
-
-                // Mostrar una advertencia al usuario y NO asignar la tecla
-                if (waitingText != null)
-                {
-                    waitingText.text = "Error! Key already used by " + GetActionName(binding.actionName) + ".\nPress another key.";
-                }
-
-                return;
+                conflictingAction = binding.actionName;
+                break;
             }
         }
+
+        if (conflictingAction != null)
+        {
+            Debug.LogWarning("Key " + newKey.ToString() + " already assigned to: " + conflictingAction);
+
+            if (waitingText != null && localizedKeyConflict != null)
+            {
+                StartCoroutine(ShowErrorMessage(conflictingAction));
+            }
+            else if (waitingText != null)
+            {
+                // Fallback sin localización
+                waitingText.text = "Error! Key already used by " + GetActionName(conflictingAction) + ".\nPress another key.";
+            }
+
+            return;
+        }
+
         InputManager.Instance.SetKeyForAction(currentActionToRemap, newKey);
         UpdateAllKeyTexts();
         CancelRemapping();
+    }
+
+    private IEnumerator ShowErrorMessage(string conflictingAction)
+    {
+        if (waitingText != null && localizedKeyConflict != null && localizedPressKeyFor != null)
+        {
+            // Mostrar error en rojo
+            localizedKeyConflict.Arguments = new object[] { GetLocalizedActionName(conflictingAction) };
+            waitingText.text = localizedKeyConflict.GetLocalizedString();
+            waitingText.color = Color.red;
+
+            yield return new WaitForSeconds(1.5f);
+
+            // Volver al mensaje normal
+            waitingText.color = Color.white;
+            localizedPressKeyFor.Arguments = new object[] { GetLocalizedActionName(currentActionToRemap) };
+            waitingText.text = localizedPressKeyFor.GetLocalizedString();
+        }
     }
 
     private void CancelRemapping()
@@ -329,17 +431,34 @@ public class OptionsMenu : MonoBehaviour
     }
 
     private string GetKeyDisplayName(KeyCode key)
-{
-    switch (key)
     {
-        case KeyCode.LeftShift: return "Left Shift";
-        case KeyCode.RightShift: return "Right Shift";
-        case KeyCode.LeftControl: return "Left Control";
-        case KeyCode.RightControl: return "Right Control";
-        case KeyCode.Space: return "Space";
-        default: return key.ToString().ToUpper();
+        switch (key)
+        {
+            case KeyCode.LeftShift: return "Left Shift";
+            case KeyCode.RightShift: return "Right Shift";
+            case KeyCode.LeftControl: return "Left Control";
+            case KeyCode.RightControl: return "Right Control";
+            case KeyCode.Space: return "Space";
+            default: return key.ToString().ToUpper();
+        }
     }
-}
+
+    private string GetLocalizedActionName(string actionName)
+    {
+        switch (actionName)
+        {
+            case "Jump":
+                return localizedActionJump != null ? localizedActionJump.GetLocalizedString() : "Jump";
+            case "Interact":
+                return localizedActionInteract != null ? localizedActionInteract.GetLocalizedString() : "Interact";
+            case "Dash":
+                return localizedActionDash != null ? localizedActionDash.GetLocalizedString() : "Dash";
+            case "Flashlight":
+                return localizedActionFlashlight != null ? localizedActionFlashlight.GetLocalizedString() : "Flashlight";
+            default:
+                return actionName;
+        }
+    }
 
     private string GetActionName(string actionName)
     {
@@ -358,18 +477,15 @@ public class OptionsMenu : MonoBehaviour
         AudioManager.Instance.SaveAudioSettings();
         InputManager.Instance.SaveKeyBindings();
         Debug.Log("Configuración guardada");
-        // Podrías mostrar un mensaje de confirmación aquí
     }
 
     private void ResetToDefaults()
     {
-        // Resetear audio
         musicSlider.value = 0.75f;
         sfxSlider.value = 0.75f;
         AudioManager.Instance.SetMusicVolume(0.75f);
         AudioManager.Instance.SetSFXVolume(0.75f);
 
-        // Resetear teclas
         InputManager.Instance.ResetToDefaults();
         UpdateAllKeyTexts();
 

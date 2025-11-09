@@ -48,7 +48,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifeTime: 4
-  damage: 1
+  damage: 5
+  hitForce: 5
 --- !u!33 &3592887437007638529
 MeshFilter:
   m_ObjectHideFlags: 0
