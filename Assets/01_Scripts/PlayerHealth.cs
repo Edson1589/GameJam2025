@@ -95,19 +95,18 @@ public class PlayerHealth : MonoBehaviour
     {
         if (healthFillImage != null)
         {
-            // Usar ownedMax para mostrar la vida relativa a la vida máxima actual del jugador
-            // En el nivel 3, ownedMax debería ser 120 (todas las partes), pero si es 40, usamos eso
-            float fill = ownedMax > 0 ? (float)currentHP / ownedMax : 0f;
+            // Normaliza contra finalMax para que la barra solo esté llena cuando tengas TODAS las piezas
+            float fill = finalMax > 0 ? (float)currentHP / finalMax : 0f;
             healthFillImage.fillAmount = Mathf.Clamp01(fill);
 
-            // Debug para verificar
-            Debug.Log($"🩺 UI: {currentHP}/{ownedMax} = {fill * 100f:F1}% | fillAmount: {healthFillImage.fillAmount}");
+            Debug.Log($"🩺 UI: HP={currentHP} | OwnedMax={ownedMax} | FinalMax={finalMax} | Fill={fill:P1}");
         }
         else
         {
             Debug.LogWarning("⚠️ PlayerHealth: healthFillImage no está asignado");
         }
     }
+
 
     public int GetCurrentHP() => currentHP;
     public int GetOwnedMax() => ownedMax;

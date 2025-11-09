@@ -132,6 +132,7 @@ public class PlayerController : MonoBehaviour
         {
             Instance = this;
         }
+        if (!playerHealth) playerHealth = GetComponent<PlayerHealth>();
     }
 
     void Start()
@@ -580,7 +581,7 @@ public class PlayerController : MonoBehaviour
         {
             GameManager.Instance.CollectTorso();
         }
-
+        if (playerHealth != null) playerHealth.OnPartConnected(BodyPart.Torso);
         UpdateStatusText();
         UpdateInstructions();
 

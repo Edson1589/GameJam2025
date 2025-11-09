@@ -22,7 +22,7 @@ public class TurretInteractable : MonoBehaviour
 
     private bool playerInRange = false;
     private bool isDisabled = false;
-    private float progress = 0f;
+    public float progress = 0f;
     private Collider triggerCol;
 
     private bool requireKeyUpBeforeContinue = false;

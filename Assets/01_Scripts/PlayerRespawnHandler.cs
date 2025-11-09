@@ -11,6 +11,8 @@ public class PlayerRespawnHandler : MonoBehaviour
     [SerializeField] private Rigidbody rb;
     [SerializeField] private CharacterController characterController;
 
+    [SerializeField] private int maxHP = 100;
+    private float progress = 0f;
     public void RespawnNow()
     {
         TeleportToSpawn();
@@ -58,10 +60,28 @@ public class PlayerRespawnHandler : MonoBehaviour
             boss.RestoreFullHealth();
         }
 
+        BossHealth bosslvl1 = FindObjectOfType<BossHealth>();
+        if (bosslvl1 != null)
+        {
+            bosslvl1.currentHP = maxHP;
+        }
+
         AmmoPickup[] allAmmoPickups = FindObjectsOfType<AmmoPickup>();
         foreach (AmmoPickup pickup in allAmmoPickups)
         {
             pickup.Respawn();
+        }
+
+        TurretInteractable turret = FindObjectOfType<TurretInteractable>();
+        if (turret != null)
+        {
+            turret.progress = progress;
+        }
+
+        BeltSwitch belt = FindObjectOfType<BeltSwitch>();
+        if (belt != null)
+        {
+            belt.canActivate = false;
         }
 
         Debug.Log($"PlayerRespawnHandler: Boss restaurado y {allAmmoPickups.Length} municiones reaparecieron.");

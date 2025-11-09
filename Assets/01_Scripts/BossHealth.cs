@@ -4,8 +4,8 @@ using System.Collections;
 public class BossHealth : MonoBehaviour
 {
     [Header("Vida del Jefe")]
-    [SerializeField] private int maxHP = 100;
-    [SerializeField] private int currentHP;
+    [SerializeField] public int maxHP = 100;
+    [SerializeField] public int currentHP;
 
     [Header("Daño por torreta desactivada")]
     [SerializeField] private int damagePerTurret = 25;

@@ -1348,6 +1348,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd3b6c4bfb0e0b24ab50f01bd7532e3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  animatorControllerAsset: {fileID: 0}
   moveSpeed: 30
   jumpForce: 8
   groundCheck: {fileID: 314709057}
@@ -1358,6 +1359,7 @@ MonoBehaviour:
   hasLegs: 1
   hasArms: 0
   hasTorso: 0
+  allowJumpWithoutLegs: 0
   pushPower: 3
   pushRayDistance: 1.5
   flashlight: {fileID: 0}
@@ -1366,7 +1368,6 @@ MonoBehaviour:
   instructionsText: {fileID: 811327766}
   maxJumps: 123
   camTransform: {fileID: 0}
-  headAnimator: {fileID: 675522160}
   pulseSpeed: 2
   pulseMinScale: 0.95
   pulseMaxScale: 1.05
@@ -1374,9 +1375,26 @@ MonoBehaviour:
   legsGroup: {fileID: 1586543852}
   armsGroup: {fileID: 1660170782}
   torsoGroup: {fileID: 2000804334}
+  headGroupTransform: {fileID: 0}
+  torsoGroupTransform: {fileID: 0}
   playerHealth: {fileID: 122415836}
   playerDash: {fileID: 122415837}
+  initialYOffset: 0
   laser: {fileID: 122415838}
+  headOnlyColliderHeight: 0.3
+  withTorsoColliderHeight: 0.6
+  withLegsColliderHeight: 1
+  headStackingOffsetTorso: -0.15
+  headStackingOffsetLegs: -0.13
+  torsoStackingOffsetLegs: 0.42
+  legsStackingOffset: 0.468
+  armsStackingOffset: 0.46
+  heightTransitionDuration: 0.5
+  groundSnapUp: 2
+  groundSnapDown: 5
+  groundSnapMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!33 &122415832
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -1429,7 +1447,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   respawnPoint: {fileID: 2085694407}
+  alignRotationToSpawn: 1
   rb: {fileID: 122415828}
+  characterController: {fileID: 0}
 --- !u!114 &122415836
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1478,23 +1498,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   firePoint: {fileID: 2131787564}
-  camTransform: {fileID: 988181925}
-  range: 60
-  hitMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  triggerMode: 2
+  projectilePrefab: {fileID: 0}
+  projectileSpeed: 40
+  projectileLifetime: 3
   cooldown: 0.3
   requiresTorso: 1
   unlocked: 0
-  visualMode: 1
-  beamDuration: 0.05
-  line: {fileID: 2131787565}
-  cylinderBeam: {fileID: 418281408}
-  cylinderAxis: {x: 0, y: 1, z: 0}
-  detachBeamFromParent: 1
-  cylinderDiameter: 1
-  cylinderExtraLength: 0
+  requiresAmmo: 1
+  ammoPerShot: 1
+  shootKey: 107
+  useInputManager: 0
+  sfxSource: {fileID: 0}
+  sfxShoot: {fileID: 0}
+  muzzleVFX: {fileID: 0}
+  muzzleVFXLife: 0.5
+  camTransform: {fileID: 988181925}
 --- !u!1 &130943709
 GameObject:
   m_ObjectHideFlags: 0
@@ -2937,12 +2955,43 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00550e89bb3be344b8803a33a3ebd090, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  firstMessage: "Toma esto... te abrir\xE1 el camino. No dejes que A.N.C.L.A. te
-    copie."
-  repeatMessage: Ya tienes la llave. Ve a la puerta principal.
+  localizedFirstMessage:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  localizedRepeatMessage:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   playerTag: Player
   promptUI: {fileID: 130943709}
   promptText: {fileID: 1401501792}
+  localizedPromptText:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  sfxSource: {fileID: 0}
+  sfxGive: {fileID: 0}
+  sfxRepeat: {fileID: 0}
+  sfxVolume: 1
+  pitchRange: {x: 0.98, y: 1.02}
+  references:
+    version: 1
 --- !u!4 &263459727
 Transform:
   m_ObjectHideFlags: 0
@@ -6239,17 +6288,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   memoryID: 1
-  memoryText: 'Day 1: I woke up in the Assembly Zone.
-
-    My parts... scattered.
-
-    What
-    did A.N.C.L.A. do to me?'
+  localizedMemoryText:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   rotationSpeed: 60
   floatAmplitude: 0.2
   floatSpeed: 3
   pulseSpeed: 2
   pulseIntensity: 0.3
+  pickupSfx: {fileID: 0}
+  pickupVolume: 1
+  references:
+    version: 1
 --- !u!33 &651170573
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -7091,10 +7147,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de1e1806118d3a14f9331d2fd851d1b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  npcMessage: Acercate a la puerta y sigue el camino recto.
+  localizedNpcMessage:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   playerTag: Player
   promptUI: {fileID: 796699761}
   promptText: {fileID: 970026984}
+  localizedPromptText:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  sfxSource: {fileID: 0}
+  sfxOpen: {fileID: 0}
+  sfxClose: {fileID: 0}
+  sfxVolume: 1
+  pitchRange: {x: 0.98, y: 1.02}
+  references:
+    version: 1
 --- !u!4 &815062737
 Transform:
   m_ObjectHideFlags: 0
@@ -10062,17 +10142,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   memoryID: 2
-  memoryText: 'I hear my Legs... arguing.
-
-    "Freedom," they say. "Movement."
-
-    Will
-    they trust me again?'
+  localizedMemoryText:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   rotationSpeed: 60
   floatAmplitude: 0.2
   floatSpeed: 3
   pulseSpeed: 2
   pulseIntensity: 0.3
+  pickupSfx: {fileID: 0}
+  pickupVolume: 1
+  references:
+    version: 1
 --- !u!33 &1264349981
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -11292,8 +11379,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerTag: Player
   capsuleController: {fileID: 1318151549}
-  message: "Recolector biomec\xE1nico localizado.\nM\xF3dulo Piernas disponible."
+  localizedMessage:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   messageDuration: 2.5
+  references:
+    version: 1
 --- !u!4 &1402118971
 Transform:
   m_ObjectHideFlags: 0
@@ -12207,20 +12304,33 @@ MonoBehaviour:
   playerTag: Player
   boss: {fileID: 1615839293}
   bossHpUI: {fileID: 2019703916}
-  startMessage: "\u26A0 ANCLA: Intruso detectado. Iniciando protocolo de contenci\xF3n."
+  localizedStartMessage:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   messageDuration: 2.5
   preAttackHold: 0.8
   lookDuration: 0.6
   disableDuringCinematic: []
   freezePlayerRigidbody: 1
-  bossTitle: ENSAMBLADOR
+  localizedBossTitle:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   bossTitleHold: 2.2
-  musicSource: {fileID: 1489700485}
-  bossMusic: {fileID: 8300000, guid: 65191b8801592b04ca6abc090f9958ef, type: 3}
-  musicVolume: 0.5
-  musicFadeIn: 0.5
-  loopBossMusic: 1
   pusherSpawner: {fileID: 1489700486}
+  references:
+    version: 1
 --- !u!4 &1489700484
 Transform:
   m_ObjectHideFlags: 0
@@ -13698,6 +13808,10 @@ MonoBehaviour:
   sfxShockwave: {fileID: 8300000, guid: 675269e09fd6b2e45a3e86dbd30eb499, type: 3}
   sfxPunch: {fileID: 8300000, guid: 8ed2e48d672fa7f45a03b3e79767242e, type: 3}
   sfxShoot: {fileID: 8300000, guid: 1fec860c22de2a446bcf930646125e23, type: 3}
+  sfxShootProjectile: {fileID: 0}
+  sfxDeath: {fileID: 0}
+  deathAnimTimeout: 3
+  fadeOutTime: 1
   sfxVolume: 1
   pitchRange: {x: 0.98, y: 1.02}
 --- !u!4 &1615839294
@@ -13829,6 +13943,9 @@ MonoBehaviour:
   currentHP: 0
   damagePerTurret: 25
   boss: {fileID: 1615839293}
+  enableOnDeath: []
+  enableCollidersOnDeath: []
+  showTriggerDelay: 0
 --- !u!1 &1617073735
 GameObject:
   m_ObjectHideFlags: 0
@@ -14620,17 +14737,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   memoryID: 3
-  memoryText: 'A.N.C.L.A. sees me as the perfect template.
-
-    Too human, it says.
-
-    It
-    wants to copy me... without will.'
+  localizedMemoryText:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   rotationSpeed: 60
   floatAmplitude: 0.2
   floatSpeed: 3
   pulseSpeed: 2
   pulseIntensity: 0.3
+  pickupSfx: {fileID: 0}
+  pickupVolume: 1
+  references:
+    version: 1
 --- !u!33 &1702304860
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -16755,6 +16879,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bossHealth: {fileID: 1615839296}
+  anchorMother: {fileID: 0}
   fillImage: {fileID: 617392265}
   group: {fileID: 2019703917}
   hideWhenNoBoss: 1

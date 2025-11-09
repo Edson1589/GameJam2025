@@ -15,7 +15,7 @@ public class BeltSwitch : MonoBehaviour, IJammable
 
     private Renderer switchRenderer;
     private bool isOn = false;
-    private bool canActivate = true;
+    public bool canActivate = true;
     private float cooldown = 0.5f;
     private float cooldownTimer = 0f;
 
@@ -38,7 +38,7 @@ public class BeltSwitch : MonoBehaviour, IJammable
 
     void Update()
     {
-  
+
         if (isJammed)
         {
             jamTimer -= Time.deltaTime;
@@ -70,7 +70,7 @@ public class BeltSwitch : MonoBehaviour, IJammable
         }
     }
 
-    private void ActivateSwitch()
+    public void ActivateSwitch()
     {
         if (connectedBelt == null)
         {
