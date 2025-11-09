@@ -327,7 +327,6 @@ public class PersistentHUD : MonoBehaviour
 
         optionsPanelOpen = true;
         if (optionsPanel != null)
-
         {
             optionsPanel.SetActive(true);
             Debug.Log("✅ PersistentHUD: Menú de pausa abierto");
@@ -336,10 +335,6 @@ public class PersistentHUD : MonoBehaviour
         {
             Debug.LogWarning("⚠️ PersistentHUD: optionsPanel no está asignado. No se puede mostrar el menú de pausa.");
         }
-
-            optionsPanel.SetActive(true);
-
-
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
 
@@ -539,7 +534,10 @@ public class PersistentHUD : MonoBehaviour
                 if (newText != null) newText.color = highlightedTextColor;
             }
 
-            EventSystem.current.SetSelectedGameObject(newSelectable.gameObject);
+            if (EventSystem.current != null)
+            {
+                EventSystem.current.SetSelectedGameObject(newSelectable.gameObject);
+            }
         }
     }
 
@@ -573,7 +571,10 @@ public class PersistentHUD : MonoBehaviour
             TextMeshProUGUI newText = optionsPanelButtons[currentOptionsSelectedIndex].GetComponentInChildren<TextMeshProUGUI>();
             if (newText != null) newText.color = Color.yellow;
 
-            EventSystem.current.SetSelectedGameObject(optionsPanelButtons[currentOptionsSelectedIndex].gameObject);
+            if (EventSystem.current != null)
+            {
+                EventSystem.current.SetSelectedGameObject(optionsPanelButtons[currentOptionsSelectedIndex].gameObject);
+            }
         }
     }
 
