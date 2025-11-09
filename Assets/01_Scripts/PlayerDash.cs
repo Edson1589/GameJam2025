@@ -135,8 +135,7 @@ public class PlayerDash : MonoBehaviour
         PlayerHealth playerHealth = GetComponent<PlayerHealth>();
         if (playerHealth != null && playerHealth.GetHealthFillImage() == dashFillImage)
         {
-            // Si es el mismo Image, no actualizar para evitar conflicto
-            Debug.LogWarning("⚠️ PlayerDash: dashFillImage es el mismo que healthFillImage. Usa imágenes separadas.");
+           
             return;
         }
 

@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Pushable
   - PlayerSpawn
+  - Grounded
   layers:
   - Default
   - TransparentFX

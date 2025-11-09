@@ -10,6 +10,7 @@ public class BossProjectile : MonoBehaviour
 
     private Vector3 velocity;
     private Rigidbody rb;
+    private Transform ownerRoot; // Para evitar colisiones con el dueño
 
     public void Init(Vector3 dir, float speed)
     {
@@ -20,6 +21,13 @@ public class BossProjectile : MonoBehaviour
         {
             rb.velocity = velocity;
         }
+    }
+
+    // Sobrecarga para incluir el owner (para evitar colisiones con el jugador que dispara)
+    public void Init(Vector3 dir, float speed, Transform owner)
+    {
+        Init(dir, speed);
+        ownerRoot = owner;
     }
 
     private void Awake()
@@ -58,6 +66,24 @@ public class BossProjectile : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        // Ignorar colisión con el dueño del proyectil
+        if (ownerRoot != null && other.transform.root == ownerRoot)
+        {
+            return;
+        }
+
+        // Detectar jefe AnchorMother (si el proyectil fue disparado por el jugador)
+        if (ownerRoot != null && ownerRoot.CompareTag("Player"))
+        {
+            var anchorMother = other.GetComponent<AnchorMother>() ?? other.GetComponentInParent<AnchorMother>();
+            if (anchorMother != null)
+            {
+                anchorMother.TakeDamage(damage);
+                Destroy(gameObject);
+                return;
+            }
+        }
+
         if (other.CompareTag("Player"))
         {
             PlayerHealth health = other.GetComponent<PlayerHealth>();

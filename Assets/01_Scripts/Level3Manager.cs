@@ -116,6 +116,23 @@ public class Level3Manager : MonoBehaviour
             playerController.hasArms = true;
             playerController.hasTorso = true;
 
+            // Desbloquear el laser ya que tiene torso
+            LaserRay laser = playerController.GetComponent<LaserRay>();
+            if (laser == null)
+            {
+                laser = playerController.GetComponentInChildren<LaserRay>();
+            }
+            if (laser != null)
+            {
+                laser.SetUnlocked(true);
+                if (showDebugLogs)
+                    Debug.Log(">>> Level3Manager: Laser desbloqueado (jugador tiene torso)");
+            }
+            else
+            {
+                Debug.LogWarning(">>> Level3Manager: No se encontró componente LaserRay en el jugador");
+            }
+
             // Actualizar UI
             playerController.UpdateStatusText();
             playerController.UpdateInstructions();
@@ -291,6 +308,28 @@ public class Level3Manager : MonoBehaviour
             GameManager.Instance.hasLegs = true;
             GameManager.Instance.hasArms = true;
             GameManager.Instance.hasTorso = true;
+        }
+
+        // Permitir salto sin piernas en nivel 3
+        playerController.SetAllowJumpWithoutLegs(true);
+        if (showDebugLogs)
+            Debug.Log(">>> Level3Manager: Salto habilitado sin necesidad de piernas");
+
+        // Desbloquear el laser ya que tiene torso
+        LaserRay laser = playerController.GetComponent<LaserRay>();
+        if (laser == null)
+        {
+            laser = playerController.GetComponentInChildren<LaserRay>();
+        }
+        if (laser != null)
+        {
+            laser.SetUnlocked(true);
+            if (showDebugLogs)
+                Debug.Log(">>> Level3Manager: Laser desbloqueado (jugador tiene torso)");
+        }
+        else
+        {
+            Debug.LogWarning(">>> Level3Manager: No se encontró componente LaserRay en el jugador");
         }
 
         // Forzar actualización del estado visual y UI

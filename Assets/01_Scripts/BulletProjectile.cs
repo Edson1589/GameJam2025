@@ -43,6 +43,15 @@ public class BulletProjectile : MonoBehaviour
     {
         if (ownerRoot && other.transform.root == ownerRoot) return;
 
+        // Detectar jefe AnchorMother
+        var anchorMother = other.GetComponent<AnchorMother>() ?? other.GetComponentInParent<AnchorMother>();
+        if (anchorMother != null)
+        {
+            anchorMother.TakeDamage(10); // Daño por bala (puede ser configurado en AnchorMother)
+            Destroy(gameObject);
+            return;
+        }
+
         var bot = other.GetComponent<PusherBot>() ?? other.GetComponentInParent<PusherBot>();
         if (bot != null)
         {

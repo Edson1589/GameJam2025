@@ -24,5 +24,27 @@ public class PlayerRespawnHandler : MonoBehaviour
         }
 
         Debug.Log("Jugador respawneado al inicio del pasillo 4.");
+
+        // Notificar que el jugador ha respawneado (para restaurar boss y munición)
+        OnPlayerRespawned();
+    }
+
+    private void OnPlayerRespawned()
+    {
+        // Restaurar salud del boss
+        AnchorMother boss = FindObjectOfType<AnchorMother>();
+        if (boss != null)
+        {
+            boss.RestoreFullHealth();
+        }
+
+        // Restaurar todos los AmmoPickup
+        AmmoPickup[] allAmmoPickups = FindObjectsOfType<AmmoPickup>();
+        foreach (AmmoPickup pickup in allAmmoPickups)
+        {
+            pickup.Respawn();
+        }
+
+        Debug.Log($"PlayerRespawnHandler: Boss restaurado y {allAmmoPickups.Length} municiones reaparecieron.");
     }
 }

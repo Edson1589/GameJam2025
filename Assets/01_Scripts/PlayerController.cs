@@ -23,6 +23,15 @@ public class PlayerController : MonoBehaviour
     public bool hasLegs = false;
     public bool hasArms = false;
     public bool hasTorso = false;
+    
+    [Header("Level 3 Override")]
+    [SerializeField] private bool allowJumpWithoutLegs = false; // Permite saltar sin piernas (útil para nivel 3)
+
+  
+    public void SetAllowJumpWithoutLegs(bool allow)
+    {
+        allowJumpWithoutLegs = allow;
+    }
 
     [Header("Push Settings")]
     [SerializeField] private float pushPower = 3f;
@@ -120,6 +129,13 @@ public class PlayerController : MonoBehaviour
             UpdateColliderAndPivot(initialConfig);
         }
 
+        // Verificar si estamos en nivel 3 y activar salto si es necesario
+        if (Level3Manager.Instance != null && Level3Manager.Instance.IsActive())
+        {
+            SetAllowJumpWithoutLegs(true);
+            Debug.Log("PlayerController: Salto habilitado para nivel 3");
+        }
+
         if (rb != null)
         {
             rb.velocity = Vector3.zero;
@@ -191,10 +207,38 @@ public class PlayerController : MonoBehaviour
 
     private void HandleInput()
     {
-        if (InputManager.Instance != null && InputManager.Instance.GetKeyDown("Jump") && hasLegs && availableJumps > 0)
+        bool canJump = (hasLegs || allowJumpWithoutLegs) && availableJumps > 0;
+        
+        // Debug del salto
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            Debug.Log($"=== DEBUG SALTO ===");
+            Debug.Log($"hasLegs: {hasLegs}");
+            Debug.Log($"allowJumpWithoutLegs: {allowJumpWithoutLegs}");
+            Debug.Log($"availableJumps: {availableJumps}");
+            Debug.Log($"canJump: {canJump}");
+            Debug.Log($"InputManager.Instance: {(InputManager.Instance != null ? "EXISTE" : "NULL")}");
+            if (InputManager.Instance != null)
+            {
+                Debug.Log($"GetKeyDown('Jump'): {InputManager.Instance.GetKeyDown("Jump")}");
+            }
+            Debug.Log($"rb: {(rb != null ? "EXISTE" : "NULL")}");
+            Debug.Log($"isGrounded: {isGrounded}");
+        }
+        
+        // Intentar salto con InputManager primero
+        if (InputManager.Instance != null && InputManager.Instance.GetKeyDown("Jump") && canJump)
         {
             rb.velocity = new Vector3(rb.velocity.x, jumpForce, rb.velocity.z);
             availableJumps--;
+            Debug.Log($"Salto ejecutado! Saltos restantes: {availableJumps}");
+        }
+        // Fallback: usar Input directo de Unity si InputManager no funciona
+        else if (InputManager.Instance == null && Input.GetKeyDown(KeyCode.Space) && canJump)
+        {
+            rb.velocity = new Vector3(rb.velocity.x, jumpForce, rb.velocity.z);
+            availableJumps--;
+            Debug.Log($"Salto ejecutado (fallback)! Saltos restantes: {availableJumps}");
         }
 
         if (InputManager.Instance != null && hasTorso && InputManager.Instance.GetKeyDown("Flashlight"))
@@ -237,6 +281,23 @@ public class PlayerController : MonoBehaviour
         isGrounded = Physics.CheckSphere(groundCheck.position, groundCheckRadius, groundLayer);
 
         if (!wasGrounded && isGrounded)
+        {
+            // Solo restablecer saltos cuando realmente toca el suelo
+            if (availableJumps < maxJumps)
+            {
+                availableJumps = maxJumps;
+                Debug.Log($"Jugador tocó el suelo. Saltos restablecidos: {availableJumps}");
+            }
+        }
+        
+        // Si está en el suelo y no tiene saltos disponibles, restablecerlos (por seguridad)
+        if (isGrounded && availableJumps == 0)
+        {
+            availableJumps = maxJumps;
+        }
+        
+        // Limitar availableJumps al máximo para evitar bugs
+        if (availableJumps > maxJumps)
         {
             availableJumps = maxJumps;
         }
@@ -579,10 +640,10 @@ public class PlayerController : MonoBehaviour
             string instructions = "Controls:\n";
             instructions += "- WASD/Arrows: Move\n";
 
-            if (hasLegs)
+            if (hasLegs || allowJumpWithoutLegs)
             {
                 instructions += $"- Space: Jump ({availableJumps} / {maxJumps})\n";
-                if (playerDash != null)
+                if (playerDash != null && hasLegs)
                 {
                     instructions += $"- Left Shift: Dash\n";
                 }

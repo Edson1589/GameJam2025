@@ -35,9 +35,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/00_Scenes/VideoScene.unity
     guid: ffe246baf139d2247b6bdbc8563ded3c
-  - enabled: 0
-    path: 
-    guid: 00000000000000000000000000000000
+  - enabled: 1
+    path: Assets/00_Scenes/VideoSceneFinal.unity
+    guid: 16df3f0e770d83844b7e6d4ed578325d
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: 7ad20eba81f05474ca84602fd5698525, type: 2}
     com.unity.localization.settings: {fileID: 11400000, guid: da99cd83901342340ac8ece5bbcd80e7, type: 2}
