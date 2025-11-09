@@ -17889,7 +17889,7 @@ MonoBehaviour:
   enableOnDeath:
   - {fileID: 881998486}
   enableCollidersOnDeath: []
-  showTriggerDelay: 3
+  showTriggerDelay: 0
 --- !u!1 &1617073735
 GameObject:
   m_ObjectHideFlags: 0
