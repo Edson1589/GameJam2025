@@ -15,7 +15,7 @@ MonoBehaviour:
   m_GroupName: Localization-String-Tables-English (United States) (en-US)
   m_Data:
     m_SerializedData: []
-  m_GUID: 7553dbf43f29a6e4484084dbb3bc1a06
+  m_GUID: a315f443930551848ab4d9c39e975ce9
   m_SerializeEntries:
   - m_GUID: bfa94a09447bb454b8aff6383a28614c
     m_Address: UITexts_en-US

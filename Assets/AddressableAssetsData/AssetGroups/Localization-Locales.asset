@@ -15,7 +15,7 @@ MonoBehaviour:
   m_GroupName: Localization-Locales
   m_Data:
     m_SerializedData: []
-  m_GUID: c10153687d021db488a26113f383e738
+  m_GUID: 336df0678acf4d944867fb37b21721d2
   m_SerializeEntries:
   - m_GUID: 16b4a059437a76e409b98ddb3e812449
     m_Address: Spanish (Mexico) (es-MX)

@@ -15,8 +15,18 @@ MonoBehaviour:
   m_GroupName: Default Local Group
   m_Data:
     m_SerializedData: []
-  m_GUID: 38fc0490e007e79468b300116d5a5d74
-  m_SerializeEntries: []
+  m_GUID: 53197ff69ab73e6488a4369f01520afa
+  m_SerializeEntries:
+  - m_GUID: 7ed5a4606aa20fb449b54df1aaf3ca82
+    m_Address: Assets/08_Localization/UITexts.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: da99cd83901342340ac8ece5bbcd80e7
+    m_Address: Assets/08_Localization/Localization Settings.asset
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 561f566f82591894e911a8bbad0065ea, type: 2}
   m_SchemaSet:

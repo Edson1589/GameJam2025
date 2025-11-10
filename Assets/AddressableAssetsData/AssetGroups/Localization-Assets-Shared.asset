@@ -15,7 +15,7 @@ MonoBehaviour:
   m_GroupName: Localization-Assets-Shared
   m_Data:
     m_SerializedData: []
-  m_GUID: ef0f446243dc34048afd6e31255a19f7
+  m_GUID: b1c7880af4f795b4ea85626bd7339afb
   m_SerializeEntries:
   - m_GUID: 17c2654aacae7b94382b24533b670dcc
     m_Address: Assets/08_Localization/UITexts Shared Data.asset

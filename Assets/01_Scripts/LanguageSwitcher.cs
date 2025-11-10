@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.Localization;
 using UnityEngine.SceneManagement;
+using UnityEngine.Localization.Components;
 
 public class LanguageSwitcher : MonoBehaviour
 {
@@ -103,6 +104,9 @@ public class LanguageSwitcher : MonoBehaviour
         {
             LocalizationSettings.SelectedLocale = targetLocale;
             Debug.Log($"Idioma aplicado: {targetLocale.Identifier.Code}");
+
+            RefreshLocalizeComponents();
+
         }
         else
         {
@@ -111,6 +115,7 @@ public class LanguageSwitcher : MonoBehaviour
             if (targetLocale != null)
             {
                 LocalizationSettings.SelectedLocale = targetLocale;
+                RefreshLocalizeComponents();
             }
         }
     }
@@ -132,6 +137,8 @@ public class LanguageSwitcher : MonoBehaviour
 
             PlayerPrefs.SetString("SelectedLanguage", localeCode);
             PlayerPrefs.Save();
+
+            RefreshLocalizeComponents();
 
             StartCoroutine(LoadMainMenuAfterDelay(0.1f));
         }
@@ -160,6 +167,17 @@ public class LanguageSwitcher : MonoBehaviour
         }
 
         return null;
+    }
+
+    private void RefreshLocalizeComponents()
+    {
+        LocalizeStringEvent[] allLocalizeEvents =
+            FindObjectsByType<LocalizeStringEvent>(FindObjectsSortMode.None);
+
+        foreach (var localizeEvent in allLocalizeEvents)
+        {
+            localizeEvent.RefreshString();
+        }
     }
 
     public string GetSavedLanguage()

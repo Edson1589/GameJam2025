@@ -380,5 +380,9 @@ MonoBehaviour:
     m_Localized: Encuentra la llave
     m_Metadata:
       m_Items: []
+  - m_Id: 896761403777024
+    m_Localized: '[E] Activar Palanca'
+    m_Metadata:
+      m_Items: []
   references:
     version: 1

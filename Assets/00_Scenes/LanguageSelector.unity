@@ -153,7 +153,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useSystemLanguage: 1
-  fallbackLanguage: en
+  fallbackLanguage: en-US
   mainMenuSceneName: 00_Scenes/MainMenu
 --- !u!4 &94515349
 Transform:
@@ -5533,7 +5533,7 @@ MonoBehaviour:
       m_KeyId: 5604993900544
       m_Key: 
     m_FallbackState: 0
-    m_WaitForCompletion: 0
+    m_WaitForCompletion: 1
     m_LocalVariables: []
   m_FormatArguments: []
   m_UpdateString:

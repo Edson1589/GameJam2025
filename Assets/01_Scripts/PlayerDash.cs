@@ -29,12 +29,31 @@ public class PlayerDash : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         playerController = GetComponent<PlayerController>();
 
-        if (dashFillImage != null)
+        Debug.Log("=== PlayerDash Awake ===");
+
+        if (dashUIRoot == null && dashFillImage != null)
         {
-            dashUIRoot = dashFillImage.gameObject;
-            dashUIRoot.SetActive(false);
+            dashUIRoot = dashFillImage.transform.parent?.gameObject;
+
+            if (dashUIRoot != null)
+            {
+                Debug.Log($"✓ dashUIRoot encontrado automáticamente: {dashUIRoot.name}");
+            }
+            else
+            {
+                Debug.LogError("✗ No se pudo encontrar el padre de dashFillImage!");
+            }
         }
 
+        if (dashUIRoot != null)
+        {
+            dashUIRoot.SetActive(false);
+            Debug.Log($"✓ Dash UI '{dashUIRoot.name}' desactivado en Awake");
+        }
+        else
+        {
+            Debug.LogError("✗ ERROR: dashUIRoot es NULL después de intentar auto-asignarlo!");
+        }
     }
 
     public void InitializeUI(bool hasLegs)

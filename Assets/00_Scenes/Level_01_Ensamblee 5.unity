@@ -5284,6 +5284,7 @@ GameObject:
   - component: {fileID: 407283185}
   - component: {fileID: 407283184}
   - component: {fileID: 407283183}
+  - component: {fileID: 407283186}
   m_Layer: 0
   m_Name: InteractionPrompt
   m_TagString: Untagged
@@ -5443,6 +5444,45 @@ RectTransform:
   m_AnchoredPosition: {x: -0.07, y: 0.75}
   m_SizeDelta: {x: 32.147, y: 5}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &407283186
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 407283182}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56eb0353ae6e5124bb35b17aff880f16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_StringReference:
+    m_TableReference:
+      m_TableCollectionName: GUID:17c2654aacae7b94382b24533b670dcc
+    m_TableEntryReference:
+      m_KeyId: 896761403777024
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  m_FormatArguments: []
+  m_UpdateString:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 407283183}
+        m_TargetAssemblyTypeName: TMPro.TMP_Text, Unity.TextMeshPro
+        m_MethodName: set_text
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  references:
+    version: 1
 --- !u!1 &414576444
 GameObject:
   m_ObjectHideFlags: 0
@@ -28947,7 +28987,7 @@ MonoBehaviour:
   dashSpeed: 20
   dashDuration: 0.2
   dashCooldownDuration: 10
-  dashFillImage: {fileID: 0}
+  dashFillImage: {fileID: 1587834627}
 --- !u!114 &3571109617355709261
 MonoBehaviour:
   m_ObjectHideFlags: 0
